@@ -5,7 +5,7 @@ import json
 import os
 import re
 
-github_token = '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'
+github_token = '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'
 
 
 def get_commit_data(repo_urls: List[str]):
