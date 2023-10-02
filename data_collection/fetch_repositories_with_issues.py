@@ -1,35 +1,43 @@
 import json
 import os
 import requests
+import time
 
 github_token = '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'
 headers = {
     'Authorization': f'Bearer {github_token}'
 }
-def get_pull_request_number(repo_owner: str, repo_name: str) -> int:
-    pull_request_url= f"https://api.github.com/search/issues?q=repo:{repo_owner}/{repo_name}+type:issue"
-    print(pull_request_url)
-    response = requests.get(pull_request_url, headers=headers)
-    if response.status_code == 200:
-        if "total_count" in response.json():
-            number_of_pull_requests = response.json()["total_count"]
-            print(number_of_pull_requests)
-    else:
-        print(response.status_code)
-        return 0
-    return number_of_pull_requests
+
 
 def get_issue_number(repo_owner: str, repo_name: str) -> int:
-    issues_url = f"https://api.github.com/search/issues?q=repo:{repo_owner}/{repo_name}+type:issue"
-    print(issues_url)
-    response = requests.get(issues_url, headers=headers)
-    if response.status_code == 200:
-        if "total_count" in response.json():
-            number_of_issues = response.json()["total_count"]
-            print(number_of_issues)
-    else:
-        print(response.status_code)
+    # Construct the API URL for fetching issues
+    # Set the headers with the required authorization using a personal access token
+
+    try:
+        issues_url = f"https://api.github.com/search/issues?q=repo:{repo_owner}/{repo_name}+type:issue"
+        print(issues_url)
+        response = requests.get(issues_url, headers=headers)
+
+
+        # Check the response status code
+        if response.status_code == 200:
+            # Check if "total_count" is in the response JSON
+            if "total_count" in response.json():
+                number_of_issues = response.json()["total_count"]
+                print(f"Number of issues: {number_of_issues}")
+            else:
+                print("Error: 'total_count' not found in the response.")
+                return 0
+        else:
+            print(f'Failed to fetch issues. Status code: {response.status_code}')
+            return 0
+    except requests.exceptions.RequestException as e:
+        print('An error occurred:', str(e))
         return 0
+
+    # Introduce a 2-second delay before sending another request
+    time.sleep(2)
+
     return number_of_issues
 
 #Java programming language
