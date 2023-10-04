@@ -5,26 +5,34 @@ import json
 import os
 import re
 
-github_token = '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'
-
+github_token = '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'
+headers = {'Authorization': f'Bearer {github_token}'}
 
 def get_commit_data(repo_urls: List[str]):
     for repo_url in repo_urls:
-        repository = Repository(repo_url,
-                                only_no_merge=True,
-                                only_modifications_with_file_types=['.java'])
+        repository = Repository(repo_url, only_modifications_with_file_types=['.java'])
         for commit in repository.traverse_commits():
+            commit_hash = commit.hash
             commit_msg = commit.msg
-            issue_number = get_issue_number(commit_msg)
-            if issue_number is None:
+            commit_author = commit.author.name
+            committer_date = commit.author_date.date().day , commit.author_date.date().month , commit.author_date.date().year ,
+            in_main_branch = commit.in_main_branch
+            merge = commit.merge
+            insertions = commit.insertions
+            deletions = commit.deletions
+            pull_request_number = get_pull_request_number(commit_msg)
+            if pull_request_number is None:
+                print('pull request number is none')
                 continue
             else:
-                issue_url = get_issue_request_url(repo_url, issue_number)
-                headers = {"Authorization": f"token {github_token}"}
-                response = requests.get(issue_url, headers=headers)
+                print('pull request number is NOT none')
+                pull_request_url = get_pull_request_url(repo_url, pull_request_number)
+                response = requests.get(pull_request_url, headers=headers)
                 if "title" in response.json():
-                    issue_title = response.json()["title"]
+                    pull_request_title = response.json()["title"]
+                    print(pull_request_title)
                 else:
+                    print('NOT A PR: ' + str(pull_request_number))
                     continue
 
                 # only commits that changed only one file
@@ -43,7 +51,16 @@ def get_commit_data(repo_urls: List[str]):
                     os.makedirs(folder_name, exist_ok=True)
 
                     commit_info = {
-                        'issue': issue_title
+                        'repository url' : repo_url,
+                        'commit hash': commit_hash,
+                        'commit message' : commit_msg,
+                        'pull request': pull_request_title,
+                        'commit author' : commit_author,
+                        'committer date' : committer_date,
+                        'in main branch' : in_main_branch,
+                        'merge' : merge,
+                        'added lines' : insertions,
+                        'deleted lines' : deletions,
                     }
 
                     commit_info_path = os.path.join(folder_name, 'commit_info.json')
@@ -62,29 +79,38 @@ def get_commit_data(repo_urls: List[str]):
                     with open(source_code_after_path, 'w') as source_code_after_file:
                         source_code_after_file.write(source_code_after)
 
-
-def get_issue_number(commit_msg):
+def get_pull_request_number(commit_msg):
     pattern = r'#(\d+)'
-    issue_numbers = re.findall(pattern, commit_msg)
-    if len(issue_numbers) != 1:
+    pull_request_numbers = re.findall(pattern, commit_msg)
+    if len(pull_request_numbers) != 1:
         return None
     else:
-        issue_number = issue_numbers[0]
-        return issue_number
+        pull_request_number = pull_request_numbers[0]
+        print(pull_request_number)
+        return pull_request_number
 
 
-def get_issue_request_url(repository_url, issue_number):
+def get_pull_request_url(repository_url, pull_request_number):
     parts = repository_url.strip("/").split("/")
     owner = parts[-2]
     repo_name = parts[-1]
-    issue_url = f"https://api.github.com/repos/{owner}/{repo_name}/issues/{issue_number}"
-    return issue_url
+    pull_request_url = f"https://api.github.com/repos/{owner}/{repo_name}/pulls/{pull_request_number}"
+    print(pull_request_url)
+    return pull_request_url
 
 
 def main():
-    repository_urls = ["https://github.com/EssentialsX/Essentials"]
+    repository_urls = ["https://github.com/iluwatar/java-design-patterns",
+                       "https://github.com/spring-projects/spring-framework",
+                       "https://github.com/NationalSecurityAgency/ghidra",
+                       "https://github.com/square/retrofit",
+                       "https://github.com/bumptech/glide",
+                       "https://github.com/SeleniumHQ/selenium",
+                       "https://github.com/TeamNewPipe/NewPipe",
+                       "https://github.com/apache/skywalking",
+                       "https://github.com/libgdx/libgdx",
+                       "https://github.com/mybatis/mybatis-3"]
     get_commit_data(repository_urls)
-
 
 if __name__ == "__main__":
     main()
