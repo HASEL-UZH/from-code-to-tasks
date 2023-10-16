@@ -7,41 +7,45 @@ import torch
 from sklearn.metrics.pairwise import cosine_similarity
 
 def similarity_calculation(model, tokenizer):
+    similarity_array = []
     current_dir = os.getcwd()
-    commit_data_100_path = os.path.join(current_dir, "data_collection/commit_data_removed_empty")
-    task_description_embeddings = {}
-    for folder_pull_request in os.listdir(commit_data_100_path):
-        folder_path_pull_request = os.path.join(commit_data_100_path, folder_pull_request)
-        # Get PR embedding
-        commit_info_path = os.path.join(folder_path_pull_request, "commit_info.json")
-        if os.path.exists(commit_info_path):
-            with open(commit_info_path, 'r') as commit_info_file:
-                commit_info_data = json.load(commit_info_file)
-                pull_request_value = commit_info_data.get("pull request")
-                if pull_request_value:
-                    pull_request_embedding = generate_pull_request_embedding(model, tokenizer, pull_request_value)
-                    task_description_embeddings[folder_pull_request] = pull_request_embedding
-        time.sleep(0.3)
+    sliding_window_folder = "0_data_collection/commit_data_sliding_window"
 
-    similarity_dict = {}
-    for folder_code_diff in os.listdir(commit_data_100_path):
-        folder_path_code_diff = os.path.join(commit_data_100_path, folder_code_diff)
-        if os.path.isdir(folder_path_code_diff):
-            print("Folder:", folder_code_diff)
-            # Get code diff embedding
-            diff_file_paths = []
-            for file in os.listdir(folder_path_code_diff):
-                if file.endswith(".diff"):
-                    diff_file_path = os.path.join(folder_path_code_diff, file)
-                    diff_file_paths.append(diff_file_path)
-            added_code, deleted_code = split_code_diff(diff_file_paths)
-            code_diff_embedding = generate_code_diff_embedding(model, tokenizer, added_code, deleted_code)
-            similarity_dict[folder_path_code_diff] = {}
+    for sliding_window_subfolder in os.listdir(sliding_window_folder):
+        sliding_window_subfolder_path = os.path.join(sliding_window_folder, sliding_window_subfolder)
+        task_description_embeddings = {}
+        for folder_pull_request in os.listdir(sliding_window_subfolder_path):
+            folder_path_pull_request = os.path.join(sliding_window_subfolder_path, folder_pull_request)
+            # Get PR embedding
+            commit_info_path = os.path.join(folder_path_pull_request, "commit_info.json")
+            if os.path.exists(commit_info_path):
+                with open(commit_info_path, 'r') as commit_info_file:
+                    commit_info_data = json.load(commit_info_file)
+                    pull_request_value = commit_info_data.get("pull request")
+                    if pull_request_value:
+                        pull_request_embedding = generate_pull_request_embedding(model, tokenizer, pull_request_value)
+                        task_description_embeddings[folder_pull_request] = pull_request_embedding
+            time.sleep(0.3)
+        similarity_dict = {}
+        for folder_code_diff in os.listdir(sliding_window_subfolder_path):
+            folder_path_code_diff = os.path.join(sliding_window_subfolder_path, folder_code_diff)
+            if os.path.isdir(folder_path_code_diff):
+                print("Folder:", folder_code_diff)
+                # Get code diff embedding
+                diff_file_paths = []
+                for file in os.listdir(folder_path_code_diff):
+                    if file.endswith(".diff"):
+                        diff_file_path = os.path.join(folder_path_code_diff, file)
+                        diff_file_paths.append(diff_file_path)
+                added_code, deleted_code = split_code_diff(diff_file_paths)
+                code_diff_embedding = generate_code_diff_embedding(model, tokenizer, added_code, deleted_code)
+                similarity_dict[folder_code_diff] = {}
 
-            for key, value in task_description_embeddings.items():
-                cosine_similarity = calculate_cosine_similarity(code_diff_embedding, value)
-                similarity_dict[folder_path_code_diff][key] = cosine_similarity
-    return similarity_dict
+                for key, value in task_description_embeddings.items():
+                    cosine_similarity = calculate_cosine_similarity(code_diff_embedding, value)
+                    similarity_dict[folder_code_diff][key] = cosine_similarity
+        similarity_array.append(similarity_dict)
+    return similarity_array
 
 def generate_pull_request_embedding(model, tokenizer, pull_request):
 
