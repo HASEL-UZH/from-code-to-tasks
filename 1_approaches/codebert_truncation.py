@@ -160,12 +160,12 @@ def save_evaluation_metrics_to_csv(title, description, date, evaluation_metrics)
     data = [[title, description, date, evaluation_metrics['mean'], evaluation_metrics['median'],
              evaluation_metrics['stdev'], evaluation_metrics['min'], evaluation_metrics['max']]]
 
-    # Check if the '4_results' folder exists, create it if not
-    if not os.path.exists('../4_results'):
-        os.makedirs('../4_results')
+    # Check if the '2_results' folder exists, create it if not
+    if not os.path.exists('../2_results'):
+        os.makedirs('../2_results')
 
-    # Define the file path for the 'results.csv' file in '4_results' folder
-    file_path = os.path.join('../4_results', 'results.csv')
+    # Define the file path for the 'results.csv' file in '2_results' folder
+    file_path = os.path.join('../2_results', 'results.csv')
 
     # Check if the file exists, if not create it and write the header
     file_exists = os.path.exists(file_path)
