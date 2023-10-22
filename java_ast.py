@@ -13,4 +13,4 @@ def create_java_ast_(in_file, out_file):
     return result.stdout.strip()
 
 if __name__=="__main__":
-    create_java_ast_('AstMetaWorkspace/data/in/Example.java', 'AstMetaWorkspace/data/out/Example2.ast.json' )
+    create_java_ast_('AstMetaWorkspace/data/in/MultipleMethod.java', 'AstMetaWorkspace/data/out/MultipleMethod.ast.json' )

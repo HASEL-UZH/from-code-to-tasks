@@ -84,15 +84,17 @@ def get_commit_data(repo_urls: List[str]):
                             file_name = modified_file.filename
                             if not file_name.endswith(".java"):
                                 continue
+                            # Can be None if file is deleted or only renamed
                             source_code_before = modified_file.source_code_before
+                            # Can be None if file is added or only renamed
                             source_code_after = modified_file.source_code
                             commit_diff = modified_file.diff
 
-                            source_code_before_path = os.path.join(folder_name, f'{file_name}_before.java')
+                            source_code_before_path = os.path.join(folder_name, f'{file_name}_before')
                             with open(source_code_before_path, 'w') as source_code_before_file:
                                 source_code_before_file.write(source_code_before)
 
-                            source_code_after_path = os.path.join(folder_name, f'{file_name}_after.java')
+                            source_code_after_path = os.path.join(folder_name, f'{file_name}_after')
                             with open(source_code_after_path, 'w') as source_code_after_file:
                                 source_code_after_file.write(source_code_after)
 

@@ -1,0 +1,63 @@
+{
+  "type": "compilation-unit",
+  "identifier": "DisplayDate.java",
+  "path": "tbd",
+  "children": [
+    {
+      "type": "package",
+      // based on '/packageDeclaration'
+      "identifier": "ch.sheena.rocks.ba",
+      "children": [
+        {
+          "type": "class",
+          // based on '/types'
+          "identifier": "DisplayDate",
+          // based on /types[i].name.identifier.
+          "children": [
+            {
+              "type": "method",
+              // based on '/types[i].members[j].identifier'
+              "identifier": "main",
+              // based on '/types[i].members[j].name.identifier'
+              "fingerprint": "TBD hash based on ./body"
+              // based on '/types[i].members[j].body'
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+{
+  'type': 'compilation-unit',
+  'identifier': 'Example',
+  'children': [
+    {
+      'type': 'package',
+      'identifier': 'ch.sheena.rocks.ba',
+      'children': [
+        {
+          'type': 'class',
+          'identifier': 'DisplayDate',
+          'children': [
+            {
+              'type': 'method',
+              'identifier': 'main',
+              'fingerprint': '786aabc017a5e42f45f7b0e826fa158678ba33a73958387b8b8f097817ca4722'
+            },
+            {
+              'type': 'method',
+              'identifier': 'myMethod',
+              'fingerprint': 'fa1c71876ebfeb0644f1cd85757d5b92d7dd76d18d62b695e3c06254c0095c4d'
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+
+
+
