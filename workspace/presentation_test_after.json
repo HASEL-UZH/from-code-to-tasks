@@ -1,0 +1,43 @@
+{
+  "type": "compilation-unit",
+  "identifier": "Example",
+  "children": [
+    {
+      "type": "package",
+      "identifier": "com.iluwatar.presentationmodel",
+      "children": [
+        {
+          "type": "class",
+          "identifier": "PresentationTest",
+          "UID": "PresentationTest",
+          "children": [
+            {
+              "type": "method",
+              "identifier": "testCreateAlbumList",
+              "UID": "PresentationTest/testCreateAlbumList",
+              "fingerprint": "f4e1ea8a22f2b2094c4e6b0e9bbb80e7ceb9fea4af330b7a1f49c31592f30243"
+            },
+            {
+              "type": "method",
+              "identifier": "testSetSelectedAlbumNumber_2",
+              "UID": "PresentationTest/testSetSelectedAlbumNumber_2",
+              "fingerprint": "df8e75348dc678706b4df3b1c1f02b95f49a88f5c41d09f57584e1e7dc89da64"
+            },
+            {
+              "type": "method",
+              "identifier": "testSetComposer_false",
+              "UID": "PresentationTest/testSetComposer_false",
+              "fingerprint": "41d5a4082b3bcb606e551a2b2abf17cc5e1c9d9c84dc8be014ba2918bdd51d77"
+            },
+            {
+              "type": "method",
+              "identifier": "testSetComposer_true",
+              "UID": "PresentationTest/testSetComposer_true",
+              "fingerprint": "10c7fdc07682cff5dba207429ab8a854a4e5010adb017603ac6f225162b52c35"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
