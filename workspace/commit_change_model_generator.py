@@ -1,6 +1,5 @@
 import json
 import os
-import re
 
 from ast_compare import compare_ast, build_change_tree
 from ast_compare_text import generate_change_text_for_file
@@ -13,6 +12,8 @@ def ast_meta_file_iterator():
     for root, dirs, _ in os.walk(folder_path):
         if root != folder_path:
             subfolder_name = os.path.basename(root)
+            if subfolder_name == "commit_5_7627ee83d3c431859793a3969622cf272ae6b488":
+                print("hello")
             process_subfolder(folder_path, subfolder_name)
 
 
@@ -36,7 +37,9 @@ def get_before_after_dict(subfolder_path, ast_meta_files):
     before_after_dict = {}
     processed_files = []
     for ast_meta_file in ast_meta_files:
-        file_name = re.match(r"[^_]+", ast_meta_file).group(0)
+        file_name = ast_meta_file.replace("_after_meta_ast.json", "").replace(
+            "_before_meta_ast.json", ""
+        )
         if file_name in processed_files:
             continue
         # Check if the corresponding _before_meta_ast.json or _after_meta_ast.json exists
@@ -81,18 +84,20 @@ def build_commit_change_object(subfolder_path, json_dict, pull_request):
         "code": {"text": "", "details": []},
     }
     for file_name, change_tuple in json_dict.items():
+        before_meta_ast, after_met_ast = change_tuple
+        ast_compare_flat = compare_ast(before_meta_ast, after_met_ast)
         try:
-            before_meta_ast, after_met_ast = change_tuple
-            ast_compare_flat = compare_ast(before_meta_ast, after_met_ast)
             ast_compare_tree = build_change_tree(ast_compare_flat)
-            commit_change_object["code"]["details"].append(ast_compare_tree)
-            ast_file_change_text = generate_change_text_for_file(
-                file_name, ast_compare_tree
-            )
-            commit_compare_text += ast_file_change_text
-            commit_change_object["code"]["text"] = commit_compare_text
         except:
-            print("error " + subfolder_path)
+            ast_compare_tree = {}
+            pass
+        commit_change_object["code"]["details"].append(ast_compare_tree)
+        ast_file_change_text = generate_change_text_for_file(
+            file_name, ast_compare_tree
+        )
+        commit_compare_text += ast_file_change_text
+        commit_change_object["code"]["text"] = commit_compare_text
+
     return commit_change_object
 
 

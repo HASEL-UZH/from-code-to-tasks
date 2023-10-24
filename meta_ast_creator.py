@@ -15,7 +15,9 @@ def ast_file_iterator():
         for root, dirs, files in os.walk(folder_path):
             for file in files:
                 if file.endswith(("after_ast.json", "before_ast.json")):
-                    file_name = re.match(r"[^_]+", file).group(0)
+                    file_name = file.replace("_after_meta_ast.json", "").replace(
+                        "_before_meta_ast.json", ""
+                    )
                     file_path = os.path.join(root, file)
                     with open(file_path, "r") as json_file:
                         input_json = json.load(json_file)
