@@ -15,20 +15,18 @@ def ast_file_iterator():
         for root, dirs, files in os.walk(folder_path):
             for file in files:
                 if file.endswith(("after_ast.json", "before_ast.json")):
+                    file_name = re.match(r"[^_]+", file).group(0)
                     file_path = os.path.join(root, file)
                     with open(file_path, "r") as json_file:
                         input_json = json.load(json_file)
                         out_file_name = re.sub(r"ast", "meta_ast", file)
                         out_folder = os.path.join(root, out_file_name)
-                        meta_ast = meta_ast_creator(input_json)
+                        meta_ast = meta_ast_creator(file_name, input_json)
                         with open(out_folder, "w") as json_file:
                             json.dump(meta_ast, json_file, indent=4)
 
 
-def meta_ast_creator(input_json):
-    # TODO fix
-    file = "Example.ast.json"
-    file_name = re.sub(r"\..*", "", file)
+def meta_ast_creator(file_name, input_json):
     package_name = get_package_name(input_json)
 
     output_json = {
@@ -66,6 +64,7 @@ def meta_ast_creator(input_json):
                     .get("name")
                     .get("identifier")
                 )
+                condensed_method_object = get_condensed_method_object(member)
                 output_json["children"][i]["children"].append(
                     {
                         "type": "method",
@@ -73,9 +72,7 @@ def meta_ast_creator(input_json):
                         "uid": f"{output_json['children'][i]['uid']}/m:{method_name}",
                         "identifier": method_name,
                         "fingerprint": str(
-                            generate_unique_hash(
-                                input_json.get("types")[i].get("members")[j]
-                            )
+                            generate_unique_hash(condensed_method_object)
                         ),
                     }
                 )
@@ -83,6 +80,10 @@ def meta_ast_creator(input_json):
                 continue
     print(output_json)
     return output_json
+
+
+def get_condensed_method_object(method_object):
+    pass
 
 
 def get_package_name(json_obj):
