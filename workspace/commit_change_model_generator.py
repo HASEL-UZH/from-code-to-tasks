@@ -12,8 +12,7 @@ def ast_meta_file_iterator():
     for root, dirs, _ in os.walk(folder_path):
         if root != folder_path:
             subfolder_name = os.path.basename(root)
-            if subfolder_name == "commit_5_7627ee83d3c431859793a3969622cf272ae6b488":
-                print("hello")
+            print(subfolder_name)
             process_subfolder(folder_path, subfolder_name)
 
 
@@ -90,6 +89,7 @@ def build_commit_change_object(subfolder_path, json_dict, pull_request):
             ast_compare_tree = build_change_tree(ast_compare_flat)
         except:
             ast_compare_tree = {}
+            print(subfolder_path)
             pass
         commit_change_object["code"]["details"].append(ast_compare_tree)
         ast_file_change_text = generate_change_text_for_file(

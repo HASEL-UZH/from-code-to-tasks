@@ -1,5 +1,4 @@
-import json
-import os
+import re
 
 from ast_utils import traverse_ast, is_class, get_name_from_uid
 
@@ -23,6 +22,8 @@ def generate_change_text_for_file(file_name, compare_tree):
         else:
             return f"In the file {file_name}, the following changes have been made: {generated_text}"
     else:
+        # TODO uncomment to achieve camel case splitting
+        # generated_text = change_text_camel_case_splitter(generated_text).lower()
         return generated_text
 
 
@@ -79,18 +80,5 @@ def generate_file_text(node, parent, level):
     return text
 
 
-if __name__ == "__main__":
-    path = "workspace/change_models"
-    folder_text = ""
-    for file_name in os.listdir(path):
-        if file_name.endswith(".json"):
-            file_path = os.path.join(path, file_name)
-            file_text = generate_change_text_for_file(file_name, file_path)
-            folder_text += file_text
-    commit_model = {"pr": {"text": ""}, "code": {"text": folder_text, "details": []}}
-    output_file_path = "workspace/commit_model/commit_change_model.json"
-
-    # Write commit_model to a JSON file
-    with open(output_file_path, "w") as output_file:
-        json.dump(commit_model, output_file, indent=4)
-    pass
+def change_text_camel_case_splitter(change_text):
+    return re.sub(r"([a-z])([A-Z])", r"\1 \2", change_text)
