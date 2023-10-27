@@ -7,6 +7,19 @@ from datetime import date
 WINDOW_SIZE = 20
 
 
+def copy_specific_files(src_path, dst_path):
+    # Function to copy specific files from src_path to dst_path
+    for root, dirs, files in os.walk(src_path):
+        for file in files:
+            if file in ["commit_info.json", "commit_change_object.json"]:
+                src_file_path = os.path.join(root, file)
+                dst_file_path = os.path.join(
+                    dst_path, os.path.relpath(src_file_path, src_path)
+                )
+                os.makedirs(os.path.dirname(dst_file_path), exist_ok=True)
+                shutil.copy(src_file_path, dst_file_path)
+
+
 def read_commit_dates(folder_path):
     # Function to read commit dates from the given folder
     commit_dates = []
@@ -41,7 +54,7 @@ def create_sliding_window_folders(input_folder, output_folder):
         for subfolder in window_subfolders:
             src_path = os.path.join(input_folder, subfolder)
             dst_path = os.path.join(sliding_window_folder, subfolder)
-            shutil.copytree(src_path, dst_path)
+            copy_specific_files(src_path, dst_path)
 
 
 if __name__ == "__main__":
