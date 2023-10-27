@@ -12,7 +12,6 @@ def ast_meta_file_iterator():
     for root, dirs, _ in os.walk(folder_path):
         if root != folder_path:
             subfolder_name = os.path.basename(root)
-            print(subfolder_name)
             process_subfolder(folder_path, subfolder_name)
 
 

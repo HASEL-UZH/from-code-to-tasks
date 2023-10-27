@@ -3,10 +3,12 @@ import json
 import os
 import re
 
+from meta_ast_utils import filter_json
+
 
 def ast_file_iterator():
     folder_path = (
-        "0_data_collection/datasets/commit_data_removed_empty_and_only_comments"
+        "../0_data_collection/datasets/commit_data_removed_empty_and_only_comments"
     )
 
     folder_path = os.path.join(os.path.dirname(__file__), folder_path)
@@ -15,8 +17,8 @@ def ast_file_iterator():
         for root, dirs, files in os.walk(folder_path):
             for file in files:
                 if file.endswith(("after_ast.json", "before_ast.json")):
-                    file_name = file.replace("_after_meta_ast.json", "").replace(
-                        "_before_meta_ast.json", ""
+                    file_name = file.replace("_after_ast.json", "").replace(
+                        "_before_ast.json", ""
                     )
                     file_path = os.path.join(root, file)
                     with open(file_path, "r") as json_file:
@@ -80,12 +82,28 @@ def meta_ast_creator(file_name, input_json):
                 )
             else:
                 continue
-    print(output_json)
     return output_json
 
 
-def get_condensed_method_object(method_object):
-    pass
+def get_condensed_method_object(method_object, sort=True):
+    def accept_visitor(value, parent, key, level):
+        if key == "range" and isinstance(value, dict) and "beginLine" in value:
+            return False
+        if key == "tokenRange" and isinstance(value, dict) and "beginToken" in value:
+            return False
+
+        # ignore empty arrays
+        if isinstance(value, list) and not value:
+            return False
+
+        # ignore imports
+        if key == "imports" and isinstance(value, list):
+            return False
+
+        return True
+
+    result = filter_json(method_object, accept_visitor, sort)
+    return result
 
 
 def get_package_name(json_obj):
@@ -100,10 +118,11 @@ def get_package_name(json_obj):
         return identifier
 
 
-def generate_unique_hash(input_json):
+def generate_unique_hash(condensed_method_object):
     sha256_hash = hashlib.sha256()
-    sha256_hash.update(str(input_json).encode("utf-8"))
+    sha256_hash.update(str(condensed_method_object).encode("utf-8"))
     unique_hash = sha256_hash.hexdigest()
+    pass
     return unique_hash
 
 

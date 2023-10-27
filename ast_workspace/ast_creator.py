@@ -25,7 +25,7 @@ def ast_creator(in_file, out_file):
     command = [
         "java",
         "-jar",
-        "./AstMetaWorkSpace/ast-meta-werks-0.1.1.jar",
+        "./ast_workspace/ast-meta-werks-0.1.1.jar",
         in_file,
         out_file,
     ]

@@ -121,7 +121,8 @@ def get_commit_data(repo_urls: List[str]):
 
                 # Define Folder
                 folder_name = os.path.join(
-                    "../commit_data", f"commit_{index}_{commit.hash}"
+                    f"../datasets/commit_data_per_repository/{index}",
+                    f"commit_{index}_{commit.hash}",
                 )
                 os.makedirs(folder_name, exist_ok=True)
                 # Define Commit Info
