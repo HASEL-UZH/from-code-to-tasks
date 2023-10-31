@@ -1,0 +1,14 @@
+Title,Description,Date,Mean,Median,Standard Deviation,Minimum,Maximum
+
+codebert summation k=1,embeddings of all tokens are summed using torch.sum,18.10.23 (13:46:45),0.06940865543442352,0.05,0.037881095029278,0.0,0.2
+codebert summation k=3,embeddings of all tokens are summed using torch.sum,18.10.23 (13:51:44),0.1835150313842088,0.2,0.051425161924294034,0.05,0.4
+codebert summation k=5,embeddings of all tokens are summed using torch.sum,18.10.23 (13:57:34),0.2876445325404691,0.3,0.05898431327477005,0.15,0.6
+codebert truncation k=1,the code embeddings are truncated to match the sequence length of the pull request embeddings,18.10.23 (15:45:20),0.07046580773042617,0.05,0.05227679145678851,0.0,0.3
+codebert truncation k=3,the code embeddings are truncated to match the sequence length of the pull request embeddings,18.10.23 (15:54:22),0.18306904525933268,0.2,0.07658824718316656,0.0,0.5
+codebert truncation k=5,the code embeddings are truncated to match the sequence length of the pull request embeddings,18.10.23 (16:12:25),0.28688470432771723,0.3,0.09196813070858398,0.0,0.55
+ast preliminary approach tf k=1,"file names, class names, method names (added, deleted, modified)",24.10.23 (17:16:12),0.16220129941636383,0.15,0.07918845737928364,0.0,0.65
+ast preliminary approach tf k=3,"file names, class names, method names (added, deleted, modified)",24.10.23 (17:26:11),0.3075597401167272,0.3,0.12214433924427517,0.1,1.0
+ast preliminary approach tf k=5,"file names, class names, method names (added, deleted, modified)",24.10.23 (17:35:20),0.472932496421099,0.4,0.17909595897082178,0.2,1.0
+ast preliminary approach tf-idf k=1,"file names, class names, method names (added, deleted, modified)",24.10.23 (16:46:26),0.16345666776786696,0.15,0.0810701233296477,0.0,0.65
+ast preliminary approach tf-idf k=3,"file names, class names, method names (added, deleted, modified)",24.10.23 (17:45:29),0.3077084021583526,0.3,0.12099669853159725,0.1,1.0
+ast preliminary approach tf-idf k=5,"file names, class names, method names (added, deleted, modified)",24.10.23 (18:05:44),0.47246999229159786,0.4,0.17973470431576083,0.2,1.0

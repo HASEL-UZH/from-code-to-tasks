@@ -1,0 +1,4 @@
+Dataset,# Folder,# Distinct PRs,Ratio
+commit_data,3576,3148,1.14
+commit_data_removed_empty,3257,3148,1.03
+commit_data_removed_empty_and_only_comments,3046,2947,1.03
