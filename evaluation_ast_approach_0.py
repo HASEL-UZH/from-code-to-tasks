@@ -60,9 +60,8 @@ def generate_tf_vector(code_change_text, pull_request_text):
     return tf_vector_code_change, tf_vector_pull_request
 
 
-def generate_similarity_object(text_object):
+def generate_similarity_object(sliding_window_folder, text_object):
     similarity_array = []
-    sliding_window_folder = "0_data_collection/datasets/commit_data_sliding_window"
     for sliding_window_subfolder in os.listdir(sliding_window_folder):
         print("current sliding window " + sliding_window_subfolder)
         sliding_window_subfolder_path = os.path.join(
@@ -212,13 +211,18 @@ def calculate_unique_words_overall(text_object):
 
 
 if __name__ == "__main__":
+    window_size = 20
+    sliding_window_folder = (
+        f"0_data_collection/datasets/commit_data_sliding_window_{window_size}"
+    )
     k = 5
-    title = "ast preliminary approach tf-idf k=5"
+    title = f"ast approach preliminary tf-idf k={k} window size = {window_size}"
     description = "file names, class names, method names (added, deleted, modified)"
     date = datetime.datetime.now().strftime("%d.%m.%y (%H:%M:%S)")
 
     text_object = generate_text_object()
     total_unique_word_size, unique_words = calculate_unique_words_overall(text_object)
-    similarity_object = generate_similarity_object(text_object)
+    similarity_object = generate_similarity_object(sliding_window_folder, text_object)
+
     evaluation_metrics = calculate_evaluation_metrics(k, similarity_object)
     save_evaluation_metrics_to_csv(title, description, date, evaluation_metrics)
