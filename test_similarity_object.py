@@ -48,35 +48,39 @@ def calculate_evaluation_metrics(k, similarity_objects):
     return evaluation_metrics
 
 
-def get_top_k_keys(data, k):
-    # Sort the data by the first item of the tuple in descending order
-    sorted_data = sorted(data.items(), key=lambda x: x[1][0], reverse=True)
-
-    # Find the value of the k-th largest item
-    kth_largest_value = sorted_data[k - 1][1][0]
-
-    # Create a list of keys where the first item in the tuple is greater than or equal to the kth largest value
-    top_k_keys = [k for k, v in data.items() if v[0] >= kth_largest_value]
-
+def get_top_k_folders(data, k):
     grouped_data = {}
-
-    for key, value in data.items():
+    for folder, value in data.items():
         if value not in grouped_data:
-            grouped_data[value] = []
-        grouped_data[value].append(key)
-
-    # Convert the tuple keys to their first element
-    grouped_data = {k[0]: v for k, v in grouped_data.items()}
-
-    return top_k_keys
+            grouped_data[value] = [folder]
+        else:
+            grouped_data[value].append(folder)
+    result_dict = {}
+    for key, folders in grouped_data.items():
+        number, folder = key
+        if number not in result_dict:
+            result_dict[number] = []
+        result_dict[number].extend(folders)
+    top_k_keys = list(result_dict.keys())[:k]
+    result_folders = []
+    for key, folders in result_dict.items():
+        if key in top_k_keys:
+            for folder in folders:
+                result_folders.append(folder)
+    return result_folders
 
 
 if __name__ == "__main__":
     # Example usage:
-    data = {"folder_1": (0.85, "a"), "folder_2": (0.85, "a"), "folder_3": (0.8, "b")}
+    data = {
+        "folder_1": (0.85, "a"),
+        "folder_2": (0.85, "a"),
+        "folder_3": (0.85, "b"),
+        "folder_4": (0.6, "c"),
+    }
     k = 1
 
-    get_top_k_keys(data, k)
+    x = get_top_k_folders(data, k)
 
     similarity_dict = [
         {
@@ -114,5 +118,5 @@ if __name__ == "__main__":
             },
         },
     ]
-    # evaluation_metrics = calculate_evaluation_metrics(1, similarity_dict)
-    # print(evaluation_metrics)
+    evaluation_metrics = calculate_evaluation_metrics(1, similarity_dict)
+    print(evaluation_metrics)
