@@ -1,11 +1,10 @@
-import json
 import time
 
 import requests
 
-from src.workspace_context import get_repository_file, CANDIDATE_REPOSITORY_FILE
+from src.workspace_context import CANDIDATE_REPOSITORY_FILE, get_repository_file_path, write_json_file
 
-GITHUB_TOKEN = "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"
+GITHUB_TOKEN = "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"
 HEADERS = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
 
 
@@ -35,7 +34,7 @@ def fetch_most_popular_java_repositories_with_issues(
         "sort": "stars",
         "order": "desc",
         "page": "1",
-        "per_page": "200",
+        "per_page": str(number_of_repositories),
         "since": "2022-01-01T00:00:00Z",
         "before": "2021-01-01T00:00:00Z",
     }
@@ -45,16 +44,17 @@ def fetch_most_popular_java_repositories_with_issues(
     if response.status_code == 200:
         data = response.json()
         repositories = data["items"]
-        candidate_repositories = {"repositories": []}
+        candidate_repositories = {"candidate_repositories": []}
         for repo in repositories:
             repo_name = repo["name"]
+            print(repo_name)
             repo_owner = repo["owner"]["login"]
             issue_number = get_issue_pr_number(repo_owner, repo_name, "issue")
             pr_number = get_issue_pr_number(repo_owner, repo_name, "pr")
 
             if issue_number > issue_minimum and pr_number > pr_minimum:
                 repository_url = f"https://github.com/{repo_owner}/{repo_name}"
-                candidate_repositories["repositories"].append(repository_url)
+                candidate_repositories["candidate_repositories"].append(repository_url)
                 if len(candidate_repositories) == number_of_repositories:
                     break
             else:
@@ -64,16 +64,15 @@ def fetch_most_popular_java_repositories_with_issues(
         return None
 
 def fetch_repository_task():
-    number_of_repositories = 200
+    number_of_repositories = 10
     issue_minimum = 500
     pr_minimum = 500
     candidate_repositories = fetch_most_popular_java_repositories_with_issues(
         number_of_repositories, issue_minimum, pr_minimum
     )
-    repository_file = get_repository_file(CANDIDATE_REPOSITORY_FILE)
-    with open(repository_file, "w") as json_file:
-        json.dump(candidate_repositories, json_file, indent=4)
+    repository_file_path = get_repository_file_path(CANDIDATE_REPOSITORY_FILE)
+    write_json_file(repository_file_path, candidate_repositories)
 
 
 if __name__ == "__main__":
-   fetch_repository_task()
+    fetch_repository_task()
