@@ -24,6 +24,8 @@ def generate_change_text_for_file(file_name, compare_tree):
     else:
         # TODO uncomment to achieve camel case splitting
         # generated_text = change_text_camel_case_splitter(generated_text).lower()
+        if generated_text == "":
+            pass
         return generated_text
 
 

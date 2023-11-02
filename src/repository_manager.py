@@ -22,6 +22,25 @@ def get_repository_commits(repo_id):
             commits.append(commit)
     return commits
 
+def get_repository_change_commits():
+    repositories = get_repositories()
+    change_commits = []
+    for repository in repositories:
+        commits = get_repository_commits(repository["id"])
+        for commit in commits:
+            commit_change_object = load_json_file(os.path.join(get_commit_data_dir_path(commit["repo_id"], commit["commit_hash"]), "commit_change_object.json"))
+            pull_request =  commit_change_object["pr"]["text"]
+            change_text = commit_change_object["code"]["text"]
+            change_commit = {
+                "commit_date" : "", # FIXME
+                "repo_id" : commit["repo_id"],
+                "commit_hash" : commit["commit_hash"],
+                "pull_request_text" : pull_request,
+                "change_text" : change_text
+            }
+            change_commits.append(change_commit)
+    return change_commits
+
 def get_repository_commit_files(repo_id, commit_hash):
     commit_dir = get_commit_data_dir_path(repo_id, commit_hash)
     file_infos = []

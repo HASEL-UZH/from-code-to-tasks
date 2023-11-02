@@ -1,7 +1,5 @@
 from src.ast_generation.ast_utils import create_ast_map, get_parent_uid
 
-
-# before: AST meta node, after: AST meta node,
 def compare_ast(before, after):
     changes = []
 

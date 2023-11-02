@@ -14,10 +14,8 @@ def get_before_after_dict(ast_meta_files):
         file_name = get_file_name_without_ast_extension(ast_meta_file["file_name"])
         if file_name in processed_files:
             continue
-        # Check if the corresponding _before_meta_ast.json or _after_meta_ast.json exists
         before_file_name = f"{file_name}_before_meta_ast.json"
         after_file_name = f"{file_name}_after_meta_ast.json"
-
         before_after_json_tuple = get_before_after_json_tuple(before_file_name, after_file_name, ast_meta_files)
         processed_files.append(file_name)
         before_after_dict[file_name] = before_after_json_tuple

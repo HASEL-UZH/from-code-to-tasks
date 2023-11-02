@@ -108,3 +108,4 @@ def get_pull_request(file_path):
     commit_info_file_path = os.path.join(file_path, "commit_info.json")
     data = load_json_file(commit_info_file_path)
     return data["pull request"]
+

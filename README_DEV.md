@@ -77,6 +77,8 @@ ast_compare/commit_change_model_generator.py
 --> (EXTEND) workspace/datasets/commit_data_removed_empty_and_only_comments/commit_{repo_id}_{commit_hash}
 ```
 
+[commit_change_object.json](workspace%2Fdatasets%2Fcommit_data_removed_empty_and_only_comments%2Fcommit_0_2aa9e78dddb410b48f6d06c3ea6de1b8f6db4ffc%2Fcommit_change_object.json)
+
 - commit_change_object.json (combines all files of the commit)
 
 ## Create dataset per repository
