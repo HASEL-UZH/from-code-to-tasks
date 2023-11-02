@@ -105,6 +105,6 @@ def write_text_file(file_path, file_content, opts={}):
         file.write(file_content)
 
 def get_pull_request(file_path):
-    with open(file_path, 'r') as file:
-        data = json.load(file)
-        return load_json_file(data)["pull request"]
+    commit_info_file_path = os.path.join(file_path, "commit_info.json")
+    data = load_json_file(commit_info_file_path)
+    return data["pull request"]
