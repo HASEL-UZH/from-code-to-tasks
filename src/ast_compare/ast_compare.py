@@ -1,4 +1,4 @@
-from ast_workspace.ast_utils import create_ast_map, get_parent_uid
+from src.ast_generation.ast_utils import create_ast_map, get_parent_uid
 
 
 # before: AST meta node, after: AST meta node,

@@ -1,38 +1,14 @@
 import hashlib
-import json
 import os
-import re
 
-from meta_ast_utils import filter_json
-
-
-def ast_file_iterator():
-    folder_path = (
-        "../0_data_collection/datasets/commit_data_removed_empty_and_only_comments"
-    )
-
-    folder_path = os.path.join(os.path.dirname(__file__), folder_path)
-
-    if os.path.exists(folder_path) and os.path.isdir(folder_path):
-        for root, dirs, files in os.walk(folder_path):
-            for file in files:
-                if file.endswith(("after_ast.json", "before_ast.json")):
-                    file_name = file.replace("_after_ast.json", "").replace(
-                        "_before_ast.json", ""
-                    )
-                    file_path = os.path.join(root, file)
-                    with open(file_path, "r") as json_file:
-                        input_json = json.load(json_file)
-                        out_file_name = re.sub(r"ast", "meta_ast", file)
-                        out_folder = os.path.join(root, out_file_name)
-                        meta_ast = meta_ast_creator(file_name, input_json)
-                        with open(out_folder, "w") as json_file:
-                            json.dump(meta_ast, json_file, indent=4)
+from src.ast_meta_generation.meta_ast_utils import filter_json
+from src.repository_manager import get_repositories, get_repository_commits, get_repository_commit_files
+from src.workspace_context import write_json_file, is_ast_file, load_json_file, get_file_name_without_ast_extension, \
+    get_meta_ast_for_ast_source_file
 
 
 def meta_ast_creator(file_name, input_json):
     package_name = get_package_name(input_json)
-
     output_json = {
         "type": "compilation-unit",
         "identifier": file_name,
@@ -91,20 +67,15 @@ def get_condensed_method_object(method_object, sort=True):
             return False
         if key == "tokenRange" and isinstance(value, dict) and "beginToken" in value:
             return False
-
         # ignore empty arrays
         if isinstance(value, list) and not value:
             return False
-
         # ignore imports
         if key == "imports" and isinstance(value, list):
             return False
-
         return True
-
     result = filter_json(method_object, accept_visitor, sort)
     return result
-
 
 def get_package_name(json_obj):
     package_declaration = json_obj.get("packageDeclaration")
@@ -125,6 +96,18 @@ def generate_unique_hash(condensed_method_object):
     pass
     return unique_hash
 
+def meta_ast_creator_task():
+    repositories = get_repositories()
+    for repository in repositories:
+        commits = get_repository_commits(repository["id"])
+        for commit in commits:
+            commit_files = get_repository_commit_files(commit["repo_id"], commit["commit_hash"])
+            for commit_file_info in commit_files:
+                if is_ast_file(commit_file_info["file_name"]):
+                    input_json = load_json_file(commit_file_info["file_path"])
+                    output_json = meta_ast_creator(get_file_name_without_ast_extension(commit_file_info["file_name"]), input_json)
+                    write_json_file(os.path.join(commit_file_info["dir_name"], get_meta_ast_for_ast_source_file(commit_file_info["file_name"])), output_json)
+
 
 if __name__ == "__main__":
-    ast_file_iterator()
+    meta_ast_creator_task()

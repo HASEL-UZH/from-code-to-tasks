@@ -2,10 +2,7 @@ import time
 
 import requests
 
-from src.workspace_context import CANDIDATE_REPOSITORY_FILE, get_repository_file_path, write_json_file
-
-GITHUB_TOKEN = "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"
-HEADERS = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
+from src.workspace_context import CANDIDATE_REPOSITORY_FILE, get_repository_file_path, write_json_file, HEADERS
 
 
 def get_issue_pr_number(repo_owner: str, repo_name: str, type: str) -> int:

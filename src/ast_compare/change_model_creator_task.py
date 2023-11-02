@@ -3,51 +3,24 @@ import os
 
 from ast_compare import compare_ast, build_change_tree
 from ast_compare_text import generate_change_text_for_file
+from src.repository_manager import get_repositories, get_repository_commits, get_repository_commit_files
+from src.workspace_context import write_json_file, get_pull_request, is_ast_meta_file
 
 
-def ast_meta_file_iterator():
-    folder_path = (
-        "../0_data_collection/datasets/commit_data_removed_empty_and_only_comments"
-    )
-    for root, dirs, _ in os.walk(folder_path):
-        if root != folder_path:
-            subfolder_name = os.path.basename(root)
-            process_subfolder(folder_path, subfolder_name)
-
-
-def process_subfolder(folder_path, subfolder_name):
-    subfolder_path = os.path.join(folder_path, subfolder_name)
-    subfolder_files = os.listdir(subfolder_path)
-    ast_meta_files = [
-        file for file in subfolder_files if file.endswith("_meta_ast.json")
-    ]
-    pull_request = get_pull_request(
-        os.path.join(folder_path, subfolder_name, "commit_info.json")
-    )
-    json_dict = get_before_after_dict(subfolder_path, ast_meta_files)
-    commit_change_object = build_commit_change_object(
-        subfolder_path, json_dict, pull_request
-    )
-    save_commit_change_object(subfolder_path, commit_change_object)
-
-
-def get_before_after_dict(subfolder_path, ast_meta_files):
+#subfolder path i.e. commit folder
+#all ast meta files of one commit
+def get_before_after_dict(ast_meta_files):
     before_after_dict = {}
     processed_files = []
     for ast_meta_file in ast_meta_files:
-        file_name = ast_meta_file.replace("_after_meta_ast.json", "").replace(
-            "_before_meta_ast.json", ""
-        )
+        file_name = ast_meta_file["file_name"].replace("_after_meta_ast.json", "").replace("_before_meta_ast.json", "")
         if file_name in processed_files:
             continue
         # Check if the corresponding _before_meta_ast.json or _after_meta_ast.json exists
         before_file = f"{file_name}_before_meta_ast.json"
         after_file = f"{file_name}_after_meta_ast.json"
 
-        before_after_tuple = get_before_after_tuple(
-            subfolder_path, before_file, after_file, ast_meta_files
-        )
-
+        before_after_tuple = get_before_after_tuple(before_file, after_file, ast_meta_files)
         processed_files.append(file_name)
         before_after_dict[file_name] = before_after_tuple
     return before_after_dict
@@ -96,24 +69,35 @@ def build_commit_change_object(subfolder_path, json_dict, pull_request):
         )
         commit_compare_text += ast_file_change_text
         commit_change_object["code"]["text"] = commit_compare_text
-
     return commit_change_object
 
+def process_subfolder(folder_path, subfolder_name):
+    subfolder_path = os.path.join(folder_path, subfolder_name)
+    subfolder_files = os.listdir(subfolder_path)
+    ast_meta_files = [
+        file for file in subfolder_files if file.endswith("_meta_ast.json")
+    ]
 
-def get_pull_request(commit_info_file):
-    if os.path.exists(commit_info_file):
-        with open(commit_info_file, "r") as json_file:
-            data = json.load(json_file)
-        return data.get("pull request")
-    return None
+    commit_info_file_path = os.path.join(folder_path, subfolder_name, "commit_info.json")
+    pull_request = get_pull_request(commit_info_file_path)
+
+    json_dict = get_before_after_dict(subfolder_path, ast_meta_files)
+    commit_change_object = build_commit_change_object(
+        subfolder_path, json_dict, pull_request
+    )
+    write_json_file(subfolder_path, commit_change_object)
 
 
-def save_commit_change_object(subfolder_path, commit_change_object):
-    os.makedirs(subfolder_path, exist_ok=True)
-    output_file = os.path.join(subfolder_path, "commit_change_object.json")
-    with open(output_file, "w") as output_file_obj:
-        json.dump(commit_change_object, output_file_obj, indent=4)
-
+def change_model_creator_task():
+    repositories = get_repositories()
+    for repository in repositories:
+        commits = get_repository_commits(repository["id"])
+        for commit in commits:
+            commit_files = get_repository_commit_files(commit["repo_id"], commit["commit_hash"])
+            ast_meta_files = [commit_file for commit_file in commit_files if is_ast_meta_file(commit_file["file_name"])]
+            commit_change_dictionary = get_before_after_dict(ast_meta_files)
+            commit_change_object = build_commit_change_object(commit_change_dictionary)
+            write_json_file(os.path.join(commit["dir_name"], "commit_change_object.json"), commit_change_object)
 
 if __name__ == "__main__":
-    ast_meta_file_iterator()
+    change_model_creator_task()
