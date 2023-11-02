@@ -10,6 +10,7 @@ WORKSPACE_ROOT = os.path.abspath("./_workspace")
 
 DATASETS_DIR = os.path.join(WORKSPACE_ROOT, "datasets")
 COMMIT_DATA_DIR = os.path.join(DATASETS_DIR, "commit_data")
+RESULTS_DIR = os.path.join(WORKSPACE_ROOT, "results")
 REPOSITORIES_DIR = os.path.join(WORKSPACE_ROOT, "repositories")
 
 CANDIDATE_REPOSITORY_FILE = "candidate_repositories.json"
@@ -24,6 +25,9 @@ def get_datasets_dir():
 
 def get_commit_data_dir():
     return get_or_create_dir(COMMIT_DATA_DIR)
+
+def get_results_dir():
+    return get_or_create_dir(RESULTS_DIR)
 
 # Get file path
 
