@@ -39,6 +39,8 @@ def process_commit(repo_url, repo_index, commit):
             print("NOT a PR (Issue): " + str(pull_request_number))
     except Exception as e:
         print(f"An error occurred during PR fetching: {str(e)}")
+
+
 def save_commit_data(repo_url, repo_index, commit, pull_request_title):
     print(pull_request_title)
     committer_date = (

@@ -1,6 +1,6 @@
 import os
 
-from src.workspace_context import load_json_file, FINAL_REPOSITORY_FILE, get_commit_repository_dir_path, \
+from src.workspace_context import read_json_file, FINAL_REPOSITORY_FILE, get_commit_repository_dir_path, \
     get_commit_data_dir_path, get_repository_file_path
 
 
