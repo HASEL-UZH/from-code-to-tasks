@@ -1,27 +1,20 @@
 import csv
 import os
-import random
-
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 import statistics
-from src.repository_manager import get_repository_change_commits
+from src.comparison.cosine_similarity import calculate_cosine_similarity
 from src.utils.utils import group_by
-from src.workspace_context import get_results_dir
+from src.workspace_context import get_results_dir, write_json_file
 
 
-def get_total_accuracy(commits, window_size, embedding_strategy, k):
+def get_total_accuracy(commits, k, window_size, embedding_strategy):
     sliding_windows = create_sliding_windows(commits, window_size)
     accuracies_over_all_windows = []
     for sliding_window in sliding_windows:
-        accuracy_per_window = get_accuracy_per_window(sliding_window, embedding_strategy, k)
+        accuracy_per_window = get_accuracy_per_window(sliding_window, k, embedding_strategy)
         accuracies_over_all_windows.append(accuracy_per_window)
     return accuracies_over_all_windows
 
-# Repository specific and repository unspecific
-# interface ISlidingWindow
-# {'key': 'Fix typos spanish readme and factory', 'commits': [{'commit_date': '', 'repo_id': '0', 'commit_hash': '0ad44ced247191cc631100010ca40b4baa84d161', 'pull_request_text': 'Fix typos spanish readme and factory', 'change_text': 'jldfjlljfdjlfdjlfa'}, {'commit_date': '', 'repo_id': '0', 'commit_hash': '0398509823409580324580845', 'pull_request_text': 'Fix typos spanish readme and factory', 'change_text': 'sdfsdfasdfsdfsadfsafsdfsdfsdfasff'}], 'change text': 'jldfjlljfdjlfdjlfa, sdfsdfasdfsdfsadfsafsdfsdfsdfasff', 'pull_request_text': 'Fix typos spanish readme and factory'}
 
 def create_sliding_windows(commits, window_size):
     sliding_windows = []
@@ -47,7 +40,7 @@ def create_sliding_windows(commits, window_size):
         sliding_windows.append(sliding_window)
     return sliding_windows
 
-def get_accuracy_per_window(sliding_window, embedding_strategy, k):
+def get_accuracy_per_window(sliding_window, k, embedding_strategy):
     correct_predictions = 0
     for item_code in sliding_window["items"]:
         item_code_change_comparison = {}
@@ -64,32 +57,6 @@ def get_accuracy_per_window(sliding_window, embedding_strategy, k):
     accuracy_per_window = correct_predictions/sliding_window["window_size"]
     return accuracy_per_window
 
-# Embedding Strategies
-def tf_embedding_strategy(text):
-    vectorizer = CountVectorizer()
-    # TODO fix training_data
-    training_data = ["your", "training", "data", "function", "class"]
-    vectorizer.fit(training_data)
-    tf_text_vector = vectorizer.transform([text]).toarray()[0]
-    return tf_text_vector
-
-def tf_idf_embedding_strategy(text):
-    vectorizer = TfidfVectorizer()
-    # TODO fix training_data
-    training_data = ["your", "training", "data", "function", "class"]
-    vectorizer.fit(training_data)
-    tf_idf_text_vector = vectorizer.transform([text]).toarray()[0]
-    return tf_idf_text_vector
-
-# TODO CodeBERT embedding strategy
-
-
-# Similarity Calculation
-def calculate_cosine_similarity(embedding1, embedding2):
-    #cosine_similarity = np.dot(embedding1, embedding2) / (np.linalg.norm(embedding1) * np.linalg.norm(embedding2))
-    # TODO remove
-    cosine_similarity = random.random()
-    return cosine_similarity
 
 def get_statistics_object(accuracies_over_all_windows):
     mean_value = statistics.mean(accuracies_over_all_windows)
@@ -106,26 +73,19 @@ def get_statistics_object(accuracies_over_all_windows):
     }
     return statistics_object
 
-
-def save_results_to_csv(statistics_object, title, k, window_size):
+def save_results_to_csv(statistics_object, k, window_size, embedding_strategy):
     results_dir_path = get_results_dir()
     results_file_path = os.path.join(results_dir_path, "results.csv")
-
     file_exists = os.path.exists(results_file_path)
-
     with open(results_file_path, mode='a', newline='') as file:
-        fieldnames = ['title', 'k', 'window_size', 'mean', 'median', 'min', 'max', 'stdev']
+        fieldnames = ['k', 'window_size', 'embedding_strategy',  'mean', 'median', 'min', 'max', 'stdev']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
-
-        # If the file doesn't exist, write the headers
         if not file_exists:
             writer.writeheader()
-
-        # Write the statistics to the CSV file
         writer.writerow({
-            'title': title,
             'k': k,
             'window_size': window_size,
+            'embedding_strategy' : embedding_strategy,
             'mean': statistics_object['mean'],
             'median': statistics_object['median'],
             'min': statistics_object['min'],
@@ -133,15 +93,12 @@ def save_results_to_csv(statistics_object, title, k, window_size):
             'stdev': statistics_object['stdev']
         })
 
+def save_results_to_json(statistics_object, k, window_size, embedding_strategy):
+    results_dir_path = get_results_dir()
+    results_file_path = os.path.join(results_dir_path, f"results_{k}_{window_size}_{embedding_strategy}.json")
+    statistics_object["k"] = k,
+    statistics_object["window_size"] = window_size,
+    statistics_object["embedding_strategy"] = embedding_strategy
+    write_json_file(results_file_path, statistics_object)
 
-def result_creator_task():
-    change_commits = get_repository_change_commits()
-    title = "xyz"
-    k=5
-    window_size = 10
-    total_accuracies = get_total_accuracy(change_commits, window_size, tf_embedding_strategy, k)
-    statistics_object = get_statistics_object(total_accuracies)
-    save_results_to_csv(statistics_object, title, k, window_size)
 
-if __name__=="__main__":
-    result_creator_task()
