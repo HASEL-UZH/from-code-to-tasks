@@ -9,6 +9,8 @@ from src.workspace_context import get_results_dir, write_json_file
 
 def get_total_accuracy(commits, k, window_size, embedding_strategy):
     sliding_windows = create_sliding_windows(commits, window_size)
+    if not sliding_windows:
+        return None
     accuracies_over_all_windows = []
     for sliding_window in sliding_windows:
         accuracy_per_window = get_accuracy_per_window(sliding_window, k, embedding_strategy)
@@ -49,7 +51,7 @@ def get_accuracy_per_window(sliding_window, k, embedding_strategy):
         for item_pr in sliding_window["items"]:
             item_pull_request_text = item_pr["pull_request_text"]
             item_pull_request_embedding = embedding_strategy(item_pull_request_text)
-            similarity = calculate_cosine_similarity(item_change_text_embedding, item_pull_request_embedding)
+            similarity = calculate_cosine_similarity(item_change_text_embedding, item_pull_request_embedding, embedding_strategy)
             item_code_change_comparison[item_pr["key"]] = similarity
         top_k_keys = sorted(item_code_change_comparison, key=item_code_change_comparison.get, reverse=True)[:k]
         if item_code["pull_request_text"] in top_k_keys:
@@ -85,7 +87,7 @@ def save_results_to_csv(statistics_object, k, window_size, embedding_strategy):
         writer.writerow({
             'k': k,
             'window_size': window_size,
-            'embedding_strategy' : embedding_strategy,
+            'embedding_strategy' : str(embedding_strategy),
             'mean': statistics_object['mean'],
             'median': statistics_object['median'],
             'min': statistics_object['min'],
@@ -95,10 +97,10 @@ def save_results_to_csv(statistics_object, k, window_size, embedding_strategy):
 
 def save_results_to_json(statistics_object, k, window_size, embedding_strategy):
     results_dir_path = get_results_dir()
-    results_file_path = os.path.join(results_dir_path, f"results_{k}_{window_size}_{embedding_strategy}.json")
+    results_file_path = os.path.join(results_dir_path, f"results_{k}_{window_size}.json")
     statistics_object["k"] = k,
     statistics_object["window_size"] = window_size,
-    statistics_object["embedding_strategy"] = embedding_strategy
+    statistics_object["embedding_strategy"] = str(embedding_strategy)
     write_json_file(results_file_path, statistics_object)
 
 
