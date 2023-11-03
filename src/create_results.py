@@ -2,7 +2,7 @@ import csv
 import os
 
 import statistics
-from src.comparison.cosine_similarity import calculate_cosine_similarity
+from src.comparison.calculate_cosine_similarity import calculate_cosine_similarity
 from src.utils.utils import group_by
 from src.workspace_context import get_results_dir, write_json_file
 

@@ -5,11 +5,23 @@ from transformers import AutoModel, AutoTokenizer
 model = AutoModel.from_pretrained("microsoft/codebert-base")
 tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
 
+def get_java_corpus():
+    corpus = []
+    # resources = db.get_resources()
+    # java_resources = resources.filter(type=="java")
+    # for java_resource in java_resources:
+    #     java_code = db.get_content(java_resource)
+    #     # Tokenize the content to extract words
+    #     words = word_tokenize(java_code)
+    #     # Extend the corpus with the words from the current file
+    #     corpus.extend(words)
+    return corpus
+
 # Returns a single vector as NP array
 def tf_embedding_strategy(text):
     vectorizer = CountVectorizer()
     # TODO fix training_data
-    training_data = ["your", "training", "data", "function", "class"]
+    training_data = get_java_corpus()
     vectorizer.fit(training_data)
     tf_text_vector = vectorizer.transform([text]).toarray()[0]
     return tf_text_vector
@@ -18,7 +30,7 @@ def tf_embedding_strategy(text):
 def tf_idf_embedding_strategy(text):
     vectorizer = TfidfVectorizer()
     # TODO fix training_data
-    training_data = ["your", "training", "data", "function", "class"]
+    training_data = get_java_corpus()
     vectorizer.fit(training_data)
     tf_idf_text_vector = vectorizer.transform([text]).toarray()[0]
     return tf_idf_text_vector
@@ -50,11 +62,11 @@ def codebert_summed_embedding_strategy(text):
     return summed_embeddings
 
 
-if __name__ == "__main__":
-    text = "hello code my variable x = 5 for i in x call my function"
-    embedding_not_summed = codebert_embedding_strategy(text)
-    print(embedding_not_summed.shape)
-    torch.Size([1, 15, 768])
-    embedding_summed = codebert_summed_embedding_strategy(text)
-    print(embedding_summed.shape)
-    torch.Size([1, 768])
+# if __name__ == "__main__":
+#     text = "hello code my variable x = 5 for i in x call my function"
+#     embedding_not_summed = codebert_embedding_strategy(text)
+#     print(embedding_not_summed.shape)
+#     torch.Size([1, 15, 768])
+#     embedding_summed = codebert_summed_embedding_strategy(text)
+#     print(embedding_summed.shape)
+#     torch.Size([1, 768])
