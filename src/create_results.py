@@ -4,7 +4,8 @@ import os
 import statistics
 from src.comparison.calculate_cosine_similarity import calculate_cosine_similarity
 from src.utils.utils import group_by
-from src.workspace_context import get_results_dir, write_json_file
+from src.workspace_context import write_json_file
+from src.workspace_context_old import get_results_dir
 
 
 def get_total_accuracy(commits, k, window_size, embedding_strategy):

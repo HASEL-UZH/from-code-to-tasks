@@ -1,12 +1,13 @@
 import os
 
-from src.workspace_context import read_json_file, FINAL_REPOSITORY_FILE, get_commit_repository_dir_path, \
+from src.workspace_context import read_json_file
+from src.workspace_context_old import FINAL_REPOSITORY_FILE, get_commit_repository_dir_path, \
     get_commit_data_dir_path, get_repository_file_path
 
 
 def get_repositories():
     repository_file_path = get_repository_file_path(FINAL_REPOSITORY_FILE)
-    repository_json = load_json_file(repository_file_path)
+    repository_json = read_json_file(repository_file_path)
     return repository_json["final_repositories"]
 
 def get_repository_commits(repo_id):
@@ -28,7 +29,7 @@ def get_repository_change_commits():
     for repository in repositories:
         commits = get_repository_commits(repository["id"])
         for commit in commits:
-            commit_change_object = load_json_file(os.path.join(get_commit_data_dir_path(commit["repo_id"], commit["commit_hash"]), "commit_change_object.json"))
+            commit_change_object = read_json_file(os.path.join(get_commit_data_dir_path(commit["repo_id"], commit["commit_hash"]), "commit_change_object.json"))
             pull_request =  commit_change_object["pr"]["text"]
             change_text = commit_change_object["code"]["text"]
             change_commit = {

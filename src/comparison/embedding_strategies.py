@@ -1,20 +1,21 @@
 import torch
+from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from transformers import AutoModel, AutoTokenizer
+
+from src.object_store import db
 
 model = AutoModel.from_pretrained("microsoft/codebert-base")
 tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")
 
 def get_java_corpus():
     corpus = []
-    # resources = db.get_resources()
-    # java_resources = resources.filter(type=="java")
-    # for java_resource in java_resources:
-    #     java_code = db.get_content(java_resource)
-    #     # Tokenize the content to extract words
-    #     words = word_tokenize(java_code)
-    #     # Extend the corpus with the words from the current file
-    #     corpus.extend(words)
+    resources = db.get_resources()
+    java_resources = [obj for obj in resources if obj["type"] == "java"]
+    for java_resource in java_resources:
+        java_code = db.load_resource(java_resource)
+        words = word_tokenize(java_code)
+        corpus.extend(words)
     return corpus
 
 # Returns a single vector as NP array

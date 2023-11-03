@@ -6,96 +6,81 @@ GITHUB_TOKEN = "github_pat_11AVZSWSY0BJ894OKDrJ2w_oXUxUqxo3WjSbQIExDNqcOi6TdChE3
 HEADERS = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
 
 
-WORKSPACE_ROOT = os.path.abspath("./_workspace")
-
-DATASETS_DIR = os.path.join(WORKSPACE_ROOT, "datasets")
-COMMIT_DATA_DIR = os.path.join(DATASETS_DIR, "commit_data")
-RESULTS_DIR = os.path.join(WORKSPACE_ROOT, "results")
+WORKSPACE_ROOT = os.path.abspath("./_store")
+STORE_ROOT = os.path.abspath("./_store")
+OBJECT_INF_FILE = "_OBJECT_INF.json"
 REPOSITORIES_DIR = os.path.join(WORKSPACE_ROOT, "repositories")
+_COMMITS_DIR = "commits"
 
-CANDIDATE_REPOSITORY_FILE = "candidate_repositories.json"
-FINAL_REPOSITORY_FILE = "final_repositories.json"
+def get_workspace_dir():
+    return get_or_create_dir(WORKSPACE_ROOT)
 
-# Get dir
-def get_repository_dir():
-    return get_or_create_dir(REPOSITORIES_DIR)
+def get_store_dir(path=None):
+    full_path = STORE_ROOT
+    if path:
+        full_path = os.path.join(STORE_ROOT, path)
+    return get_or_create_dir(full_path)
 
-def get_datasets_dir():
-    return get_or_create_dir(DATASETS_DIR)
+def get_store_path(file_path):
+    file_name = os.path.basename(file_path)
+    dir_name = os.path.dirname(file_path)
+    store_path = os.path.join(get_store_dir(dir_name), file_name)
+    return store_path
 
-def get_commit_data_dir():
-    return get_or_create_dir(COMMIT_DATA_DIR)
+def get_repository_dir(repo_id=None):
+    paths = [REPOSITORIES_DIR, repo_id] if repo_id else [REPOSITORIES_DIR]
+    return os.path.join(*paths)
 
-def get_results_dir():
-    return get_or_create_dir(RESULTS_DIR)
+def get_commit_dir(repo_id, commit_id):
+    repo_dir = get_repository_dir(repo_id)
+    commit_dir = os.path.join(repo_dir,_COMMITS_DIR,"commit_"+commit_id)
+    return commit_dir
 
-# Get file path
 
-def get_repository_file_path(file_name):
-    return os.path.join(get_repository_dir(), file_name)
+# --- Check file type
 
-def get_datasets_file_path(file_name):
-    return os.path.join(get_datasets_dir(), file_name)
+def is_java_file(file_name):
+    return file_name.endswith(".java")
 
-# Create dir if it doesn't already exist
+
+def is_ast_file(file_name):
+    return file_name.endswith("ast.json") and not file_name.endswith("meta_ast.json")
+
+
+def is_ast_meta_file(file_name):
+    return file_name.endswith("meta_ast.json")
+
+# returns the file extensions including the '.'
+def get_file_ext(file_name):
+    _, ext = os.path.splitext(file_name)
+    return ext
+
+
+# returns the file extensions without the '.'
+def get_file_ext_name(file_name):
+    _, ext = os.path.splitext(file_name)
+    return ext[1:]
+
+def get_file_base_name(file_name):
+    base, _ = os.path.splitext(file_name)
+    return base
+
+# --- File IO
 
 def get_or_create_dir(dir_name):
     os.makedirs(dir_name, exist_ok=True)
     return dir_name
 
-# Get repository data
-
-def get_commit_repository_dir_path(repo_id):
-    dir_name = get_or_create_dir(os.path.join(get_commit_data_dir(), str(repo_id)))
-    return dir_name
-def get_commit_data_dir_path(repo_id, commit_hash):
-    dir_name = os.path.join(get_commit_repository_dir_path(repo_id), f"commit_{repo_id}_{commit_hash}")
-    return get_or_create_dir(dir_name)
-
-def get_commit_data_file_before(repo_id, commit_hash, file_name):
-    return os.path.join(get_commit_data_dir_path(repo_id, commit_hash), f"{get_file_name_without_extension(file_name)}_before.java")
-
-def get_commit_data_file_after(repo_id, commit_hash, file_name):
-    return os.path.join(get_commit_data_dir_path(repo_id, commit_hash), f"{get_file_name_without_extension(file_name)}_after.java")
-
-def get_commit_data_file_diff(repo_id, commit_hash, file_name):
-    return os.path.join(get_commit_data_dir_path(repo_id, commit_hash), f"{get_file_name_without_extension(file_name)}.diff")
-
-def get_commit_data_file_info(repo_id, commit_hash):
-    return os.path.join(get_commit_data_dir_path(repo_id, commit_hash), f"commit_info.json")
-
-# Get file names
-def get_file_name_without_extension(file_name):
-    return os.path.splitext(file_name)[0]
-
-def get_file_name_without_ast_extension(file_name):
-    return file_name.split("_", 1)[0]
-
-def get_ast_for_java_source_file(file_name):
-    ast_file_name = (re.sub(r"(\.java)", "", os.path.splitext(file_name)[0]) + "_ast.json")
-    return ast_file_name
-
-def get_meta_ast_for_ast_source_file(file_name):
-    meta_ast_file_name = file_name.replace("ast.json", "meta_ast.json")
-    return meta_ast_file_name
-
-# Check file type
-
-def is_java_file(file_name):
-    return file_name.endswith(".java")
-
-def is_ast_file(file_name):
-    return file_name.endswith("ast.json") and not file_name.endswith("meta_ast.json")
-
-def is_ast_meta_file(file_name):
-    return file_name.endswith("meta_ast.json")
-
-
 # Load json
-def load_json_file(file_path):
+def read_json_file(file_path):
     with open(file_path, 'r') as file:
         data = json.load(file)
         return data
+
+def read_text_file(file_path):
+    with open(file_path, 'r') as file:
+        content = file.read()
+        return content
 
 # Write json
 def write_json_file(file_path, file_content):
@@ -110,6 +95,6 @@ def write_text_file(file_path, file_content, opts={}):
 
 def get_pull_request(file_path):
     commit_info_file_path = os.path.join(file_path, "commit_info.json")
-    data = load_json_file(commit_info_file_path)
+    data = read_json_file(commit_info_file_path)
     return data["pull request"]
 

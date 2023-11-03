@@ -1,10 +1,11 @@
 import re
+
 import requests
 from pydriller import Repository
 
 from src.object_factory import ObjectFactory, get_resource_id
-from src.utils.utils import get_date_string
 from src.object_store import db
+from src.utils.utils import get_date_string
 from src.workspace_context import HEADERS, is_java_file, get_file_base_name
 
 
@@ -126,5 +127,5 @@ def create_commit_data_task():
 
 
 if __name__ == "__main__":
-    print("TASK DISABLED"); exit(0)
+    #print("TASK DISABLED"); exit(0)
     create_commit_data_task()

@@ -1,5 +1,4 @@
 import os
-import uuid
 
 from src.object_factory import ObjectFactory
 from src.workspace_context import get_workspace_dir, get_or_create_dir, get_repository_dir, OBJECT_INF_FILE, \
@@ -226,6 +225,7 @@ class ObjectStore:
                 else:
                     content = read_text_file(file_path)
                 resource["content"] = content
+        return resource.get("content")
 
     def delete(self):
         pass

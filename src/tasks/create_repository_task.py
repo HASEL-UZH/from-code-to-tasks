@@ -6,6 +6,7 @@ from src.object_factory import ObjectFactory
 from src.object_store import db
 from src.workspace_context import HEADERS
 
+
 def create_repository_task(url_excludes=[]):
     url_excludes = url_excludes or ["https://github.com/Snailclimb/JavaGuide","https://github.com/facebook/react-native"]
     number_of_repositories = 100 # Maximum is 100
@@ -79,5 +80,5 @@ def fetch_most_popular_java_repositories_with_issues(
 
 
 if __name__ == "__main__":
-    print("TASK DISABLED"); exit(0)
+    # print("TASK DISABLED"); exit(0)
     create_repository_task()

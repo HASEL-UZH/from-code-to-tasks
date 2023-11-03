@@ -5,7 +5,7 @@ from src.repository_manager import get_repository_change_commits
 
 
 def run_results_task():
-    # TODO add meta strategies and term strategies
+# TODO add meta strategies and term strategies
     meta_strategies = []
     term_strategies = []
     embedding_strategies = [tf_embedding_strategy, tf_idf_embedding_strategy, codebert_embedding_strategy, codebert_summed_embedding_strategy]
