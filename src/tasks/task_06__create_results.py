@@ -1,10 +1,10 @@
 from src.comparison.embedding_strategies import tf_embedding_strategy, tf_idf_embedding_strategy, \
     codebert_embedding_strategy, codebert_summed_embedding_strategy
 from src.create_results import get_total_accuracy, get_statistics_object, save_results_to_csv, save_results_to_json
-from src.repository_manager import get_repository_change_commits
+from src.object_store import db
 
 
-def run_results_task():
+def create_results_task():
 # TODO add meta strategies and term strategies
     meta_strategies = []
     term_strategies = []
@@ -12,7 +12,11 @@ def run_results_task():
     window_sizes = [10, 20, 30]
     k_values = [1,3,5]
 
-    change_commits = get_repository_change_commits()
+    change_resources = db.find_resources({"kind": "change", "type": "json"})
+    change_commits = []
+    for change_resource in change_resources:
+         change_commits.append(db.load_resource(change_resource))
+
     for k in k_values:
         for window_size in window_sizes:
             for embedding_strategy in embedding_strategies:
@@ -30,4 +34,4 @@ def run_results_task():
 
 
 if __name__=="__main__":
-    run_results_task()
+    create_results_task()

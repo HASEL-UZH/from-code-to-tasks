@@ -1,9 +1,6 @@
-import hashlib
-import os
-
-from src.ast_meta_generation.meta_ast_creator_task import meta_ast_creator
 from src.object_factory import ObjectFactory
 from src.object_store import db
+from src.strategies.meta_ast.default_meta_ast_strategy import meta_ast_creator
 
 
 def create_meta_ast_task():
