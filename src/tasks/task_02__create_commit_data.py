@@ -69,7 +69,6 @@ def save_commit_data(repository, git_commit, pull_request_title):
             if  is_java_file(file_name):
                 if modified_file.source_code_before:
                     source_before_resource = ObjectFactory.resource(commit, {
-                       "id": get_resource_id(commit.get("id"), file_name),
                        "name": base_file_name,
                        "type": "java",
                        "kind": "source",

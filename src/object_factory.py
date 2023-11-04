@@ -1,46 +1,66 @@
+import os
 from src.utils.utils import camel_to_snake
 
+CLASSIFIER_REPOSITORY = "repository"
+CLASSIFIER_COMMIT = "commit"
+CLASSIFIER_RESOURCE = "resource"
+
+CLASSIFIERS = {
+    CLASSIFIER_REPOSITORY: CLASSIFIER_REPOSITORY,
+    CLASSIFIER_COMMIT: CLASSIFIER_COMMIT,
+    CLASSIFIER_RESOURCE: CLASSIFIER_RESOURCE,
+}
 
 class ObjectFactory:
-    CLASSIFIERS = {
-        "repository": "repository",
-        "commit": "commit",
-        "resource": "resource",
-    }
+
+    # obj: dict | string (id)
+    @staticmethod
+    def _get_classifier(obj):
+        if not obj:
+            return
+        classifier = None
+        if type(obj).__name__ == "string":
+            classifier = obj
+        elif type(obj).__name__ == "dict":
+            classifier = obj.get("classifier")
+        return classifier
+
+
+    # obj: dict | string (id)
+    @staticmethod
+    def is_container(obj):
+        return ObjectFactory.is_repository(obj) or ObjectFactory.is_commit(obj)
+
 
     @staticmethod
     def is_repository(obj):
-        if obj:
-            classifier = obj["classifier"]
-            return classifier == ObjectFactory.CLASSIFIERS["repository"]
-        return False
+        classifier = ObjectFactory._get_classifier(obj)
+        return classifier == CLASSIFIER_REPOSITORY
+
 
     @staticmethod
     def is_commit(obj):
-        if obj:
-            classifier = obj["classifier"]
-            return classifier == ObjectFactory.CLASSIFIERS["commit"]
-        return False
+        classifier = ObjectFactory._get_classifier(obj)
+        return classifier == CLASSIFIER_COMMIT
+
 
     @staticmethod
     def is_resource(obj):
-        if obj:
-            classifier = obj["classifier"]
-            return classifier == ObjectFactory.CLASSIFIERS["resource"]
-        return False
+        classifier = ObjectFactory._get_classifier(obj)
+        return classifier == CLASSIFIER_RESOURCE
 
 
     @staticmethod
     def repository(url, data=None):
         if data is None:
             data = {}
-        repo_id = get_repository_id(url)
-        classifier = ObjectFactory.CLASSIFIERS["repository"]
-        oid = get_object_id(classifier, repo_id)
+        repo_id = get_repository_identifier(url)
+        classifier = CLASSIFIER_REPOSITORY
+        id = get_object_id(classifier, repo_id)
         _object = {
+            "id": id,
             "classifier": classifier,
-            "oid": oid,
-            "id": repo_id,
+            "identifier": repo_id,
             "repository_url": url,
         }
         _object = {**_object, **data, **_object}
@@ -50,39 +70,37 @@ class ObjectFactory:
     def commit(data=None):
         if data is None:
             data = {}
-        id = data["commit_hash"]
-        classifier = ObjectFactory.CLASSIFIERS["commit"]
-        oid = get_object_id(classifier, id)
-        repo_id = get_repository_id(data["repository_url"])
-        repo_classifier = ObjectFactory.CLASSIFIERS["repository"]
-        repo_oid = get_object_id(repo_classifier, repo_id)
+        identifier = data["commit_hash"]
+        classifier = CLASSIFIER_COMMIT
+        id = get_object_id(classifier, identifier)
+        repo_identifier = get_repository_identifier(data["repository_url"])
+        repo_id = get_object_id(CLASSIFIER_REPOSITORY, repo_identifier)
         _object = {
-            "classifier": classifier,
-            "oid": oid,
             "id": id,
-            "repository_id": repo_id,
-            "@repository": repo_oid
+            "classifier": classifier,
+            "identifier": identifier,
+            "repository_identifier": repo_identifier,
+            "@repository": repo_id
         }
         _object = {**_object, **data, **_object}
         return _object
 
     @staticmethod
     def resource(container, data):
-        if data is None:
-            data = {}
-        id = data.get("id")
-        full_name = data.get("name", "undefined")
-        if data.get("name") and data.get("type"):
-            full_name = ".".join([data.get("name"), data.get("type")])
-        if not id:
-            id = "/".join([container.get("id", "undefined"), full_name])
-        classifier = ObjectFactory.CLASSIFIERS["resource"]
-        oid = get_object_id(classifier, id)
+        requirements = ["name", "type", "kind"]
+        if not all(key in data for key in requirements):
+            raise Exception("Instantiation error for class 'Resource'")
+
+        filename = encode_resource_name(data)
+        identifier = "#".join([container["identifier"], filename])
+        classifier = CLASSIFIER_RESOURCE
+        id = get_object_id(classifier, identifier)
         _object = {
-            "classifier": classifier,
-            "oid": oid,
             "id": id,
-            "@container": container.get("oid"),
+            "classifier": classifier,
+            "identifier": identifier,
+            "filename": filename,
+            "@container": container.get("id"),
         }
         _object = {**_object, **data, **_object}
         if not "content" in _object:
@@ -95,7 +113,7 @@ class ObjectFactory:
 def get_object_id(classifier, _id):
    return "::".join([classifier,_id])
 
-def get_repository_id(repository_url):
+def get_repository_identifier(repository_url):
     # Remove the prefix
     id = repository_url.replace("https://github.com/", "")
     # Replace "/" with "__"
@@ -103,6 +121,50 @@ def get_repository_id(repository_url):
     id = camel_to_snake(id)
     return id
 
-def get_resource_id(container_id, name):
-    id = "/".join([container_id or "", name])
+def get_resource_id(container_id, identifier):
+    id = "/".join([container_id or "", identifier])
     return id
+
+def encode_resource_name(resource):
+    base_template = "{name}--{kind}--{version}"
+    strategy_template = "{meta}--{terms}--{embedding}"
+
+    base_part = base_template.format(
+        name = resource.get("name", "undefined") or "",
+        kind = resource.get("kind", "") or "",
+        version = resource.get("version", "") or "",
+    )
+    strategy = resource.get("strategy")
+    if strategy:
+        strategy_part = strategy_template.format(
+            meta=strategy.get("meta", "") or "",
+            terms=strategy.get("terms", "") or "",
+            embedding=strategy.get("embedding", "") or ""
+        )
+        base_part = "@".join([base_part, strategy_part])
+
+    name = ".".join([base_part, resource.get("type", "txt")])
+    return name
+
+def decode_resource_name(resource_name):
+    root, ext = os.path.splitext(resource_name)
+    type = ext[1:]
+    parts = root.split("@")
+    base_part = parts[0]
+    base_parts = base_part.split("--")
+    strategy_part = parts[1] if 1 < len(parts) else None
+    obj = {
+        "filename": resource_name,
+        "name": base_parts[0] or None,
+        "kind": base_parts[1] or None,
+        "version": base_parts[2] or None,
+        "type": type
+    }
+    if strategy_part:
+        strategy_parts = strategy_part.split("--")
+        obj["strategy"] = {
+            "meta": strategy_parts[0] or None,
+            "terms": strategy_parts[1] or None,
+            "embedding": strategy_parts[2]or None,
+        }
+    return obj

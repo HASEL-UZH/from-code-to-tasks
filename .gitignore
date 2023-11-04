@@ -4,4 +4,5 @@ _tmp
 **/__pycache__/
 _workspace
 _store
+__store
 _workspace.zip

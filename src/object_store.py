@@ -1,16 +1,22 @@
 import os
+from importlib.resources import is_resource
 
-from src.object_factory import ObjectFactory
-from src.workspace_context import get_workspace_dir, get_or_create_dir, get_repository_dir, OBJECT_INF_FILE, \
-    write_json_file, get_store_dir, read_json_file, get_commit_dir, write_text_file, get_store_path, read_text_file
+from src.object_factory import ObjectFactory, decode_resource_name
+from src.workspace_context import get_or_create_dir, \
+    write_json_file, get_store_dir, read_json_file, write_text_file, read_text_file
 
+OBJECT_INF_FILE = "_OBJECT_INF.json"
+REPOSITORIES_DIR_NAME = "repositories"
+COMMITS_DIR_NAME = "commits"
 
 # Base file system structure
-# workspace (root)
-#   datasets/
-#       commit_data/
-#           repository_{repo_id}/   // use name instead
+# store (root)
+#   repositories/
+#       {repository_id}
+#           _OBJECT_INF.json
+#           commits
 #               {commit_id}/
+#                   _OBJECT_INF.json
 #                   FileA_before.java
 #                   FileA_after.java
 #                   FileA.diff
@@ -24,8 +30,6 @@ from src.workspace_context import get_workspace_dir, get_or_create_dir, get_repo
 #                   FileX.diff
 #                   ...
 #                   commit_info.jsom
-#
-#   repositories/
 #
 #
 #  object types:
@@ -44,8 +48,8 @@ from src.workspace_context import get_workspace_dir, get_or_create_dir, get_repo
 #     Resource
 #
 class ObjectStore:
-    def __init__(self, workspace_dir):
-        self.workspace_dir = workspace_dir
+    def __init__(self, store_dir):
+        self.store_dir = store_dir
         self.dirty = True
         self.root = None
         self.nodes = []
@@ -90,28 +94,33 @@ class ObjectStore:
                 try:
                     container_object = parent.get("_object")
                     if container_object:
-                        file_base_data = _decode_resource_name(base_name)
-                        file_object = ObjectFactory.resource(container_object, file_base_data)
-                        file_object["_location"] = fs_element
-                        node["_object"] = file_object
+                        file_base_data = decode_resource_name(base_name)
+                        resource = ObjectFactory.resource(container_object, file_base_data)
+                        location = self.get_resource_location(resource, container_object)
+                        resource["_location"] = location
+                        _fs_path = self.get_fs_path(location)
+                        if _fs_path != fs_element:
+                            raise Exception()
+
+                        node["_object"] = resource
                         self.nodes.append(node)
+
                 except Exception as e:
                     pass
             return node
 
-        self.root = scan(self.workspace_dir,None, None,0)
+        self.root = scan(self.store_dir,None, None,0)
         self.set_dirty(False, "sync")
         for node in self.nodes:
             obj = node.get("_object")
             if obj:
-                oid = obj.get("id")
-                if (oid):
-                    self.objects[oid] = obj
+                id = obj.get("id")
+                if (id):
+                    self.objects[id] = obj
 
         pass
     # print(json.dumps(self.root, indent=4))
     pass
-
 
     def _accept(self, name, is_file):
         exclusions =[OBJECT_INF_FILE, ".DS_Store", ".gitignore" ]
@@ -139,8 +148,32 @@ class ObjectStore:
     def invalidate(self):
         self.set_dirty(True, "invalidate")
 
-    def find_object(self, oid):
-        pass
+    # --- Query
+
+    def _get_objects(self):
+        self.sync()
+        return list(self.objects.values())
+
+    def find_object(self, id):
+        self.sync()
+        obj = self.objects.get(id)
+        return obj
+
+    def find_many(self, criteria, objects=None ):
+        self.sync()
+        objects = objects or self._get_objects()
+        if isinstance(criteria, dict):
+            return [item for item in objects if all(item.get(k) == v for k, v in criteria.items())]
+        elif callable(criteria):
+            return [item for item in objects if criteria(item)]
+        return objects
+
+    def find_one(self, criteria, objects=None ):
+        results = self.find_many(criteria, objects)
+        return results[0] if results else None
+
+    def find_resources(self, criteria):
+        return self.find_many(criteria, self.get_resources())
 
 
     # @returns IRepository
@@ -163,61 +196,57 @@ class ObjectStore:
         return commits
 
     def get_resources(self):
-        _nodes = self._get_nodes()
-        nodes = [
-            obj for obj in _nodes
-            if obj and "_object" in obj and ObjectFactory.is_resource(obj["_object"])
-        ]
-        commits = [obj["_object"] for obj in nodes if "_object" in obj]
-        return commits
+        objects = self._get_objects()
+        # resources = self.find_many(is_resource, objects)
+        resources = self.find_many({"classifier": "resource"}, objects)
+        return resources
+
+    # --- IO
+
+    def get_resource_location(self, resource, container=None):
+        if not ObjectFactory.is_resource(resource):
+            return None
+        location = resource.get("_location")
+        if not location:
+            container = container or self.find_object(resource.get("@container"))
+            if container:
+                location = os.path.join(container["_location"], resource["filename"])
+                return location
+        raise Exception("Cannot create resource location")
 
 
     # repository: IRepository
     def save_repository(self, repository):
-        directory = get_or_create_dir(get_repository_dir(repository["id"]))
+        directory = get_or_create_dir(self.get_repository_dir(repository["identifier"]))
         info_file = os.path.join(directory, OBJECT_INF_FILE)
         repository["_location"] = os.path.relpath(directory, get_store_dir())
         write_json_file(info_file, repository)
         self.invalidate()
 
+
+    # commit: ICommit
     def save_commit(self, commit):
-        repo_dir = get_repository_dir()
-        directory = get_or_create_dir(get_commit_dir(commit["repository_id"], commit["id"]))
+        directory = get_or_create_dir(self.get_commit_dir(commit["repository_identifier"], commit["identifier"]))
         info_file = os.path.join(directory, OBJECT_INF_FILE)
         commit["_location"] = os.path.relpath(directory, get_store_dir())
         write_json_file(info_file, commit)
         self.invalidate()
 
-    def save_resource(self, resource, container=None):
-        location = resource.get("_location")
-        if not location:
-            if container and container.get("_location"):
-                directory = container.get("_location")
-                file_name = _encode_resource_name(resource)
-                location = os.path.join(directory, file_name)
-                resource["_location"] = location
-            else:
-                # FIXME try o locate the container by it's container oid (@container)
-                raise Exception("Cannot determine location for resource: "+resource.get("oid"))
 
-        file_path = get_store_path(location)
+    # resource: IResource
+    def save_resource(self, resource, container = None):
+        file_path = self.get_resource_path(resource, container)
         if resource["type"] == "json":
             write_json_file(file_path, resource.get("content"))
         else:
             write_text_file(file_path, resource.get("content"))
-
-    # commit_id: string; // uid of commit (e.g., iluwatar/java-design-patterns|0ad44ced247191cc631100010ca40b4baa84d161)
-    def get_commit(self, commit_id):
-        pass
-
-
-    def get_resource(self, resource_id):
-        pass
-
+        self.invalidate()
 
     def load_resource(self, resource, force = False):
+        if not resource:
+            return None
         if not resource.get("content") or force:
-            file_path = resource.get("_location")
+            file_path = self.get_resource_path(resource)
             if file_path and os.path.exists(file_path):
                 content = None
                 if resource.get("type")=="json":
@@ -227,56 +256,43 @@ class ObjectStore:
                 resource["content"] = content
         return resource.get("content")
 
-    def delete(self):
-        pass
+    # absolute path
+    def get_repository_dir(self, repo_id=None):
+        paths = [REPOSITORIES_DIR_NAME, repo_id] if repo_id else [REPOSITORIES_DIR_NAME]
+        repository_dir =  get_or_create_dir(self.get_fs_path(os.path.join(self.store_dir, *paths)))
+        return repository_dir
+
+    # absolute path
+    def get_commit_dir(self, repo_id, commit_id):
+        repo_dir = self.get_repository_dir(repo_id)
+        commit_dir = get_or_create_dir(os.path.join(repo_dir, COMMITS_DIR_NAME, "commit_"+commit_id))
+        return commit_dir
+
+    # absolute path
+    def get_fs_path(self, location):
+        full_path = os.path.abspath(os.path.join(self.store_dir, location))
+        return full_path
+
+    def get_resource_path(self, resource, container = None):
+        location = resource.get("_location")
+        if not location:
+            container = container or self.find_object(resource.get("@container"))
+            if container and container.get("_location"):
+                directory = container.get("_location")
+                file_name = resource["filename"]
+                location = os.path.join(directory, file_name)
+                resource["_location"] = location
+            else:
+                # FIXME try o locate the container by it's container id (@container)
+                raise Exception("Cannot determine location for resource: "+resource.get("id"))
+
+        file_path = self.get_fs_path(location)
+        return file_path
 
 
-def _encode_resource_name(resource):
-    base_template = "{name}--{kind}--{version}"
-    strategy_template = "{meta}--{terms}--{embedding}"
-
-    base_part = base_template.format(
-        name = resource.get("name", "undefined") or "",
-        kind = resource.get("kind", "") or "",
-        version = resource.get("version", "") or "",
-    )
-    strategy = resource.get("strategy")
-    if strategy:
-        strategy_part = strategy_template.format(
-            meta=strategy.get("meta","") or "",
-            terms=strategy.get("terms","") or "",
-            embedding=strategy.get("embedding","") or ""
-        )
-        base_part = "@".join([base_part, strategy_part])
-
-    name = ".".join([base_part, resource.get("type", "txt")])
-    return name
-
-def _decode_resource_name(resource_name):
-    root, ext = os.path.splitext(resource_name)
-    type = ext[1:]
-    parts = root.split("@")
-    base_part = parts[0]
-    base_parts = base_part.split("--")
-    strategy_part = parts[1] if 1 < len(parts) else None
-    obj = {
-        "name": base_parts[0] or None,
-        "kind": base_parts[1] or None,
-        "version": base_parts[2] or None,
-        "type": type
-    }
-    if strategy_part:
-        strategy_parts = strategy_part.split("--")
-        obj["strategy"] = {
-            "meta": strategy_parts[0] or None,
-            "terms": strategy_parts[1] or None,
-            "embedding": strategy_parts[2]or None,
-        }
-    return obj
-
-
-ws = get_workspace_dir()
+ws = get_store_dir()
 db = ObjectStore(ws)
+
 
 if __name__ == "__main__":
     print("object_store DISABLED"); exit(0)

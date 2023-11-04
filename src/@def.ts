@@ -1,13 +1,12 @@
 export interface IObject {
+    id: string; // uuid, technical id
     classifier: string;
-    id: string;
-    uid: string; // uuid, technical id
+    identifier: string;
 }
 
 export interface IStoreObject {
     // internal
     _location?: string; // absolute file location
-    _filename?: string; // relative filename
 }
 
 export interface IContainer extends IObject, IStoreObject {
@@ -15,13 +14,12 @@ export interface IContainer extends IObject, IStoreObject {
 }
 
 export interface IRepository extends IContainer {
-    id: string;  // "iluwatar__java-design-patterns",
+    identifier: string;  // "iluwatar__java-design-patterns",
     repository_url: string; // "https:github.com/iluwatar/java-design-patterns",
 }
 
-
 /**
- * Example
+ * Commit Example
  * {
  *   "repository_url": "https:github.com/iluwatar/java-design-patterns",
  *   "commit_hash": "0ad44ced247191cc631100010ca40b4baa84d161",
@@ -37,7 +35,7 @@ export interface IRepository extends IContainer {
  *}
  */
 export interface ICommit extends IContainer {
-    "@repository": string; // repository.oid
+    "@repository": string; // repository.id
     repository_url: string;
     commit_hash: string;
     commit_message: string;
@@ -52,8 +50,9 @@ export interface ICommit extends IContainer {
 }
 
 export interface IResource extends IObject, IStoreObject {
-    "@container": string; // repository.oid || commit.oid
-    name: string; // the base name
+    "@container": string; // repository.id || commit.id
+    identifier: string // the filename based on the property of this resource
+    name: string; // the base name (excluding extension)
     type: "json" | "diff" | "text"
     kind: "source" | "diff" | "ast" | "meta-ast" | "change";
     version: "before" | "after" | null;
@@ -65,11 +64,6 @@ export interface IResource extends IObject, IStoreObject {
     content: string | {} | any;
 }
 
-
-export interface ICommitResource extends IResource {
-    commit_id: string;
-
-}
 
 
 

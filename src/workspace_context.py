@@ -8,9 +8,6 @@ HEADERS = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
 
 WORKSPACE_ROOT = os.path.abspath("./_store")
 STORE_ROOT = os.path.abspath("./_store")
-OBJECT_INF_FILE = "_OBJECT_INF.json"
-REPOSITORIES_DIR = os.path.join(WORKSPACE_ROOT, "repositories")
-_COMMITS_DIR = "commits"
 
 def get_workspace_dir():
     return get_or_create_dir(WORKSPACE_ROOT)
@@ -20,21 +17,6 @@ def get_store_dir(path=None):
     if path:
         full_path = os.path.join(STORE_ROOT, path)
     return get_or_create_dir(full_path)
-
-def get_store_path(file_path):
-    file_name = os.path.basename(file_path)
-    dir_name = os.path.dirname(file_path)
-    store_path = os.path.join(get_store_dir(dir_name), file_name)
-    return store_path
-
-def get_repository_dir(repo_id=None):
-    paths = [REPOSITORIES_DIR, repo_id] if repo_id else [REPOSITORIES_DIR]
-    return os.path.join(*paths)
-
-def get_commit_dir(repo_id, commit_id):
-    repo_dir = get_repository_dir(repo_id)
-    commit_dir = os.path.join(repo_dir,_COMMITS_DIR,"commit_"+commit_id)
-    return commit_dir
 
 
 # --- Check file type
