@@ -1,6 +1,7 @@
 import os
 from importlib.resources import is_resource
 
+from src.utils.profiler import Profiler
 from src.object_factory import ObjectFactory, decode_resource_name
 from src.workspace_context import get_or_create_dir, \
     write_json_file, get_store_dir, read_json_file, write_text_file, read_text_file
@@ -51,17 +52,15 @@ class ObjectStore:
     def __init__(self, store_dir):
         self.store_dir = store_dir
         self.dirty = True
-        self.root = None
-        self.nodes = []
         self.objects = {}
 
     def sync(self, force=False):
         if not force and not self.dirty:
             return
 
-        self.nodes = []
+        profiler = Profiler()
         self.objects = {}
-        def scan(fs_element, parent_path, parent, depth):
+        def scan(fs_element, parent_path, container_object, depth):
             """Generate a dictionary that represents the directory structure."""
 
             is_file = os.path.isfile(fs_element)
@@ -69,30 +68,19 @@ class ObjectStore:
             if not self._accept(base_name, is_file):
                 return None
 
-            node = {
-                "name": base_name,
-                "depth": depth,
-                "container": False,
-                "children": []
-            }
-
+            _object = None
             if os.path.isdir(fs_element):
-                node["container"] = True,
-                self.nodes.append(node)
                 inf_file = os.path.join(fs_element, OBJECT_INF_FILE )
                 if os.path.exists(inf_file):
                     _object = read_json_file(inf_file)
-                    node["_object"] = _object
+                    self.objects[_object["id"]] = _object
                 items = os.listdir(fs_element)
                 sorted_items = sorted(items)
                 for item in sorted_items:
                     item_path = os.path.join(fs_element, item)
-                    child = scan(item_path, fs_element, node, depth+1)
-                    if (child):
-                        node['children'].append(child)
+                    scan(item_path, fs_element, _object, depth+1)
             else:
                 try:
-                    container_object = parent.get("_object")
                     if container_object:
                         file_base_data = decode_resource_name(base_name)
                         resource = ObjectFactory.resource(container_object, file_base_data)
@@ -101,24 +89,17 @@ class ObjectStore:
                         _fs_path = self.get_fs_path(location)
                         if _fs_path != fs_element:
                             raise Exception()
-
-                        node["_object"] = resource
-                        self.nodes.append(node)
+                        self.objects[resource["id"]] = resource
+                        _object = resource
 
                 except Exception as e:
                     pass
-            return node
+            return _object
 
-        self.root = scan(self.store_dir,None, None,0)
+        root = scan(self.store_dir,None, None,0)
+
+        profiler.checkpoint("db.sync")
         self.set_dirty(False, "sync")
-        for node in self.nodes:
-            obj = node.get("_object")
-            if obj:
-                id = obj.get("id")
-                if (id):
-                    self.objects[id] = obj
-
-        pass
     # print(json.dumps(self.root, indent=4))
     pass
 
@@ -127,20 +108,6 @@ class ObjectStore:
         if is_file:
             return name not in exclusions
         return True
-
-    def state(self, sync=True):
-        if sync:
-            self.sync()
-        return {
-            "root": self.root,
-            "nodes": self.nodes
-        }
-
-    def _get_root(self):
-        return self.state()["root"]
-
-    def _get_nodes(self):
-        return self.state()["nodes"]
 
     def set_dirty(self, dirty, cause=None):
         self.dirty = dirty
@@ -154,51 +121,48 @@ class ObjectStore:
         self.sync()
         return list(self.objects.values())
 
+
     def find_object(self, id):
         self.sync()
         obj = self.objects.get(id)
         return obj
 
-    def find_many(self, criteria, objects=None ):
+
+    def find_many(self, criteria, objects=None, log=False ):
+        profiler = Profiler()
         self.sync()
         objects = objects or self._get_objects()
-        if isinstance(criteria, dict):
-            return [item for item in objects if all(item.get(k) == v for k, v in criteria.items())]
-        elif callable(criteria):
-            return [item for item in objects if criteria(item)]
-        return objects
+        try:
+            if isinstance(criteria, dict):
+                return [item for item in objects if all(item.get(k) == v for k, v in criteria.items())]
+            elif callable(criteria):
+                return [item for item in objects if criteria(item)]
+            return objects
+        finally:
+            log and profiler.checkpoint("db.find_many")
 
-    def find_one(self, criteria, objects=None ):
-        results = self.find_many(criteria, objects)
+
+    def find_one(self, criteria, objects=None, log=False ):
+        results = self.find_many(criteria, objects, log=log or False)
         return results[0] if results else None
+
 
     def find_resources(self, criteria):
         return self.find_many(criteria, self.get_resources())
 
 
-    # @returns IRepository
     def get_repositories(self):
-        _nodes = self._get_nodes()
-        nodes = [
-            obj for obj in _nodes
-            if obj and "_object" in obj and ObjectFactory.is_repository(obj["_object"])
-        ]
-        repositories = [obj["_object"] for obj in nodes if "_object" in obj]
+        repositories = self.find_many({"classifier": "repository"})
         return repositories
 
+
     def get_commits(self):
-        _nodes = self._get_nodes()
-        nodes = [
-            obj for obj in _nodes
-            if obj and "_object" in obj and ObjectFactory.is_commit(obj["_object"])
-        ]
-        commits = [obj["_object"] for obj in nodes if "_object" in obj]
+        commits = self.find_many({"classifier": "commit"})
         return commits
 
+
     def get_resources(self):
-        objects = self._get_objects()
-        # resources = self.find_many(is_resource, objects)
-        resources = self.find_many({"classifier": "resource"}, objects)
+        resources = self.find_many({"classifier": "resource"})
         return resources
 
     # --- IO
@@ -234,27 +198,61 @@ class ObjectStore:
 
 
     # resource: IResource
-    def save_resource(self, resource, container = None):
+    def save_resource(self, resource, container = None, invalidate=True):
         file_path = self.get_resource_path(resource, container)
         if resource["type"] == "json":
             write_json_file(file_path, resource.get("content"))
         else:
             write_text_file(file_path, resource.get("content"))
-        self.invalidate()
+        invalidate and self.invalidate()
 
-    def load_resource(self, resource, force = False):
+    def delete_resource(self, resource_id, invalidate=True):
+        resource = self.find_object(resource_id)
+        if (resource):
+            file_path = self.get_resource_path(resource)
+            os.remove(file_path)
+            invalidate and self.invalidate()
+
+
+    def delete_resources(self, resources, invalidate=True):
+        if not isinstance(resources, (list, tuple)):
+            raise RuntimeError("delete_resources: List required")
+        profiler = Profiler()
+        count = 0
+        for resource in resources:
+            if (resource):
+                count += 1
+                file_path = self.get_resource_path(resource)
+                os.remove(file_path)
+        profiler.checkpoint(f"{count} resources deleted")
+        count > 0 and invalidate and self.invalidate()
+
+
+    def get_resource_content(self, resource, force = False, volatile = True):
         if not resource:
             return None
-        if not resource.get("content") or force:
+        content = resource.get("content")
+        if not content or force:
             file_path = self.get_resource_path(resource)
             if file_path and os.path.exists(file_path):
-                content = None
                 if resource.get("type")=="json":
                     content = read_json_file(file_path)
                 else:
                     content = read_text_file(file_path)
-                resource["content"] = content
-        return resource.get("content")
+                if not volatile:
+                    resource["content"] = content
+        return content
+
+    def load_resource(self, resource, force=False):
+        content = self.get_resource_content(resource, force=force, volatile=False)
+        return content
+
+    def unload_resource(self, resource):
+        if not resource:
+            return None
+        if "content" in resource:
+            del resource["content"]
+
 
     # absolute path
     def get_repository_dir(self, repo_id=None):

@@ -49,6 +49,21 @@ class ObjectFactory:
         classifier = ObjectFactory._get_classifier(obj)
         return classifier == CLASSIFIER_RESOURCE
 
+    @staticmethod
+    def folder(url, data=None):
+        if data is None:
+            data = {}
+        repo_id = get_repository_identifier(url)
+        classifier = CLASSIFIER_REPOSITORY
+        id = get_object_id(classifier, repo_id)
+        _object = {
+            "id": id,
+            "classifier": classifier,
+            "identifier": repo_id,
+            "repository_url": url,
+        }
+        _object = {**_object, **data, **_object}
+        return _object
 
     @staticmethod
     def repository(url, data=None):

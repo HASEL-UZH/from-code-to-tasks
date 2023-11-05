@@ -1,4 +1,7 @@
 import torch
+import nltk
+nltk.download("punkt")
+
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from transformers import AutoModel, AutoTokenizer
@@ -13,7 +16,7 @@ def get_java_corpus():
     resources = db.get_resources()
     java_resources = [obj for obj in resources if obj["type"] == "java"]
     for java_resource in java_resources:
-        java_code = db.load_resource(java_resource)
+        java_code = db.get_resource_content(java_resource)
         words = word_tokenize(java_code)
         corpus.extend(words)
     return corpus

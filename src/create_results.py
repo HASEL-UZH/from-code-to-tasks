@@ -8,8 +8,8 @@ from src.workspace_context import write_json_file
 from src.workspace_context_old import get_results_dir
 
 
-def get_total_accuracy(commits, k, window_size, embedding_strategy):
-    sliding_windows = create_sliding_windows(commits, window_size)
+def get_total_accuracy(pr_groups, k, window_size, embedding_strategy):
+    sliding_windows = create_sliding_windows(pr_groups, window_size)
     if not sliding_windows:
         return None
     accuracies_over_all_windows = []
@@ -19,11 +19,11 @@ def get_total_accuracy(commits, k, window_size, embedding_strategy):
     return accuracies_over_all_windows
 
 
-def create_sliding_windows(commits, window_size):
+def create_pr_groups(commit_infos):
     sliding_windows = []
-    sorted_commits = sorted(commits, key=lambda x: x["commit_date"])
+    sorted_commits = sorted(commit_infos, key=lambda x: x["commit_date"])
     groups = group_by(sorted_commits, 'pull_request_text')
-    items = []
+    pr_groups = []
 
     for key, values in groups.items():
         item = {
@@ -32,16 +32,22 @@ def create_sliding_windows(commits, window_size):
             "change_text" : ', '.join ( [item["change_text"] for item in values]),
             "pull_request_text": key,
         }
-        items.append(item)
-    window_count = len(items)-window_size
+        pr_groups.append(item)
+    return pr_groups
+
+
+def create_sliding_windows(pr_groups, window_size):
+    sliding_windows = []
+    window_count = max(0, len(pr_groups)-window_size)
     for i in range(window_count):
-        sw_items = items[i:i+window_size]
+        sw_items = pr_groups[i:i+window_size]
         sliding_window = {
             "window_size": window_size,
             "items" : sw_items,
         }
         sliding_windows.append(sliding_window)
     return sliding_windows
+
 
 def get_accuracy_per_window(sliding_window, k, embedding_strategy):
     correct_predictions = 0

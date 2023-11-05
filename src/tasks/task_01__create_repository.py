@@ -5,9 +5,13 @@ import requests
 from src.object_factory import ObjectFactory
 from src.object_store import db
 from src.workspace_context import HEADERS
+from src.utils.profiler import Profiler
 
 
 def create_repository_task(url_excludes=[]):
+    print("create_repository_task started")
+    profiler = Profiler()
+
     url_excludes = url_excludes or ["https://github.com/Snailclimb/JavaGuide","https://github.com/facebook/react-native"]
     number_of_repositories = 100 # Maximum is 100
     issue_minimum = 500
@@ -19,6 +23,10 @@ def create_repository_task(url_excludes=[]):
     for url in filtered_urls:
         repository = ObjectFactory.repository(url)
         db.save_repository(repository)
+
+    profiler.checkpoint(f"create_commit_data_task done: total repositories: {len(filtered_urls)}")
+    db.invalidate()
+
 
 def get_issue_pr_number(repo_owner: str, repo_name: str, type: str) -> int:
     try:
