@@ -1,21 +1,31 @@
-import random
-
 import torch.nn.functional as F
-from sklearn.metrics.pairwise import cosine_similarity
+from numpy import dot
+from numpy.linalg import norm
+
+from src.strategies.embeddings.embedding_strategies import tf_embedding_strategy, tf_idf_embedding_strategy, \
+    codebert_embedding_strategy, codebert_summed_embedding_strategy
 
 
 def calculate_cosine_similarity(embedding1, embedding2, embedding_strategy):
-    if embedding_strategy == "tf_embedding_strategy" or "tf_idf_embedding_strategy":
-        similarity = cosine_similarity(embedding1, embedding2)
+    if embedding_strategy == tf_embedding_strategy or embedding_strategy == tf_idf_embedding_strategy:
+        similarity = dot(embedding1, embedding2)/(norm(embedding1)*norm(embedding2))
 
-    elif  embedding_strategy == "codebert_embedding_strategy":
-        similarity = F.cosine_similarity(embedding1, embedding2, dim=2)
+    elif  embedding_strategy == codebert_embedding_strategy:
+        embedding1 = embedding1[0]
+        embedding2 = embedding2[0]
+        size_diff = abs(embedding1.size(0) - embedding2.size(0))
+        if embedding1.size(0) > embedding2.size(0):
+            embedding2 = F.pad(embedding2, (0, 0, 0, size_diff) )
+        elif embedding2.size(0) > embedding1.size(0):
+            embedding1 = F.pad(embedding1, (0, 0, 0, size_diff) )
+        similarity = F.cosine_similarity(embedding1.reshape(-1), embedding2.reshape(-1), dim=0)
+        pass
 
-    elif embedding_strategy == "codebert_summed_embedding_strategy":
-        similarity = F.cosine_similarity(embedding1, embedding2, dim=1)
+    # reshape
+    # dont do zero padding
+    elif embedding_strategy == codebert_summed_embedding_strategy:
+        similarity = (F.cosine_similarity(embedding1, embedding2, dim=1)).item()
 
-    # TODO remove
-    similarity = random.random()
     return similarity
 #
 #

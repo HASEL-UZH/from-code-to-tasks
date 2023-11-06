@@ -1,8 +1,8 @@
-from src.strategies.embeddings.embedding_strategies import tf_embedding_strategy, tf_idf_embedding_strategy, \
-    codebert_embedding_strategy, codebert_summed_embedding_strategy
-from src.create_results import get_total_accuracy, get_statistics_object, save_results_to_csv, save_results_to_json, \
-    create_pr_groups
+from src.create_results import get_total_accuracy, get_statistics_object, create_pr_groups, save_results_to_csv, \
+    save_results_to_json
 from src.object_store import db
+from src.strategies.embeddings.embedding_strategies import tf_embedding_strategy, tf_idf_embedding_strategy, \
+    codebert_summed_embedding_strategy
 from src.utils.profiler import Profiler
 
 
@@ -14,7 +14,7 @@ def create_results_task():
     meta_strategies = []
     term_strategies = []
     # embedding_strategies = [tf_embedding_strategy, tf_idf_embedding_strategy, codebert_embedding_strategy, codebert_summed_embedding_strategy]
-    embedding_strategies = [tf_embedding_strategy]
+    embedding_strategies = [tf_embedding_strategy, tf_idf_embedding_strategy, codebert_summed_embedding_strategy]
     window_sizes = [10, 20, 30]
     k_values = [1,3,5]
 
@@ -52,8 +52,8 @@ def create_results_task():
                     print(f"No sliding windows could be created for window size = {window_size}.")
                     continue
                 statistics_object = get_statistics_object(total_accuracies)
-                # save_results_to_csv(statistics_object, k, window_size, embedding_strategy)
-                # save_results_to_json(statistics_object, k, window_size, embedding_strategy)
+                save_results_to_csv(statistics_object, k, window_size, embedding_strategy)
+                save_results_to_json(statistics_object, k, window_size, embedding_strategy)
                 print(f"Done running results with the following parameters k = {k}, window size = {window_size}, embedding strategy = {embedding_strategy}.")
 
     profiler.checkpoint(f"create_results_task done")

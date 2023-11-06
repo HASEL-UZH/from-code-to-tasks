@@ -1,9 +1,11 @@
-import torch
+import re
+
 import nltk
+import torch
+
 nltk.download("punkt")
 
-from nltk.tokenize import word_tokenize
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from transformers import AutoModel, AutoTokenizer
 
 from src.object_store import db
@@ -17,26 +19,36 @@ def get_java_corpus():
     java_resources = [obj for obj in resources if obj["type"] == "java"]
     for java_resource in java_resources:
         java_code = db.get_resource_content(java_resource)
-        words = word_tokenize(java_code)
-        corpus.extend(words)
+        corpus.append(java_code)
     return corpus
 
-# Returns a single vector as NP array
+# TODO add
+def get_java_corpus_subword():
+    corpus = []
+    resources = db.get_resources()
+    java_resources = [obj for obj in resources if obj["type"] == "java"]
+    for java_resource in java_resources:
+        java_code = db.get_resource_content(java_resource)
+        java_code_subword_splitted = subword_splitter(java_code)
+        corpus.append(java_code_subword_splitted)
+    return corpus
+
 def tf_embedding_strategy(text):
-    vectorizer = CountVectorizer()
-    # TODO fix training_data
-    training_data = get_java_corpus()
-    vectorizer.fit(training_data)
-    tf_text_vector = vectorizer.transform([text]).toarray()[0]
+    count_vectorizer = CountVectorizer()
+    corpus = get_java_corpus()
+    X = count_vectorizer.fit_transform(corpus)
+    shape = X.shape
+    feature_names = count_vectorizer.get_feature_names_out()
+    tf_text_vector = count_vectorizer.transform([text]).toarray()[0]
     return tf_text_vector
 
-# Returns a single vector as NP array
 def tf_idf_embedding_strategy(text):
-    vectorizer = TfidfVectorizer()
-    # TODO fix training_data
-    training_data = get_java_corpus()
-    vectorizer.fit(training_data)
-    tf_idf_text_vector = vectorizer.transform([text]).toarray()[0]
+    tf_idf_vectorizer = TfidfVectorizer()
+    corpus = get_java_corpus()
+    X = tf_idf_vectorizer.fit_transform(corpus)
+    shape = X.shape
+    feature_names = tf_idf_vectorizer.get_feature_names_out()
+    tf_idf_text_vector = tf_idf_vectorizer.transform([text]).toarray()[0]
     return tf_idf_text_vector
 
 
@@ -47,7 +59,8 @@ def codebert_embedding_strategy(text):
     text_tokens = tokenizer.tokenize(text)
     number_of_tokens = len(text_tokens)
     if len(text_tokens)> 510:
-        raise Exception(f"CodeBERT input is too large. Maximum token limit of 510 is exceeded. Number of tokens inputted are {number_of_tokens}")
+        pass
+        #raise Exception(f"CodeBERT input is too large. Maximum token limit of 510 is exceeded. Number of tokens inputted are {number_of_tokens}")
     tokens = [tokenizer.cls_token]+text_tokens+[tokenizer.eos_token]
     tokens_ids = tokenizer.convert_tokens_to_ids(tokens[1:])
     embeddings = model(torch.tensor(tokens_ids)[None,:])[0]
@@ -58,12 +71,26 @@ def codebert_summed_embedding_strategy(text):
     text_tokens = tokenizer.tokenize(text)
     number_of_tokens = len(text_tokens)
     if len(text_tokens)> 510:
-        raise Exception(f"CodeBERT input is too large. Maximum token limit of 510 is exceeded. Number of tokens inputted are {number_of_tokens}")
+        pass
+        #raise Exception(f"CodeBERT input is too large. Maximum token limit of 510 is exceeded. Number of tokens inputted are {number_of_tokens}")
     tokens = [tokenizer.cls_token]+text_tokens+[tokenizer.eos_token]
     tokens_ids = tokenizer.convert_tokens_to_ids(tokens[1:])
     embeddings = model(torch.tensor(tokens_ids)[None,:])[0]
     summed_embeddings = torch.sum(embeddings, dim=1)
     return summed_embeddings
+
+def subword_splitter(input_string):
+    words = re.findall(r'[A-Za-z]+', input_string)
+    transformed_words = []
+    for word in words:
+        if '_' in word:
+            subwords = word.split('_')
+            transformed_words.extend(subwords)
+        else:
+            subwords = re.findall(r'[a-z]+|[A-Z][a-z]*', word)
+            transformed_words.extend(subwords)
+    output_string = ' '.join(transformed_words)
+    return output_string
 
 
 # if __name__ == "__main__":

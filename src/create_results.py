@@ -70,7 +70,7 @@ def get_accuracy_per_window(sliding_window, k, embedding_strategy):
 def get_statistics_object(accuracies_over_all_windows):
     mean_value = statistics.mean(accuracies_over_all_windows)
     median_value = statistics.median(accuracies_over_all_windows)
-    stdev_value = statistics.stdev(accuracies_over_all_windows)
+    stdev_value = statistics.stdev(accuracies_over_all_windows) if len(accuracies_over_all_windows) >= 2 else None
     min_value = min(accuracies_over_all_windows)
     max_value = max(accuracies_over_all_windows)
     statistics_object = {
