@@ -90,7 +90,7 @@ def _create_multi_ast(temp_file_path, mode="serial"):
     command = [
         "java",
         "-jar",
-        "./bin/ast-meta-werks-0.2.1.jar",
+        "./bin/ast-meta-werks-0.2.3.jar",
         "--mode",
         mode,
         "--file",
