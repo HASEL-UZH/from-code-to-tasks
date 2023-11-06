@@ -1,5 +1,6 @@
 import os
-from importlib.resources import is_resource
+import uuid
+from datetime import datetime
 
 from src.utils.profiler import Profiler
 from src.object_factory import ObjectFactory, decode_resource_name
@@ -287,6 +288,13 @@ class ObjectStore:
         file_path = self.get_fs_path(location)
         return file_path
 
+    def generate_tmp_file(self):
+        unique_id = uuid.uuid4()  # Generate a random UUID.
+        current_time = datetime.now().strftime("%Y-%d-%m-%H-%M-%S")  # Format the current time.
+        tmp_filename = f"{current_time}-{unique_id}.tmp"  # Create the temp filename.
+        tmp_dir = get_or_create_dir(os.path.abspath(os.path.join(self.store_dir, "tmp")));
+        tmp_filepath = os.path.join(tmp_dir, tmp_filename)
+        return tmp_filepath
 
 ws = get_store_dir()
 db = ObjectStore(ws)
