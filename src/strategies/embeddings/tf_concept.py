@@ -31,11 +31,11 @@ def _calculate_cosine_similarity(embedding1, embedding2):
 def create_tf_concept():
     strategies = []
     strategies.append({
-        "id" : "tf_corpus_default",
+        "id" : "corpus_default",
         "create_embedding" : _create_strategy(get_java_corpus)
     })
     strategies.append({
-        "id" : "tf_corpus_subword_splitter",
+        "id" : "corpus_splitted_subwords",
         "create_embedding" : _create_strategy(get_java_corpus_subword)
     })
     return {

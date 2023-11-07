@@ -1,6 +1,8 @@
 from src.create_results import get_total_accuracy, get_statistics_object, create_pr_groups, save_dict_to_csv, \
     save_dict_to_json
 from src.object_store import db
+from src.strategies.embeddings.codebert_concept import create_codebert_concept
+from src.strategies.embeddings.codebert_summed_concept import create_codebert_summed_concept
 from src.strategies.embeddings.tf_concept import create_tf_concept
 from src.strategies.embeddings.tf_idf_concept import create_tf_idf_concept
 from src.utils.profiler import Profiler
@@ -26,11 +28,12 @@ def get_resources():
     return change_resources, commit_infos
 
 # TODO add meta strategies and term strategies
+
 def create_results_task():
     print("create_results_task started")
     profiler = Profiler()
 
-    embedding_concepts = [create_tf_concept(), create_tf_idf_concept()]
+    embedding_concepts = [create_tf_concept(), create_tf_idf_concept(), create_codebert_concept(), create_codebert_summed_concept()]
     window_sizes = [10, 20, 30]
     k_values = [1,3,5]
 
