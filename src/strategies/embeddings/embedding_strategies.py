@@ -1,10 +1,6 @@
 import re
 
-import nltk
 import torch
-
-nltk.download("punkt")
-
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from transformers import AutoModel, AutoTokenizer
 
@@ -59,20 +55,19 @@ def codebert_embedding_strategy(text):
     text_tokens = tokenizer.tokenize(text)
     number_of_tokens = len(text_tokens)
     if len(text_tokens)> 510:
-        pass
-        #raise Exception(f"CodeBERT input is too large. Maximum token limit of 510 is exceeded. Number of tokens inputted are {number_of_tokens}")
+        raise Exception(f"CodeBERT input is too large. Maximum token limit of 510 is exceeded. Number of tokens inputted are {number_of_tokens}")
     tokens = [tokenizer.cls_token]+text_tokens+[tokenizer.eos_token]
     tokens_ids = tokenizer.convert_tokens_to_ids(tokens[1:])
     embeddings = model(torch.tensor(tokens_ids)[None,:])[0]
     return embeddings
+
 
     # Returns torch object of dimension 2
 def codebert_summed_embedding_strategy(text):
     text_tokens = tokenizer.tokenize(text)
     number_of_tokens = len(text_tokens)
     if len(text_tokens)> 510:
-        pass
-        #raise Exception(f"CodeBERT input is too large. Maximum token limit of 510 is exceeded. Number of tokens inputted are {number_of_tokens}")
+        raise Exception(f"CodeBERT input is too large. Maximum token limit of 510 is exceeded. Number of tokens inputted are {number_of_tokens}")
     tokens = [tokenizer.cls_token]+text_tokens+[tokenizer.eos_token]
     tokens_ids = tokenizer.convert_tokens_to_ids(tokens[1:])
     embeddings = model(torch.tensor(tokens_ids)[None,:])[0]

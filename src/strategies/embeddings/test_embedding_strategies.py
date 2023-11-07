@@ -1,7 +1,5 @@
 import re
 
-import torch
-import torch.nn.functional as F
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 
 
@@ -67,7 +65,8 @@ def tf_idf_embedding_subword():
     corpus = ['The howdieCo myBooleanVariable hello_world.','return false']
     new_corpus = []
     for doc in corpus:
-        new_corpus.append(subword_splitter(doc))
+        new_corpus.append(doc)
+        #new_corpus.append(subword_splitter(doc))
     test = 'Added boolean variable'
     tfidfvectorizer = TfidfVectorizer()  # This includes unigrams, bigrams, and trigrams
     terms = tfidfvectorizer.fit_transform(new_corpus)
@@ -90,21 +89,11 @@ def subword_splitter(input_string):
     output_string = ' '.join(transformed_words)
     return output_string
 
-def test_cs_cb():
-    tensor1 = torch.randn(225, 768)
-    tensor2 = torch.randn(225, 768)
-
-
-    similarity = F.cosine_similarity(tensor1, tensor2, dim=1)
-    return similarity
-
-
 
 if __name__ == "__main__":
     pass
     #tf_embedding()
     #tf_idf_embedding()
     #tf_idf_code()
-    #tf_idf_subwords()
-    test_cs_cb()
+    tf_idf_embedding_subword()
 
