@@ -2,7 +2,7 @@ from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from src.strategies.embeddings.embedding_strategies import get_java_corpus, get_java_corpus_subword
+from src.strategies.embeddings.define_vocabulary import get_java_corpus, get_java_corpus_subword
 
 
 def _tf_idf_embedding_strategy(text, corpus):
