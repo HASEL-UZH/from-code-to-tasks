@@ -2,12 +2,10 @@ from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from src.strategies.embeddings.define_vocabulary import get_java_corpus, get_java_corpus_subword
 
-
-def _tf_idf_embedding_strategy(text, corpus):
+def _tf_idf_embedding_strategy(text, corpus_fn):
     tf_idf_vectorizer = TfidfVectorizer()
-    X = tf_idf_vectorizer.fit_transform(corpus)
+    X = tf_idf_vectorizer.fit_transform(corpus_fn())
     shape = X.shape
     feature_names = tf_idf_vectorizer.get_feature_names_out()
     tf_idf_text_vector = tf_idf_vectorizer.transform([text]).toarray()[0]
@@ -15,27 +13,25 @@ def _tf_idf_embedding_strategy(text, corpus):
 
 
 def _create_strategy(corpus_provider):
-    corpus = None
     def create_embedding(text):
-        nonlocal corpus
-        if not corpus:
-            corpus = corpus_provider()
-        return _tf_idf_embedding_strategy(text, corpus)
+        return _tf_idf_embedding_strategy(text, corpus_provider)
     return create_embedding
 
 def _calculate_cosine_similarity(embedding1, embedding2):
     similarity = dot(embedding1, embedding2)/(norm(embedding1)*norm(embedding2))
     return similarity
 
-def create_tf_idf_concept():
+
+# corpus_providers: {java_corpus: ICorpusProvider, java_subword_corpus: ICorpusProvider}
+def create_tf_idf_concept(corpus_providers):
     strategies = []
     strategies.append({
         "id" : "corpus_default",
-        "create_embedding" : _create_strategy(get_java_corpus)
+        "create_embedding" : _create_strategy(corpus_providers["java_corpus"]())
     })
     strategies.append({
         "id" : "corpus_splitted_subwords",
-        "create_embedding" : _create_strategy(get_java_corpus_subword)
+        "create_embedding" : _create_strategy(corpus_providers["java_subword_corpus"]())
     })
     return {
         "id" : "tf_idf",

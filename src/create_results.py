@@ -3,7 +3,6 @@ import json
 import os
 
 import statistics
-from src.comparison.calculate_cosine_similarity import calculate_cosine_similarity
 from src.utils.utils import group_by
 from src.workspace_context_old import get_results_dir
 
@@ -30,8 +29,6 @@ def get_accuracy_per_window(sliding_window, k, embedding_strategy, similarity_st
             item_pull_request_embedding = embedding_strategy(item_pull_request_text)
             if similarity_strategy:
                 similarity = similarity_strategy(item_change_text_embedding, item_pull_request_embedding)
-            else:
-                similarity = calculate_cosine_similarity(item_change_text_embedding, item_pull_request_embedding, embedding_strategy)
             item_code_change_comparison[item_pr["key"]] = similarity
         top_k_keys = sorted(item_code_change_comparison, key=item_code_change_comparison.get, reverse=True)[:k]
         if item_code["pull_request_text"] in top_k_keys:

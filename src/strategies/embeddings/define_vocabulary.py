@@ -24,6 +24,24 @@ def get_java_corpus_subword():
         corpus.append(java_code_subword_splitted)
     return corpus
 
+def java_corpus_standard_provider():
+    corpus = None
+    def create_corpus():
+        nonlocal corpus
+        if not corpus:
+            corpus = get_java_corpus()
+        return corpus
+    return create_corpus
+
+def java_corpus_subword_provider():
+    corpus = None
+    def create_corpus():
+        nonlocal corpus
+        if not corpus:
+            corpus = get_java_corpus_subword()
+        return corpus
+    return create_corpus
+
 def subword_splitter(input_string):
     words = re.findall(r'[A-Za-z]+', input_string)
     transformed_words = []

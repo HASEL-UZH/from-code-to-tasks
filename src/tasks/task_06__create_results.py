@@ -1,8 +1,8 @@
 from src.create_results import get_total_accuracy, get_statistics_object, create_pr_groups, save_dict_to_csv, \
     save_dict_to_json
 from src.object_store import db
-from src.strategies.embeddings.codebert_concept import create_codebert_concept
-from src.strategies.embeddings.codebert_summed_concept import create_codebert_summed_concept
+from src.strategies.embeddings.define_vocabulary import get_java_corpus, get_java_corpus_subword, \
+    java_corpus_standard_provider, java_corpus_subword_provider
 from src.strategies.embeddings.tf_concept import create_tf_concept
 from src.strategies.embeddings.tf_idf_concept import create_tf_idf_concept
 from src.utils.profiler import Profiler
@@ -27,13 +27,17 @@ def get_resources():
             commit_infos.append(commit_info)
     return change_resources, commit_infos
 
-# TODO add meta strategies and term strategies
 
 def create_results_task():
     print("create_results_task started")
     profiler = Profiler()
 
-    embedding_concepts = [create_tf_concept(), create_tf_idf_concept(), create_codebert_concept(), create_codebert_summed_concept()]
+    corpus_providers = {
+        "java_corpus" : java_corpus_standard_provider,
+        "java_subword_corpus" : java_corpus_subword_provider
+    }
+    embedding_concepts = [create_tf_concept(corpus_providers), create_tf_idf_concept(corpus_providers)]
+    #, create_codebert_concept(), create_codebert_summed_concept()]
     window_sizes = [10, 20, 30]
     k_values = [1,3,5]
 
