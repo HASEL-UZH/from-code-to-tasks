@@ -5,6 +5,9 @@ from src.object_factory import ObjectFactory
 from src.object_store import db
 from src.utils.profiler import Profiler
 
+AST_PARSER_JAR_V1 = "./bin/ast-meta-werks-0.1.1.jar"
+AST_PARSER_JAR_V2 = "./bin/ast-meta-werks-0.2.4.jar"
+
 def create_ast_task():
     print("create_ast_task started")
     ast_target_resources = db.find_many({"classifier": "resource", "kind": "ast"})
@@ -14,7 +17,7 @@ def create_ast_task():
     profiler = Profiler()
 
     java_resources = db.find_many({"classifier": "resource", "type": "java"})
-    create_ast_task_multi(java_resources, profiler, mode="serial")
+    create_ast_task_multi(java_resources, profiler, mode="parallel")
     # create_ast_task_single(java_resources, profiler)
 
     profiler.checkpoint(f"create_ast_task done: {count}")
@@ -51,8 +54,8 @@ def create_ast_task_multi(java_resources, profiler, mode="parallel"):
 
     try:
         _create_multi_ast(temp_file_path, mode=mode)
-    except:
-        print(f"Execution failed")
+    except Exception as e:
+        print(f"Execution failed:  "+e)
     finally:
         if os.path.exists(temp_file_path):
             # os.remove(temp_file_path)
@@ -90,18 +93,25 @@ def _create_multi_ast(temp_file_path, mode="serial"):
     command = [
         "java",
         "-jar",
-        "./bin/ast-meta-werks-0.2.3.jar",
+        AST_PARSER_JAR_V2,
         "--mode",
         mode,
         "--file",
         temp_file_path
     ]
     print(command)
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, capture_output=False, text=True)
+    # or use
+    # result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    # print(result.stdout)  # This will print the standard output of the command
+    # print(result.stderr)
     if result.returncode != 0:
         print(temp_file_path + " did not work. ")
         return
-    return result.stdout.strip()
+    if result.stdout:
+        return result.stdout.strip()
+    else:
+        return None
 
 
 def _create_ast(in_file, out_file):
@@ -109,15 +119,18 @@ def _create_ast(in_file, out_file):
     command = [
         "java",
         "-jar",
-        "./bin/ast-meta-werks-0.1.1.jar",
+        AST_PARSER_JAR_V1,
         in_file,
         out_file,
     ]
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, capture_output=False, text=True)
     if result.returncode != 0:
         print(in_file + " did not work. ")
         return
-    return result.stdout.strip()
+    if result.stdout:
+        return result.stdout.strip()
+    else:
+        return None
 
 
 
