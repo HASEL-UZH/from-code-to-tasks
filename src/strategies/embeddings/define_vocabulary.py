@@ -1,4 +1,7 @@
+import re
+
 from src.object_store import db
+
 
 def get_java_corpus():
     print("get regular corpus")

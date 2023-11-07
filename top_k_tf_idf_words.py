@@ -1,6 +1,6 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from src.strategies.embeddings.embedding_strategies import get_java_corpus
+from src.strategies.embeddings.define_vocabulary import get_java_corpus
 
 
 def get_top_k_tf_idf_words(k, input_text):
