@@ -1,5 +1,4 @@
 import csv
-import json
 import os
 
 import statistics
@@ -80,22 +79,15 @@ def get_statistics_object(accuracies_over_all_windows):
     }
     return statistics_object
 
-
-def save_dict_to_csv(data_dict):
+def save_results_to_csv(results):
+    if not results:
+        return
     results_dir_path = get_results_dir()
     results_file_path = os.path.join(results_dir_path, "results.csv")
-    file_exists = os.path.exists(results_file_path)
-    with open(results_file_path, 'a', newline='') as file:
-        fieldnames = list(data_dict.keys())
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        if not file_exists:
-            writer.writeheader()
-        writer.writerow(data_dict)
-
-
-def save_dict_to_json(filename, data_dict):
-    results_dir_path = get_results_dir()
-    results_file_path = os.path.join(results_dir_path, f"{filename}.json")
-    with open(results_file_path, 'w') as json_file:
-        json.dump(data_dict, json_file, indent=4)
+    headers = list(results[0].keys())
+    with open(results_file_path, 'w', newline='') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=headers)
+        writer.writeheader()
+        for result in results:
+            writer.writerow(result)
 

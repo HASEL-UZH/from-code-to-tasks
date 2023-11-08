@@ -1,5 +1,4 @@
-from src.create_results import get_total_accuracy, get_statistics_object, create_pr_groups, save_dict_to_csv, \
-    save_dict_to_json
+from src.create_results import get_total_accuracy, get_statistics_object, create_pr_groups, save_results_to_csv
 from src.object_store import db
 from src.strategies.embeddings.define_vocabulary import java_corpus_standard_provider, java_corpus_subword_provider
 from src.strategies.embeddings.tf_concept import create_tf_concept
@@ -82,13 +81,12 @@ def create_results_task():
                             results.append(result)
 
                         profiler.checkpoint(f"Done with the following parameters {result}")
-                        approach_name = f"{result['embeddings_concept']}_{result['embeddings_strategy']}_{k}_{window_size}"
-                        save_dict_to_csv(result)
-                        save_dict_to_json(approach_name, result)
     except Exception as e:
-        pass  # TODO save as CSV
+        print(f"An error occurred: {str(e)}")
+
     finally:
-        pass  # TODO save results
+        save_results_to_csv(results)
+
     profiler.checkpoint(f"create_results_task done")
     db.invalidate()
 
