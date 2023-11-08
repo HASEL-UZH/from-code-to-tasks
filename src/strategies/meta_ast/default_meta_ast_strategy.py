@@ -1,7 +1,7 @@
 import hashlib
-import os
 
-from src.ast_meta_generation.meta_ast_utils import filter_json
+from src.ast.meta_ast_utils import filter_json
+
 
 def meta_ast_creator(file_name, input_json):
     package_name = get_package_name(input_json)

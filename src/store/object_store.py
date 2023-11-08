@@ -2,10 +2,11 @@ import os
 import uuid
 from datetime import datetime
 
-from src.utils.profiler import Profiler
-from src.object_factory import ObjectFactory, decode_resource_name
-from src.workspace_context import get_or_create_dir, \
-    write_json_file, get_store_dir, read_json_file, write_text_file, read_text_file
+from src.core.profiler import Profiler
+from src.core.workspace_context import get_or_create_dir, read_text_file, get_store_dir, write_json_file, \
+    read_json_file, \
+    write_text_file
+from src.store.object_factory import decode_resource_name, ObjectFactory
 
 OBJECT_INF_FILE = "_OBJECT_INF.json"
 REPOSITORIES_DIR_NAME = "repositories"

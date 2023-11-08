@@ -1,9 +1,10 @@
-from src.create_results import get_total_accuracy, get_statistics_object, create_pr_groups, save_results_to_csv
-from src.object_store import db
+from src.calculations.create_results import create_pr_groups, get_total_accuracy, get_statistics_object, \
+    save_results_to_csv
+from src.core.profiler import Profiler
+from src.store.object_store import db
 from src.strategies.embeddings.define_vocabulary import java_corpus_standard_provider, java_corpus_subword_provider
 from src.strategies.embeddings.tf_concept import create_tf_concept
 from src.strategies.embeddings.tf_idf_concept import create_tf_idf_concept
-from src.utils.profiler import Profiler
 
 
 def get_resources():

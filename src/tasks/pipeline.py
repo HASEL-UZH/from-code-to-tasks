@@ -1,4 +1,4 @@
-from src.object_store import db
+from src.store.object_store import db
 from src.tasks.task_01__create_repository import create_repository_task
 from src.tasks.task_02__create_commit_data import create_commit_data_task
 from src.tasks.task_03__create_ast import create_ast_task

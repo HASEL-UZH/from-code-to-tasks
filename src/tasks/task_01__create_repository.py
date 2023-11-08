@@ -2,10 +2,10 @@ import time
 
 import requests
 
-from src.object_factory import ObjectFactory
-from src.object_store import db
-from src.workspace_context import HEADERS
-from src.utils.profiler import Profiler
+from src.core.profiler import Profiler
+from src.core.workspace_context import HEADERS
+from src.store.object_factory import ObjectFactory
+from src.store.object_store import db
 
 
 def create_repository_task(url_excludes=[]):

@@ -1,11 +1,11 @@
 import re
 
-from src.object_store import db
+from src.store.object_store import db
 
 
 def get_java_standard_corpus():
     corpus = []
-    java_resources = db.find_resources({"type": "java"})
+    java_resources = db.find_resources({"type": "java", "version":"after"})
     for java_resource in java_resources:
         java_code = db.get_resource_content(java_resource)
         corpus.append(java_code)
@@ -14,7 +14,7 @@ def get_java_standard_corpus():
 
 def get_java_corpus_subword():
     corpus = []
-    java_resources = db.find_resources({"type": "java"})
+    java_resources = db.find_resources({"type": "java",  "version":"after"})
     for java_resource in java_resources:
         java_code = db.get_resource_content(java_resource)
         java_code_subword_split = subword_splitter(java_code)

@@ -1,4 +1,5 @@
-from src.utils.ast_utils import create_ast_map, get_parent_uid
+from src.ast.ast_utils import get_parent_uid, create_ast_map
+
 
 def compare_ast(before, after):
     changes = []

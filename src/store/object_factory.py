@@ -1,5 +1,6 @@
 import os
-from src.utils.utils import camel_to_snake
+
+from src.core.utils import camel_to_snake
 
 CLASSIFIER_REPOSITORY = "repository"
 CLASSIFIER_COMMIT = "commit"

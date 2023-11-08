@@ -1,7 +1,8 @@
-from src.object_factory import ObjectFactory
-from src.object_store import db
+from src.core.profiler import Profiler
+from src.store.object_factory import ObjectFactory
+from src.store.object_store import db
 from src.strategies.meta_ast.default_meta_ast_strategy import meta_ast_creator
-from src.utils.profiler import Profiler
+
 
 def create_meta_ast_task():
     print("create_meta_ast_task started")

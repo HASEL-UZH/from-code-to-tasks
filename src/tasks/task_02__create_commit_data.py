@@ -3,11 +3,11 @@ import re
 import requests
 from pydriller import Repository
 
-from src.object_factory import ObjectFactory, get_resource_id
-from src.object_store import db
-from src.utils.utils import get_date_string
-from src.workspace_context import HEADERS, is_java_file, get_file_base_name
-from src.utils.profiler import Profiler
+from src.core.profiler import Profiler
+from src.core.utils import get_date_string
+from src.core.workspace_context import HEADERS, get_file_base_name, is_java_file
+from src.store.object_factory import ObjectFactory
+from src.store.object_store import db
 
 
 def create_commit_data_task(limit=None):

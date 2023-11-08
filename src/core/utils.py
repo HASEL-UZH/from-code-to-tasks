@@ -1,12 +1,5 @@
 import re
-from collections import defaultdict
 
-# grouped = group_by(data, "age")
-#
-# for key, group in grouped.items():
-#     print(f"Group {key}:")
-#     for item in group:
-#         print(f"  {item}")
 def group_by(items, property):
     grouped_data = {}
 

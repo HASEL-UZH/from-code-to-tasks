@@ -1,6 +1,6 @@
 import re
 
-from src.utils.ast_utils import get_name_from_uid, is_class, traverse_ast
+from src.ast.ast_utils import get_name_from_uid, traverse_ast, is_class
 
 
 def generate_change_text_for_file(file_name, compare_tree):

@@ -1,9 +1,9 @@
 import os
 import subprocess
 
-from src.object_factory import ObjectFactory
-from src.object_store import db
-from src.utils.profiler import Profiler
+from src.core.profiler import Profiler
+from src.store.object_factory import ObjectFactory
+from src.store.object_store import db
 
 AST_PARSER_JAR_V1 = "./bin/ast-meta-werks-0.1.1.jar"
 AST_PARSER_JAR_V2 = "./bin/ast-meta-werks-0.2.4.jar"

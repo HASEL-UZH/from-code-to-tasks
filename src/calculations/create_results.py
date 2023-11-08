@@ -1,9 +1,9 @@
 import csv
 import os
-
 import statistics
-from src.utils.utils import group_by
-from src.workspace_context_old import get_results_dir
+
+from src.core.utils import group_by
+from src.core.workspace_context import get_results_dir
 
 
 def get_total_accuracy(pr_groups, k, window_size, embedding_strategy, similarity_strategy=None):
@@ -82,6 +82,7 @@ def get_statistics_object(accuracies_over_all_windows):
 def save_results_to_csv(results):
     if not results:
         return
+
     results_dir_path = get_results_dir()
     results_file_path = os.path.join(results_dir_path, "results.csv")
     headers = list(results[0].keys())

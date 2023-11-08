@@ -1,22 +1,23 @@
 import json
 import os
-import re
 
 GITHUB_TOKEN = "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"
 HEADERS = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
 
 
-WORKSPACE_ROOT = os.path.abspath("./_store")
-STORE_ROOT = os.path.abspath("./_store")
 
-def get_workspace_dir():
-    return get_or_create_dir(WORKSPACE_ROOT)
+STORE_ROOT = os.path.abspath("./_store")
+RESULTS_DIR = os.path.abspath("./results")
+
 
 def get_store_dir(path=None):
     full_path = STORE_ROOT
     if path:
         full_path = os.path.join(STORE_ROOT, path)
     return get_or_create_dir(full_path)
+
+def get_results_dir():
+    return get_or_create_dir(RESULTS_DIR)
 
 
 # --- Check file type

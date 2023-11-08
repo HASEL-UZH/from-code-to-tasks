@@ -1,12 +1,10 @@
-import os
+from src.ast.ast_compare import compare_ast, build_change_tree
+from src.ast.ast_compare_text import generate_change_text_for_file
+from src.core.profiler import Profiler
+from src.core.utils import group_by, accessor
+from src.store.object_factory import ObjectFactory
+from src.store.object_store import db
 
-from src.ast_compare.ast_compare import compare_ast, build_change_tree
-from src.ast_compare.ast_compare_text import generate_change_text_for_file
-from src.object_factory import ObjectFactory
-from src.repository_manager import get_repositories, get_repository_commits, get_repository_commit_files
-from src.object_store import db
-from src.utils.profiler import Profiler
-from src.utils.utils import group_by, accessor
 
 def change_model_creator_task():
     change_model_resources = db.find_resources({"kind": "change", "type": "json"})
