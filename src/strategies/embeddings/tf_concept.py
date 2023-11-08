@@ -30,7 +30,7 @@ def _calculate_cosine_similarity(embedding1, embedding2):
     return similarity
 
 # corpus_providers: {java_corpus: ICorpusProvider, java_subword_corpus: ICorpusProvider}
-def create_tf_concept_2(corpus_providers):
+def create_tf_concept(corpus_providers):
     strategies = []
     strategies.append({
         "id" : "corpus_standard",
