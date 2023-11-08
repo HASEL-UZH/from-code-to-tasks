@@ -1,7 +1,8 @@
 import time
 
 class Profiler:
-    def __init__(self, start=True):
+    def __init__(self, name=None, start=True):
+        self.name = name
         self.start_time = None
         self.last_time = None
         self.count = 0
@@ -25,10 +26,12 @@ class Profiler:
         elapsed_since_start = current_time - self.start_time
         self.last_time = current_time
 
+        info = self.name+"::"+description if self.name else description
+
         if self.count == 1:
-            print(f"{description}: {elapsed_since_last:.4f}")
+            print(f"{info}: {elapsed_since_last:.4f}")
         else:
-            print(f"{description}: {elapsed_since_last:.4f} ({elapsed_since_start:.4f}).")
+            print(f"{info}: {elapsed_since_last:.4f} ({elapsed_since_start:.4f}).")
 
     def stop(self):
         """Stop the current profiling session and print total time."""
