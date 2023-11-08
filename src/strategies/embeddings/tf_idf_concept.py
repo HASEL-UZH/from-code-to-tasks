@@ -21,7 +21,12 @@ def _create_strategy(corpus_provider):
     return create_embedding
 
 def _calculate_cosine_similarity(embedding1, embedding2):
-    similarity = dot(embedding1, embedding2)/(norm(embedding1)*norm(embedding2))
+    nominator = dot(embedding1, embedding2)
+    denominator = (norm(embedding1) * norm(embedding2))
+    if denominator == 0:
+        pass
+        return 0.0
+    similarity = nominator / denominator
     return similarity
 
 
