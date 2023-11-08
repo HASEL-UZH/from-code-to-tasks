@@ -3,22 +3,39 @@ import re
 from src.store.object_store import db
 
 
+# TODO move function
+def get_pull_requests():
+    pull_requests = []
+    change_resources = db.find_resources({"kind": "change", "type": "json"})
+    for change_resource in change_resources:
+        change_content = db.get_resource_content(change_resource, volatile=True)
+        pull_requests.append(change_content["pr"]["text"])
+    return pull_requests
+
+
 def get_java_standard_corpus():
     corpus = []
     java_resources = db.find_resources({"type": "java", "version":"after"})
+    pr_resources = get_pull_requests()
     for java_resource in java_resources:
         java_code = db.get_resource_content(java_resource)
         corpus.append(java_code)
+    for pr_resource in pr_resources:
+        corpus.append(pr_resource)
     return corpus
 
 
 def get_java_corpus_subword():
     corpus = []
     java_resources = db.find_resources({"type": "java",  "version":"after"})
+    pr_resources = get_pull_requests()
     for java_resource in java_resources:
         java_code = db.get_resource_content(java_resource)
         java_code_subword_split = subword_splitter(java_code)
         corpus.append(java_code_subword_split)
+    for pr_resource in pr_resources:
+        pr_subword_split = subword_splitter(pr_resource)
+        corpus.append(pr_subword_split)
     return corpus
 
 
