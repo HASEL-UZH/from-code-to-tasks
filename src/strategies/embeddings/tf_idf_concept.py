@@ -2,7 +2,7 @@ from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-
+# TODO use shared vectorizer
 def _tf_idf_embedding_strategy(text, corpus_fn):
     tf_idf_vectorizer = TfidfVectorizer()
     X = tf_idf_vectorizer.fit_transform(corpus_fn())

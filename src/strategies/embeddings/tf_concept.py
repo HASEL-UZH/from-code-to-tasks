@@ -2,7 +2,7 @@ from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import CountVectorizer
 
-
+# TODO use shared vectorizer
 def _tf_embedding_strategy(text, corpus_fn):
     count_vectorizer = CountVectorizer()
     X = count_vectorizer.fit_transform(corpus_fn())

@@ -4,23 +4,23 @@ from src.object_store import db
 
 
 def get_java_standard_corpus():
-    print("get regular corpus")
     corpus = []
-    java_resources = db.find_resources({"type": "java", "version": "after"})
+    java_resources = db.find_resources({"type": "java"})
     for java_resource in java_resources:
         java_code = db.get_resource_content(java_resource)
         corpus.append(java_code)
     return corpus
 
+
 def get_java_corpus_subword():
-    print("get subword corpus")
     corpus = []
-    java_resources = db.find_resources({"type": "java", "version": "after"})
+    java_resources = db.find_resources({"type": "java"})
     for java_resource in java_resources:
         java_code = db.get_resource_content(java_resource)
         java_code_subword_split = subword_splitter(java_code)
         corpus.append(java_code_subword_split)
     return corpus
+
 
 def java_corpus_standard_provider():
     corpus = None
@@ -31,6 +31,7 @@ def java_corpus_standard_provider():
         return corpus
     return create_corpus
 
+
 def java_corpus_subword_provider():
     corpus = None
     def create_corpus():
@@ -39,6 +40,7 @@ def java_corpus_subword_provider():
             corpus = get_java_corpus_subword()
         return corpus
     return create_corpus
+
 
 def subword_splitter(input_string):
     words = re.findall(r'[A-Za-z]+', input_string)
