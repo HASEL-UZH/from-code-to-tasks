@@ -3,11 +3,10 @@ import re
 from src.object_store import db
 
 
-def get_java_corpus():
+def get_java_standard_corpus():
     print("get regular corpus")
     corpus = []
-    resources = db.get_resources()
-    java_resources = [obj for obj in resources if obj["type"] == "java"]
+    java_resources = db.find_resources({"type": "java", "version": "after"})
     for java_resource in java_resources:
         java_code = db.get_resource_content(java_resource)
         corpus.append(java_code)
@@ -16,12 +15,11 @@ def get_java_corpus():
 def get_java_corpus_subword():
     print("get subword corpus")
     corpus = []
-    resources = db.get_resources()
-    java_resources = [obj for obj in resources if obj["type"] == "java"]
+    java_resources = db.find_resources({"type": "java", "version": "after"})
     for java_resource in java_resources:
         java_code = db.get_resource_content(java_resource)
-        java_code_subword_splitted = subword_splitter(java_code)
-        corpus.append(java_code_subword_splitted)
+        java_code_subword_split = subword_splitter(java_code)
+        corpus.append(java_code_subword_split)
     return corpus
 
 def java_corpus_standard_provider():
@@ -29,7 +27,7 @@ def java_corpus_standard_provider():
     def create_corpus():
         nonlocal corpus
         if not corpus:
-            corpus = get_java_corpus()
+            corpus = get_java_standard_corpus()
         return corpus
     return create_corpus
 

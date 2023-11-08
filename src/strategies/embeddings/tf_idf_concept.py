@@ -27,11 +27,11 @@ def create_tf_idf_concept(corpus_providers):
     strategies = []
     strategies.append({
         "id" : "corpus_default",
-        "create_embedding" : _create_strategy(corpus_providers["java_corpus"]())
+        "create_embedding" : _create_strategy(corpus_providers["java_standard_corpus"])
     })
     strategies.append({
         "id" : "corpus_splitted_subwords",
-        "create_embedding" : _create_strategy(corpus_providers["java_subword_corpus"]())
+        "create_embedding" : _create_strategy(corpus_providers["java_subword_corpus"])
     })
     return {
         "id" : "tf_idf",

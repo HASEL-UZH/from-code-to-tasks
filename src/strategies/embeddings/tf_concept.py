@@ -18,19 +18,21 @@ def _create_strategy(corpus_provider):
     return create_embedding
 
 def _calculate_cosine_similarity(embedding1, embedding2):
-    similarity = dot(embedding1, embedding2)/(norm(embedding1)*norm(embedding2))
+    nominator = dot(embedding1, embedding2)
+    denominator = (norm(embedding1)*norm(embedding2))
+    similarity = nominator / denominator
     return similarity
 
 # corpus_providers: {java_corpus: ICorpusProvider, java_subword_corpus: ICorpusProvider}
 def create_tf_concept(corpus_providers):
     strategies = []
     strategies.append({
-        "id" : "corpus_default",
-        "create_embedding" : _create_strategy(corpus_providers["java_corpus"]())
+        "id" : "corpus_standard",
+        "create_embedding" : _create_strategy(corpus_providers["java_standard_corpus"])
     })
     strategies.append({
         "id" : "corpus_splitted_subwords",
-        "create_embedding" : _create_strategy(corpus_providers["java_subword_corpus"]())
+        "create_embedding" : _create_strategy(corpus_providers["java_subword_corpus"])
     })
     return {
         "id" : "tf",
