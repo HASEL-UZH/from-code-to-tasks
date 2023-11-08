@@ -2,7 +2,8 @@ from src.calculations.create_results import create_pr_groups, get_total_accuracy
     save_results_to_csv
 from src.core.profiler import Profiler
 from src.store.object_store import db
-from src.strategies.embeddings.define_vocabulary import java_corpus_standard_provider, java_corpus_subword_provider
+from src.strategies.embeddings.define_vocabulary import corpus_subword_with_numbers_provider, corpus_subword_without_numbers_provider, corpus_standard_with_numbers_provider, \
+    corpus_standard_without_numbers_provider
 from src.strategies.embeddings.tf_concept import create_tf_concept
 from src.strategies.embeddings.tf_idf_concept import create_tf_idf_concept
 
@@ -32,8 +33,10 @@ def create_results_task():
     profiler = Profiler()
 
     corpus_providers = {
-        "java_standard_corpus": java_corpus_standard_provider(),
-        "java_subword_corpus": java_corpus_subword_provider()
+        "corpus_standard_with_numbers": corpus_standard_with_numbers_provider(),
+        "corpus_standard_without_numbers": corpus_standard_without_numbers_provider(),
+        "corpus_subword_with_numbers" : corpus_subword_with_numbers_provider(),
+        "corpus_subword_without_numbers" : corpus_subword_without_numbers_provider()
     }
     embedding_concepts = [create_tf_concept(corpus_providers), create_tf_idf_concept(corpus_providers)]
     # , create_codebert_concept(), create_codebert_summed_concept()]

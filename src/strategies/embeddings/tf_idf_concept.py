@@ -23,9 +23,8 @@ def _create_strategy(corpus_provider):
 def _calculate_cosine_similarity(embedding1, embedding2):
     nominator = dot(embedding1, embedding2)
     denominator = (norm(embedding1) * norm(embedding2))
-    # if denominator == 0:
-    #     pass
-    #     return 0.0
+    if denominator == 0:
+        raise Exception("TF-IDF concept cosine similarity calculation - ZeroDivision Error")
     similarity = nominator / denominator
     return similarity
 
@@ -34,12 +33,20 @@ def _calculate_cosine_similarity(embedding1, embedding2):
 def create_tf_idf_concept(corpus_providers):
     strategies = []
     strategies.append({
-        "id" : "corpus_default",
-        "create_embedding" : _create_strategy(corpus_providers["java_standard_corpus"])
+        "id" : "corpus_standard_with_numbers",
+        "create_embedding" : _create_strategy(corpus_providers["corpus_standard_with_numbers"])
     })
     strategies.append({
-        "id" : "corpus_splitted_subwords",
-        "create_embedding" : _create_strategy(corpus_providers["java_subword_corpus"])
+        "id" : "corpus_standard_without_numbers",
+        "create_embedding" : _create_strategy(corpus_providers["corpus_standard_without_numbers"])
+    })
+    strategies.append({
+        "id" : "corpus_subword_with_numbers",
+        "create_embedding" : _create_strategy(corpus_providers["corpus_subword_with_numbers"])
+    })
+    strategies.append({
+        "id" : "corpus_subword_without_numbers",
+        "create_embedding" : _create_strategy(corpus_providers["corpus_subword_without_numbers"])
     })
     return {
         "id" : "tf_idf",
