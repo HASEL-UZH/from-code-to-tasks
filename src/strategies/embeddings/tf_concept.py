@@ -2,19 +2,22 @@ from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import CountVectorizer
 
-# TODO use shared vectorizer
-def _tf_embedding_strategy(text, corpus_fn):
-    count_vectorizer = CountVectorizer()
-    X = count_vectorizer.fit_transform(corpus_fn())
-    shape = X.shape
-    feature_names = count_vectorizer.get_feature_names_out()
-    tf_text_vector = count_vectorizer.transform([text]).toarray()[0]
+def _tf_embedding_strategy(vectorizer, text):
+    tf_text_vector = vectorizer.transform([text]).toarray()[0]
     return tf_text_vector
 
-
 def _create_strategy(corpus_provider):
+    vectorizer = None
+
     def create_embedding(text):
-        return _tf_embedding_strategy(text, corpus_provider)
+        nonlocal vectorizer
+        if not vectorizer:
+            vectorizer = CountVectorizer()
+            X = vectorizer.fit_transform(corpus_provider())
+            shape = X.shape
+            feature_names = vectorizer.get_feature_names_out()
+
+        return _tf_embedding_strategy(vectorizer, text)
     return create_embedding
 
 def _calculate_cosine_similarity(embedding1, embedding2):
@@ -24,7 +27,7 @@ def _calculate_cosine_similarity(embedding1, embedding2):
     return similarity
 
 # corpus_providers: {java_corpus: ICorpusProvider, java_subword_corpus: ICorpusProvider}
-def create_tf_concept(corpus_providers):
+def create_tf_concept_2(corpus_providers):
     strategies = []
     strategies.append({
         "id" : "corpus_standard",
