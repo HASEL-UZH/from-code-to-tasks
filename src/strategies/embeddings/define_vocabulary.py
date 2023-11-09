@@ -106,9 +106,12 @@ def subword_splitter(input_string):
     words = re.findall(r'[A-Za-z]+', input_string)
     transformed_words = []
     for word in words:
-        if '_' in word:
-            subwords = word.split('_')
-            transformed_words.extend(subwords)
+        separators = ['_', '-']
+        for separator in separators:
+            if separator in word:
+                subwords = word.split(separator)
+                transformed_words.extend(subwords)
+                break
         else:
             subwords = re.findall(r'[a-z]+|[A-Z][a-z]*', word)
             transformed_words.extend(subwords)
@@ -124,5 +127,3 @@ def remove_numbers(documents):
         cleaned_documents.append(cleaned_document)
     return cleaned_documents
 
-if __name__ == "__main__":
-    get_standard_change_text_pr_corpus()
