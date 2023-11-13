@@ -3,7 +3,7 @@ import hashlib
 from src.ast.meta_ast_utils import filter_json
 
 
-def meta_ast_creator(file_name, input_json):
+def default_meta_ast_creator(file_name, input_json):
     package_name = get_package_name(input_json)
     output_json = {
         "type": "compilation-unit",
@@ -41,6 +41,8 @@ def meta_ast_creator(file_name, input_json):
                     .get("identifier")
                 )
                 condensed_method_object = get_condensed_method_object(member)
+                method_comment = method_member["comment"]["content"]
+                method_literals = []
                 output_json["children"][i]["children"].append(
                     {
                         "type": "method",

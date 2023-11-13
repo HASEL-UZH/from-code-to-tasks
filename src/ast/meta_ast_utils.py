@@ -61,3 +61,23 @@ def traverse_json(root, visitor_fn):
                 _traverse(value, node, index, level + 1)
 
     _traverse(root, None, None, 0)
+
+
+def traverse_json_with_context(root, enter_fn, exit_fn=None, context=None):
+    def _traverse(node, parent, parent_key, level):
+        enter_fn(node, parent, parent_key, level, context)
+
+        if isinstance(node, dict):
+            for key, value in node.items():
+                _traverse(value, node, key, level + 1)
+
+        elif isinstance(node, list):
+            for index, value in enumerate(node):
+                _traverse(value, node, index, level + 1)
+
+        if exit_fn:
+            exit_fn(node, parent, parent_key, level, context)
+
+        return context
+
+    return _traverse(root, None, None, 0)

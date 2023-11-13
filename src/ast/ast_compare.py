@@ -38,11 +38,7 @@ def compare_ast(before, after):
             change = {
                 "uid": key,
                 "type": left_node["type"],
-                "change": {
-                    "type": "delete",
-                    "before": left_node,
-                    "after": None,
-                },
+                "change": {"type": "delete", "before": left_node, "after": None,},
                 "children": [],
             }
             changes.append(change)
@@ -51,11 +47,7 @@ def compare_ast(before, after):
             change = {
                 "uid": key,
                 "type": right_node["type"],
-                "change": {
-                    "type": "add",
-                    "before": None,
-                    "after": right_node,
-                },
+                "change": {"type": "add", "before": None, "after": right_node,},
                 "children": [],
             }
             changes.append(change)

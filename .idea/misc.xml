@@ -4,7 +4,7 @@
     <option name="enabledOnReformat" value="true" />
     <option name="enabledOnSave" value="true" />
     <option name="pathToExecutable" value="$USER_HOME$/anaconda3/bin/black" />
-    <option name="sdkUUID" value="873b6488-6771-4724-b46d-ecf13e1ecdcf" />
+    <option name="sdkUUID" value="4079c508-febc-4e7f-95d6-0a7bd04bc031" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10" project-jdk-type="Python SDK" />
   <component name="PyCharmProfessionalAdvertiser">
