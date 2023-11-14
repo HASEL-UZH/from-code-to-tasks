@@ -1,3 +1,5 @@
+import json
+
 from src.core.profiler import Profiler
 from src.store.object_factory import ObjectFactory
 from src.store.object_store import db
@@ -58,15 +60,15 @@ def create_meta_ast_task():
             ast_lg = ast_builder_lg.get_root()
 
             ast_meta_target_resource["strategy"]["meta"] = "ast_sm"
-            ast_meta_target_resource["content"] = ast_sm
+            ast_meta_target_resource["content"] = json.dumps(ast_sm)
             db.save_resource(ast_meta_target_resource, invalidate=False)
 
             ast_meta_target_resource["strategy"]["meta"] = "ast_md"
-            ast_meta_target_resource["content"] = ast_md
+            ast_meta_target_resource["content"] = json.dumps(ast_md)
             db.save_resource(ast_meta_target_resource, invalidate=False)
 
             ast_meta_target_resource["strategy"]["meta"] = "ast_lg"
-            ast_meta_target_resource["content"] = ast_lg
+            ast_meta_target_resource["content"] = json.dumps(ast_lg)
             db.save_resource(ast_meta_target_resource, invalidate=False)
 
     profiler.checkpoint(f"create_meta_ast_task done: {count}")
