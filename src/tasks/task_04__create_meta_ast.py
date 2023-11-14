@@ -41,39 +41,6 @@ def create_meta_ast_task():
                     f"AST resources: {count} of total: {len(ast_resources)}"
                 )
 
-            ast_meta_target_resource_sm = ObjectFactory.resource(
-                commit,
-                {
-                    "name": ast_resource.get("name"),
-                    "type": "json",
-                    "kind": "meta",
-                    "version": ast_resource.get("version"),
-                    "strategy": {"meta": "ast-sm"},
-                },
-            )
-
-            ast_meta_target_resource_md = ObjectFactory.resource(
-                commit,
-                {
-                    "name": ast_resource.get("name"),
-                    "type": "json",
-                    "kind": "meta",
-                    "version": ast_resource.get("version"),
-                    "strategy": {"meta": "ast-md"},
-                },
-            )
-
-            ast_meta_target_resource_lg = ObjectFactory.resource(
-                commit,
-                {
-                    "name": ast_resource.get("name"),
-                    "type": "json",
-                    "kind": "meta",
-                    "version": ast_resource.get("version"),
-                    "strategy": {"meta": "ast-lg"},
-                },
-            )
-
             ast_input_json = db.get_resource_content(ast_resource)
 
             # ast_sm - include methods
