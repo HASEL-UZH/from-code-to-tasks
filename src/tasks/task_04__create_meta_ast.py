@@ -12,7 +12,7 @@ from src.strategies.meta.meta_ast_strategy import (
 def create_meta_ast_task():
 
     print("create_meta_ast_task started")
-    meta_ast_resources = db.find_resources({"kind": "meta-ast", "type": "json"})
+    meta_ast_resources = db.find_resources({"kind": "meta", "type": "json"})
     db.delete_resources(meta_ast_resources)
     ast_resources = db.find_resources({"kind": "ast", "type": "json"})
     count = 0
@@ -24,19 +24,42 @@ def create_meta_ast_task():
             count += 1
             if count % 1000 == 0:
                 profiler.checkpoint(
-                    f"Meta-AST resources: {count} of total: {len(ast_resources)}"
+                    f"AST resources: {count} of total: {len(ast_resources)}"
                 )
 
-            ast_meta_target_resource = ObjectFactory.resource(
+            ast_meta_target_resource_sm = ObjectFactory.resource(
                 commit,
                 {
                     "name": ast_resource.get("name"),
                     "type": "json",
-                    "kind": "meta-ast",
+                    "kind": "meta",
                     "version": ast_resource.get("version"),
-                    "strategy": {"meta": ""},
+                    "strategy": {"meta": "ast-sm"},
                 },
             )
+
+            ast_meta_target_resource_md = ObjectFactory.resource(
+                commit,
+                {
+                    "name": ast_resource.get("name"),
+                    "type": "json",
+                    "kind": "meta",
+                    "version": ast_resource.get("version"),
+                    "strategy": {"meta": "ast-md"},
+                },
+            )
+
+            ast_meta_target_resource_lg = ObjectFactory.resource(
+                commit,
+                {
+                    "name": ast_resource.get("name"),
+                    "type": "json",
+                    "kind": "meta",
+                    "version": ast_resource.get("version"),
+                    "strategy": {"meta": "ast-lg"},
+                },
+            )
+
             ast_input_json = db.get_resource_content(ast_resource)
 
             # ast_sm - include methods
@@ -59,17 +82,14 @@ def create_meta_ast_task():
             ast_md = ast_builder_md.get_root()
             ast_lg = ast_builder_lg.get_root()
 
-            ast_meta_target_resource["strategy"]["meta"] = "ast_sm"
-            ast_meta_target_resource["content"] = json.dumps(ast_sm)
-            db.save_resource(ast_meta_target_resource, invalidate=False)
+            ast_meta_target_resource_sm["content"] = json.dumps(ast_sm)
+            db.save_resource(ast_meta_target_resource_sm, invalidate=False)
 
-            ast_meta_target_resource["strategy"]["meta"] = "ast_md"
-            ast_meta_target_resource["content"] = json.dumps(ast_md)
-            db.save_resource(ast_meta_target_resource, invalidate=False)
+            ast_meta_target_resource_md["content"] = json.dumps(ast_md)
+            db.save_resource(ast_meta_target_resource_md, invalidate=False)
 
-            ast_meta_target_resource["strategy"]["meta"] = "ast_lg"
-            ast_meta_target_resource["content"] = json.dumps(ast_lg)
-            db.save_resource(ast_meta_target_resource, invalidate=False)
+            ast_meta_target_resource_lg["content"] = json.dumps(ast_lg)
+            db.save_resource(ast_meta_target_resource_lg, invalidate=False)
 
     profiler.checkpoint(f"create_meta_ast_task done: {count}")
     db.invalidate()
