@@ -9,6 +9,20 @@ from src.strategies.meta.meta_ast_strategy import (
 )
 
 
+def get_ast_meta_resource(ast_resource, commit, ast_meta_strategy, content):
+    return ObjectFactory.resource(
+        commit,
+        {
+            "name": ast_resource.get("name"),
+            "type": "json",
+            "kind": "meta",
+            "version": ast_resource.get("version"),
+            "strategy": {"meta": ast_meta_strategy},
+            "content": content,
+        },
+    )
+
+
 def create_meta_ast_task():
 
     print("create_meta_ast_task started")
@@ -82,13 +96,19 @@ def create_meta_ast_task():
             ast_md = ast_builder_md.get_root()
             ast_lg = ast_builder_lg.get_root()
 
-            ast_meta_target_resource_sm["content"] = json.dumps(ast_sm)
+            ast_meta_target_resource_sm = get_ast_meta_resource(
+                ast_resource, commit, "ast-sm", json.dumps(ast_sm)
+            )
             db.save_resource(ast_meta_target_resource_sm, invalidate=False)
 
-            ast_meta_target_resource_md["content"] = json.dumps(ast_md)
+            ast_meta_target_resource_md = get_ast_meta_resource(
+                ast_resource, commit, "ast-md", json.dumps(ast_md)
+            )
             db.save_resource(ast_meta_target_resource_md, invalidate=False)
 
-            ast_meta_target_resource_lg["content"] = json.dumps(ast_lg)
+            ast_meta_target_resource_lg = get_ast_meta_resource(
+                ast_resource, commit, "ast-lg", json.dumps(ast_lg)
+            )
             db.save_resource(ast_meta_target_resource_lg, invalidate=False)
 
     profiler.checkpoint(f"create_meta_ast_task done: {count}")
