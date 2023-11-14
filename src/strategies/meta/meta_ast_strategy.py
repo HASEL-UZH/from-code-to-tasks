@@ -1,137 +1,207 @@
-from src.ast.meta_ast_node_creator import (
-    get_identifier_object,
-    get_method_object,
-    get_class_object,
-    get_output_json,
-    get_import_object,
+# TODO fix venv issue and add typing
+# from typing import Protocol, Any
+from src.ast.meta_ast_object_factory import (
+    get_compilation_unit_obj,
+    get_import_obj,
+    get_package_obj,
+    get_class_obj,
+    get_method_obj,
+    get_identifier_obj,
+    get_comment_obj,
 )
-from src.ast.meta_ast_utils import filter_json, traverse_json_with_context
+
+COMPILATION_UNIT = "com.github.javaparser.ast.CompilationUnit"
+PACKAGE = "com.github.javaparser.ast.PackageDeclaration"
+IMPORT = "com.github.javaparser.ast.ImportDeclaration"
+CLASS = "com.github.javaparser.ast.body.ClassOrInterfaceDeclaration"
+METHOD = "com.github.javaparser.ast.body.MethodDeclaration"
+IDENTIFIER = "com.github.javaparser.ast.body.VariableDeclarator"
+COMMENT_LINE = "com.github.javaparser.ast.comments.LineComment"
+COMMENT_BLOCK = "com.github.javaparser.ast.comments.BlockComment"
+COMMENT_JAVADOC = "com.github.javaparser.ast.comments.JavadocComment"
+
+CONTAINER_CLASSES = [COMPILATION_UNIT, PACKAGE, CLASS, METHOD, IDENTIFIER]
 
 
-def create_meta_ast(file_name, input_json, opts=None):
-    options = get_options(opts)
-    package_name = get_package_name(input_json)
-    output_json = get_output_json(package_name, file_name)
-
-    # TODO differentiate if interface
-    for i, class_type in enumerate(input_json.get("types")):
-        node_type = input_json.get("types")[i]["!"]
-        if node_type == "com.github.javaparser.ast.body.ClassOrInterfaceDeclaration":
-            class_node = input_json.get("types")[i]
-            class_name = class_node.get("name").get("identifier")
-            output_json["children"].append(
-                get_class_object(output_json["uid"], class_name)
-            )
-        else:
-            continue
-
-        if options["methods"]:
-            for j, method_member in enumerate(
-                input_json.get("types")[i].get("members")
-            ):
-                node_type = input_json.get("types")[i].get("members")[j]["!"]
-                if node_type == "com.github.javaparser.ast.body.MethodDeclaration":
-                    method_node = input_json.get("types")[i].get("members")[j]
-                    method_name = method_node.get("name").get("identifier")
-                    condensed_method_object = get_condensed_method_object(method_node)
-                    output_json["children"][i]["children"].append(
-                        get_method_object(
-                            output_json["children"][i]["uid"],
-                            method_name,
-                            condensed_method_object,
-                        )
-                    )
-                else:
-                    continue
-
-                if options["identifiers"]:
-                    method_identifiers = set()
-                    context = {"set": method_identifiers}
-                    identifiers = traverse_json_with_context(
-                        method_node, identifier_enter_visitor, context=context
-                    )["set"]
-                    for identifier in identifiers:
-                        output_json["children"][i]["children"][j]["children"].append(
-                            get_identifier_object(
-                                output_json["children"][i]["children"][j]["uid"],
-                                identifier,
-                            )
-                        )
-
-                # TODO COMMENTS
-
-    if options["imports"]:
-        imports = [
-            get_import_name(import_name.get("name"))
-            for import_name in input_json.get("imports")
-        ]
-        for import_name in imports:
-            output_json["children"].append(
-                get_import_object(output_json["uid"], import_name)
-            )
-
-    return output_json
-
-
-def get_options(opts):
-    default_opts = {
-        "imports": True,
-        "methods": True,
-        "identifiers": True,
-        "comments": True,
-    }
-    options = {**default_opts, **(opts or {})}
-    return options
-
-
-def get_package_name(json_obj):
-    package_declaration = json_obj.get("packageDeclaration")
-    if package_declaration:
-        name = package_declaration.get("name")
-        identifier = name.get("identifier")
-        qualifier = name.get("qualifier")
-        while qualifier:
-            identifier = qualifier.get("identifier") + "." + identifier
-            qualifier = qualifier.get("qualifier")
-        return identifier
-
-
-def get_import_name(import_data):
-    if "qualifier" in import_data:
-        return (
-            get_import_name(import_data.get("qualifier"))
-            + "."
-            + import_data.get("identifier")
-        )
-    else:
-        return import_data.get("identifier")
-
-
-def get_condensed_method_object(method_object, sort=True):
-    def accept_visitor(value, parent, key, level):
-        if key == "range" and isinstance(value, dict) and "beginLine" in value:
-            return False
-        if key == "tokenRange" and isinstance(value, dict) and "beginToken" in value:
-            return False
-        # ignore empty arrays
-        if isinstance(value, list) and not value:
-            return False
-        # ignore imports
-        if key == "imports" and isinstance(value, list):
-            return False
-        return True
-
-    result = filter_json(method_object, accept_visitor, sort)
-    return result
-
-
-def comment_enter_visitor(value, parent, parent_key, level, context):
+class IVisitor:
     pass
+    # class IVisitor(Protocol):
+    # def visit_before(self, value: Any, key: Any, parent: Any, level: int) -> None:
+    #     ...
+    #
+    # def visit_after(self, value: Any, key: Any, parent: Any, level: int) -> None:
+    #     ...
 
 
-def identifier_enter_visitor(value, parent, parent_key, level, context):
-    if value == "com.github.javaparser.ast.body.VariableDeclarator":
-        identifier_name = parent.get("name").get("identifier")
-        print(f" {' ' * level} {identifier_name}")
-        context["set"].add(identifier_name)
-        return context
+class MetaAstBuilder(IVisitor):
+    def __init__(self, filename, opts=None):
+        self.root = None
+        self.stack = []
+        self.filename = filename
+        self.options = MetaAstBuilder.get_options(opts)
+
+    @staticmethod
+    def get_options(opts):
+        default_opts = {
+            "imports": True,
+            "methods": True,
+            "identifiers": True,
+            "comments": True,
+        }
+        options = {**default_opts, **(opts or {})}
+        return options
+
+    def peek(self):
+        return self.stack[-1]
+
+    def pop(self):
+        return self.stack.pop()
+
+    def push(self, obj):
+        if not self.stack:
+            if not self.root:
+                self.root = obj
+            else:
+                raise Exception("Invalid stack (multiple roots)")
+
+        self.stack.append(obj)
+        return obj
+
+    def isEmpty(self):
+        return not self.stack
+
+    def is_container(self, obj_class: str):
+        return obj_class in CONTAINER_CLASSES
+
+    def is_interface(self, node, obj_class):
+        return obj_class == CLASS and node.get("isInterface") == "true"
+
+    def get_comment_type(self, obj_class):
+        comments = {
+            COMMENT_LINE: "line",
+            COMMENT_BLOCK: "block",
+            COMMENT_JAVADOC: "javadoc",
+        }
+        return comments.get(obj_class)
+
+    def add_import(self, container, imp):
+        if imp:
+            if "imports" not in container:
+                container["imports"] = []
+            container["imports"].append(imp)
+
+    def add_comment(self, container, comment):
+        if comment:
+            if "comments" not in container:
+                container["comments"] = []
+            container["comments"].append(comment)
+
+    def is_comment(self, obj_class):
+        return self.get_comment_type(obj_class) != None
+
+    def get_root(self):
+        return self.root
+
+    # def visit_before(self, value: Any, key: Any, parent: Any, level: int) -> None:
+    def visit_before(self, value, key, parent, level: int) -> None:
+        if isinstance(value, dict):
+            if "!" in value:
+                obj_class = value["!"]
+
+                if obj_class == COMPILATION_UNIT:
+                    if not self.isEmpty():
+                        raise Exception("Invalid stack (compilation unit)")
+                    obj = get_compilation_unit_obj(self.filename)
+                    self.push(obj)
+
+                elif obj_class == IMPORT:
+                    if self.options.get("imports"):
+                        container = self.peek()
+                        obj = get_import_obj(container["uid"], value)
+                        self.add_import(container, obj)
+                    return False
+
+                elif obj_class == PACKAGE:
+                    container = self.peek()
+                    obj = get_package_obj(container["uid"], value)
+                    container["children"].append(obj)
+                    self.push(obj)
+
+                elif obj_class == CLASS:
+                    if self.is_interface(value, obj_class):
+                        return False
+                    container = self.peek()
+                    obj = get_class_obj(container["uid"], value)
+                    container["children"].append(obj)
+                    self.push(obj)
+
+                elif obj_class == METHOD:
+                    if self.options.get("methods"):
+                        container = self.peek()
+                        obj = get_method_obj(container["uid"], value)
+                        container["children"].append(obj)
+                        self.push(obj)
+                    else:
+                        return False
+
+                elif obj_class == IDENTIFIER:
+                    if self.options.get("identifiers"):
+                        container = self.peek()
+                        obj = get_identifier_obj(container["uid"], value)
+                        container["children"].append(obj)
+                        self.push(obj)
+                    else:
+                        return False
+
+                elif self.is_comment(obj_class):
+                    if self.options.get("comments"):
+                        container = self.peek()
+                        obj = get_comment_obj(container["uid"], parent)
+                        self.add_comment(container, obj)
+                    return False
+
+    # def visit_after(self, value: Any, key: Any, parent: Any, level: int) -> None:
+    def visit_after(self, value, key, parent, level: int) -> None:
+        # print(f"After: Value={value}, Key={key}, Level={level}")
+        if isinstance(value, dict):
+            if "!" in value:
+                obj_class = value["!"]
+                if self.is_container(obj_class):
+                    self.pop()
+        pass
+
+
+def traverse_json_structure(
+    # json_structure: Any,
+    json_structure,
+    visitor: IVisitor,
+    # key: Any = None,
+    key=None,
+    # parent: Any = None,
+    parent=None,
+    level: int = 0,
+) -> None:
+    """
+    Traverse a JSON structure, calling visitor methods before and after visiting each node.
+
+    :param json_structure: The JSON structure to traverse.
+    :param visitor: An instance of a class that implements the IVisitor protocol.
+    :param key: The current key in the parent object, or None if root.
+    :param parent: The parent object, or None if root.
+    :param level: The current depth level in the JSON structure.
+    """
+    check = visitor.visit_before(json_structure, key, parent, level)
+
+    if check != False:
+        if isinstance(json_structure, dict):
+            for k, v in json_structure.items():
+                traverse_json_structure(
+                    v, visitor, key=k, parent=json_structure, level=level + 1
+                )
+        elif isinstance(json_structure, list):
+            for idx, item in enumerate(json_structure):
+                traverse_json_structure(
+                    item, visitor, key=idx, parent=json_structure, level=level + 1
+                )
+
+        visitor.visit_after(json_structure, key, parent, level)
