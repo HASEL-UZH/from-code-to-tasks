@@ -1,13 +1,13 @@
 from src.core.profiler import Profiler
 from src.store.object_factory import ObjectFactory
 from src.store.object_store import db
-from src.strategies.meta.meta_ast_strategy import create_meta_ast
+from src.strategies.meta.meta_ast_strategy import (
+    MetaAstBuilder,
+    traverse_json_structure,
+)
 
 
 def create_meta_ast_task():
-
-    # TODO add meta code strategy
-    # TODO add meta diff text strategy
 
     print("create_meta_ast_task started")
     meta_ast_resources = db.find_resources({"kind": "meta-ast", "type": "json"})
@@ -37,26 +37,37 @@ def create_meta_ast_task():
             )
             ast_input_json = db.get_resource_content(ast_resource)
 
-            for imports in [True, False]:
-                for methods in [True, False]:
-                    for identifiers in [True, False]:
-                        for comments in [True, False]:
-                            options = {
-                                "imports": imports,
-                                "methods": methods,
-                                "identifiers": identifiers,
-                                "comments": comments,
-                            }
+            # ast_sm - include methods
+            ast_builder_sm = MetaAstBuilder(
+                ast_resource["name"],
+                {"imports": False, "identifiers": False, "comments": False,},
+            )
+            # ast_md - include methods, comments
+            ast_builder_md = MetaAstBuilder(
+                ast_resource["name"], {"imports": False, "identifiers": False,},
+            )
+            # ast_lg - include, methods, comments, identifiers, imports
+            ast_builder_lg = MetaAstBuilder(ast_resource["name"])
 
-                            option_string = f"im:{imports}, me:{methods}, id:{identifiers}, co:{comments}"
-                            meta_ast = create_meta_ast(
-                                ast_resource["name"], ast_input_json, options
-                            )
-                            print(f"Options: {options}, Result AST: {meta_ast}")
-                            # TODO validate
-                            ast_meta_target_resource["strategy"]["meta"] = option_string
-                            ast_meta_target_resource["content"] = meta_ast
-                            db.save_resource(ast_meta_target_resource, invalidate=False)
+            traverse_json_structure(ast_input_json, ast_builder_sm)
+            traverse_json_structure(ast_input_json, ast_builder_md)
+            traverse_json_structure(ast_input_json, ast_builder_lg)
+
+            ast_sm = ast_builder_sm.get_root()
+            ast_md = ast_builder_md.get_root()
+            ast_lg = ast_builder_lg.get_root()
+
+            ast_meta_target_resource["strategy"]["meta"] = "ast_sm"
+            ast_meta_target_resource["content"] = ast_sm
+            db.save_resource(ast_meta_target_resource, invalidate=False)
+
+            ast_meta_target_resource["strategy"]["meta"] = "ast_md"
+            ast_meta_target_resource["content"] = ast_md
+            db.save_resource(ast_meta_target_resource, invalidate=False)
+
+            ast_meta_target_resource["strategy"]["meta"] = "ast_lg"
+            ast_meta_target_resource["content"] = ast_lg
+            db.save_resource(ast_meta_target_resource, invalidate=False)
 
     profiler.checkpoint(f"create_meta_ast_task done: {count}")
     db.invalidate()
