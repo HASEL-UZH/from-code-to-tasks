@@ -1,5 +1,4 @@
-from src.ast.ast_compare import compare_ast, build_change_tree
-from src.ast.ast_compare_text import generate_change_text_for_file
+from src.ast.create_ast_change_model import create_ast_change_model
 from src.core.profiler import Profiler
 from src.core.utils import group_by, accessor
 from src.store.object_factory import ObjectFactory
@@ -40,18 +39,16 @@ def change_model_creator_task():
                     meta_before = db.get_resource_content(resource_before)
                     meta_after = db.get_resource_content(resource_after)
                     resource_dict[resource_key] = (meta_before, meta_after)
-                change_object = build_commit_change_object(
-                    resource_dict, commit["pull_request"]
-                )
+                change_object = create_ast_change_model(resource_dict, commit)
                 change_resource = ObjectFactory.resource(
                     commit,
                     {
-                        "name": "summary",
+                        "name": "change-model",
                         "type": "json",
                         "kind": "change",
                         "version": None,
                         "content": change_object,
-                        "strategy": {"meta": meta_strategy_key, "terms": "default"},
+                        "strategy": {"meta": meta_strategy_key},
                     },
                 )
                 db.save_resource(change_resource, invalidate=False)
@@ -65,29 +62,6 @@ def change_model_creator_task():
 
 
 # }
-
-
-def build_commit_change_object(json_dict, pull_request):
-    commit_compare_text = ""
-    commit_change_object = {
-        "pr": {"text": pull_request},
-        "code": {"text": "", "details": []},
-    }
-    for file_name, change_tuple in json_dict.items():
-        before_meta_ast, after_met_ast = change_tuple
-        ast_compare_flat = compare_ast(before_meta_ast, after_met_ast)
-        try:
-            ast_compare_tree = build_change_tree(ast_compare_flat)
-        except:
-            ast_compare_tree = {}
-            pass
-        commit_change_object["code"]["details"].append(ast_compare_tree)
-        ast_file_change_text = generate_change_text_for_file(
-            file_name, ast_compare_tree
-        )
-        commit_compare_text += ast_file_change_text
-        commit_change_object["code"]["text"] = commit_compare_text
-    return commit_change_object
 
 
 if __name__ == "__main__":

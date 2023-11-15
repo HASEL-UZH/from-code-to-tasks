@@ -1,5 +1,5 @@
-# TODO fix venv issue and add typing
-# from typing import Protocol, Any
+from typing import Protocol, Any
+
 from src.ast.meta_ast_object_factory import (
     get_compilation_unit_obj,
     get_import_obj,
@@ -23,14 +23,12 @@ COMMENT_JAVADOC = "com.github.javaparser.ast.comments.JavadocComment"
 CONTAINER_CLASSES = [COMPILATION_UNIT, PACKAGE, CLASS, METHOD, IDENTIFIER]
 
 
-class IVisitor:
-    pass
-    # class IVisitor(Protocol):
-    # def visit_before(self, value: Any, key: Any, parent: Any, level: int) -> None:
-    #     ...
-    #
-    # def visit_after(self, value: Any, key: Any, parent: Any, level: int) -> None:
-    #     ...
+class IVisitor(Protocol):
+    def visit_before(self, value: Any, key: Any, parent: Any, level: int) -> None:
+        ...
+
+    def visit_after(self, value: Any, key: Any, parent: Any, level: int) -> None:
+        ...
 
 
 class MetaAstBuilder(IVisitor):
@@ -86,15 +84,11 @@ class MetaAstBuilder(IVisitor):
 
     def add_import(self, container, imp):
         if imp:
-            if "imports" not in container:
-                container["imports"] = []
-            container["imports"].append(imp)
+            container["children"].append(imp)
 
     def add_comment(self, container, comment):
         if comment:
-            if "comments" not in container:
-                container["comments"] = []
-            container["comments"].append(comment)
+            container["children"].append(comment)
 
     def is_comment(self, obj_class):
         return self.get_comment_type(obj_class) != None
@@ -102,8 +96,7 @@ class MetaAstBuilder(IVisitor):
     def get_root(self):
         return self.root
 
-    # def visit_before(self, value: Any, key: Any, parent: Any, level: int) -> None:
-    def visit_before(self, value, key, parent, level: int) -> None:
+    def visit_before(self, value: Any, key: Any, parent: Any, level: int) -> None:
         if isinstance(value, dict):
             if "!" in value:
                 obj_class = value["!"]
@@ -160,9 +153,7 @@ class MetaAstBuilder(IVisitor):
                         self.add_comment(container, obj)
                     return False
 
-    # def visit_after(self, value: Any, key: Any, parent: Any, level: int) -> None:
-    def visit_after(self, value, key, parent, level: int) -> None:
-        # print(f"After: Value={value}, Key={key}, Level={level}")
+    def visit_after(self, value: Any, key: Any, parent: Any, level: int) -> None:
         if isinstance(value, dict):
             if "!" in value:
                 obj_class = value["!"]
@@ -172,13 +163,10 @@ class MetaAstBuilder(IVisitor):
 
 
 def traverse_json_structure(
-    # json_structure: Any,
-    json_structure,
+    json_structure: Any,
     visitor: IVisitor,
-    # key: Any = None,
-    key=None,
-    # parent: Any = None,
-    parent=None,
+    key: Any = None,
+    parent: Any = None,
     level: int = 0,
 ) -> None:
     """

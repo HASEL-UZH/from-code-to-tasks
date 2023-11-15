@@ -12,6 +12,7 @@ CLASSIFIERS = {
     CLASSIFIER_RESOURCE: CLASSIFIER_RESOURCE,
 }
 
+
 class ObjectFactory:
 
     # obj: dict | string (id)
@@ -26,24 +27,20 @@ class ObjectFactory:
             classifier = obj.get("classifier")
         return classifier
 
-
     # obj: dict | string (id)
     @staticmethod
     def is_container(obj):
         return ObjectFactory.is_repository(obj) or ObjectFactory.is_commit(obj)
-
 
     @staticmethod
     def is_repository(obj):
         classifier = ObjectFactory._get_classifier(obj)
         return classifier == CLASSIFIER_REPOSITORY
 
-
     @staticmethod
     def is_commit(obj):
         classifier = ObjectFactory._get_classifier(obj)
         return classifier == CLASSIFIER_COMMIT
-
 
     @staticmethod
     def is_resource(obj):
@@ -96,7 +93,7 @@ class ObjectFactory:
             "classifier": classifier,
             "identifier": identifier,
             "repository_identifier": repo_identifier,
-            "@repository": repo_id
+            "@repository": repo_id,
         }
         _object = {**_object, **data, **_object}
         return _object
@@ -126,8 +123,10 @@ class ObjectFactory:
 
 # --- Utilities
 
+
 def get_object_id(classifier, _id):
-   return "::".join([classifier,_id])
+    return "::".join([classifier, _id])
+
 
 def get_repository_identifier(repository_url):
     # Remove the prefix
@@ -137,30 +136,33 @@ def get_repository_identifier(repository_url):
     id = camel_to_snake(id)
     return id
 
+
 def get_resource_id(container_id, identifier):
     id = "/".join([container_id or "", identifier])
     return id
+
 
 def encode_resource_name(resource):
     base_template = "{name}--{kind}--{version}"
     strategy_template = "{meta}--{terms}--{embedding}"
 
     base_part = base_template.format(
-        name = resource.get("name", "undefined") or "",
-        kind = resource.get("kind", "") or "",
-        version = resource.get("version", "") or "",
+        name=resource.get("name", "undefined") or "",
+        kind=resource.get("kind", "") or "",
+        version=resource.get("version", "") or "",
     )
     strategy = resource.get("strategy")
     if strategy:
         strategy_part = strategy_template.format(
             meta=strategy.get("meta", "") or "",
             terms=strategy.get("terms", "") or "",
-            embedding=strategy.get("embedding", "") or ""
+            embedding=strategy.get("embedding", "") or "",
         )
         base_part = "@".join([base_part, strategy_part])
 
     name = ".".join([base_part, resource.get("type", "txt")])
     return name
+
 
 def decode_resource_name(resource_name):
     root, ext = os.path.splitext(resource_name)
@@ -174,13 +176,13 @@ def decode_resource_name(resource_name):
         "name": base_parts[0] or None,
         "kind": base_parts[1] or None,
         "version": base_parts[2] or None,
-        "type": type
+        "type": type,
     }
     if strategy_part:
         strategy_parts = strategy_part.split("--")
         obj["strategy"] = {
             "meta": strategy_parts[0] or None,
             "terms": strategy_parts[1] or None,
-            "embedding": strategy_parts[2]or None,
+            "embedding": strategy_parts[2] or None,
         }
     return obj

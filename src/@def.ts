@@ -54,7 +54,7 @@ export interface IResource extends IObject, IStoreObject {
     identifier: string // the filename based on the property of this resource
     name: string; // the base name (excluding extension)
     type: "json" | "diff" | "text"
-    kind: "source" | "diff" | "ast" | "meta-ast" | "change";
+    kind: "source" | "diff" | "ast" | "meta" | "change";
     version: "before" | "after" | null;
     strategy: {
         meta?: string; // meta ast processing

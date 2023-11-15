@@ -14,8 +14,14 @@ def compare_ast(before, after):
             right_node["children"] = []
             change_type = (
                 "modify"
-                if left_node.get("fingerprint", None)
-                != right_node.get("fingerprint", None)
+                if (
+                    left_node.get("fingerprint", None)
+                    != right_node.get("fingerprint", None)
+                )
+                or (
+                    left_node.get("composite_fingerprint", None)
+                    != right_node.get("composite_fingerprint", None)
+                )
                 else "none"
             )
             change = {
@@ -51,7 +57,27 @@ def compare_ast(before, after):
                 "children": [],
             }
             changes.append(change)
-    pass
+
+    for change in changes:
+        if change.get("before") and change.get("after"):
+            if change["type"] == "compilation-unit":
+                if change["before"]["filename"] != change["after"]["filename"]:
+                    change["rename"] = {
+                        "before": change["before"]["filename"],
+                        "after": change["after"]["filename"],
+                    }
+                if change["before"]["package"] != change["after"]["package"]:
+                    change["move"] = {
+                        "before": change["before"]["package"],
+                        "after": change["after"]["package"],
+                    }
+            elif change["type"] == "class":
+                if change["before"]["identifier"] != change["after"]["identifier"]:
+                    change["rename"] = {
+                        "before": change["before"]["identifier"],
+                        "after": change["after"]["identifier"],
+                    }
+
     return changes
 
 

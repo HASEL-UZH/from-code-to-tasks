@@ -23,9 +23,14 @@ def create_commit_data_task(limit=None):
         repository_count += 1
         repo_url = repository["repository_url"]
         print(f"Get commits for repository: {repo_url}")
-        git_repository = Repository(repo_url, only_modifications_with_file_types=[".java"])
+        git_repository = Repository(
+            repo_url, only_modifications_with_file_types=[".java"]
+        )
         for commit in git_repository.traverse_commits():
-            if has_pull_request(commit):
+            if (
+                has_pull_request(commit)
+                and commit.hash == "0ad44ced247191cc631100010ca40b4baa84d161"
+            ):
                 processed = process_commit(repository, commit)
                 if processed:
                     commit_count += 1
@@ -35,10 +40,10 @@ def create_commit_data_task(limit=None):
             if limit and commit_count >= limit:
                 break
 
-
-    profiler.checkpoint(f"create_commit_data_task done: total repositories: {len(repositories)}, total commits: {total_commit_count}")
+    profiler.checkpoint(
+        f"create_commit_data_task done: total repositories: {len(repositories)}, total commits: {total_commit_count}"
+    )
     db.invalidate()
-
 
 
 def process_commit(repository, git_commit):
@@ -80,12 +85,10 @@ def save_commit_data(repository, git_commit, pull_request_title):
         "merge": git_commit.merge,
         "added_lines": git_commit.insertions,
         "deleted_lines": git_commit.deletions,
+        "changes": [],
     }
 
-    results = {
-        "commit": None,
-        "resources": []
-    }
+    results = {"commit": None, "resources": []}
     if None not in git_commit.modified_files:
         commit = ObjectFactory.commit(commit_info)
         db.save_commit(commit)
@@ -94,49 +97,69 @@ def save_commit_data(repository, git_commit, pull_request_title):
         for modified_file in git_commit.modified_files:
             file_name = modified_file.filename
             base_file_name = get_file_base_name(file_name)
-            if  is_java_file(file_name):
+            if is_java_file(file_name):
+                change = {
+                    "filename": modified_file.filename,
+                    "change_type": modified_file.change_type.name,
+                    "old_path": modified_file.old_path,
+                    "new_path": modified_file.new_path,
+                }
+                commit["changes"].append(change)
                 if modified_file.source_code_before:
                     commit_file_count += 1
-                    source_before_resource = ObjectFactory.resource(commit, {
-                       "name": base_file_name,
-                       "type": "java",
-                       "kind": "source",
-                       "version": "before",
-                       "content": modified_file.source_code_before
-                    })
+                    source_before_resource = ObjectFactory.resource(
+                        commit,
+                        {
+                            "name": base_file_name,
+                            "type": "java",
+                            "kind": "source",
+                            "version": "before",
+                            "content": modified_file.source_code_before,
+                        },
+                    )
                     db.save_resource(source_before_resource, commit)
                     results["resources"].append(source_before_resource)
                 if modified_file.source_code:
                     commit_file_count += 1
-                    source_after_resource = ObjectFactory.resource(commit, {
-                       "name": base_file_name,
-                       "type": "java",
-                       "kind": "source",
-                       "version": "after",
-                       "content": modified_file.source_code
-                    })
+                    source_after_resource = ObjectFactory.resource(
+                        commit,
+                        {
+                            "name": base_file_name,
+                            "type": "java",
+                            "kind": "source",
+                            "version": "after",
+                            "content": modified_file.source_code,
+                        },
+                    )
                     db.save_resource(source_after_resource, commit)
                     results["resources"].append(source_after_resource)
                 if modified_file.diff:
                     commit_file_count += 1
-                    diff_resource = ObjectFactory.resource(commit, {
-                       "name": base_file_name,
-                       "type": "diff",
-                       "kind": "diff",
-                       "version": None,
-                       "content": modified_file.diff
-                    })
+                    diff_resource = ObjectFactory.resource(
+                        commit,
+                        {
+                            "name": base_file_name,
+                            "type": "diff",
+                            "kind": "diff",
+                            "version": None,
+                            "content": modified_file.diff,
+                        },
+                    )
                     db.save_resource(diff_resource, commit)
                     results["resources"].append(diff_resource)
-        #}
-    #}
+        # }
+        db.save_commit(commit)
+    # }
     return results
-#}
+
+
+# }
 
 
 def has_pull_request(commit):
     pull_request_number = get_pull_request_number(commit.msg)
     return pull_request_number is not None
+
 
 def get_pull_request_number(commit_msg):
     pattern = r"#(\d+)"
@@ -146,6 +169,7 @@ def get_pull_request_number(commit_msg):
     else:
         pull_request_number = pull_request_numbers[0]
         return pull_request_number
+
 
 def get_pull_request_url(repository_url, pull_request_number):
     parts = repository_url.strip("/").split("/")
@@ -158,5 +182,5 @@ def get_pull_request_url(repository_url, pull_request_number):
 
 
 if __name__ == "__main__":
-    #print("TASK DISABLED"); exit(0)
+    # print("TASK DISABLED"); exit(0)
     create_commit_data_task()

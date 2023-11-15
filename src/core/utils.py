@@ -1,4 +1,5 @@
 import hashlib
+import json
 import re
 
 
@@ -63,6 +64,10 @@ def hash_string(s):
 
     # Return the hexadecimal representation of the hash
     return md5hash.hexdigest()
+
+
+def hash_object(obj):
+    return hash_string(json.dumps(obj))
 
 
 def is_date(d):

@@ -1,5 +1,7 @@
 import hashlib
 
+from src.core.utils import hash_string
+
 
 def get_compilation_unit_obj(file_name):
     return {
@@ -51,7 +53,6 @@ def get_method_obj(parent_uid, m_node):
         "identifier": method_name,
         "id": f"m:{method_name}",
         "uid": f"{parent_uid}/m:{method_name}",
-        "fingerprint": fingerprint,
         "children": [],
     }
 
@@ -68,7 +69,7 @@ def get_identifier_obj(parent_uid, id_node):
 
 def get_comment_obj(parent_uid, co_node):
     comment = co_node["comment"]["content"]
-    comment_hash = generate_unique_hash(co_node)
+    comment_hash = hash_string(comment)
     return {
         "type": "comment",
         "identifier": comment_hash,

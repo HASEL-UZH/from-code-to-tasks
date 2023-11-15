@@ -7,6 +7,15 @@ def traverse_ast(root, visitor_fn):
     _traverse(root, None, 0)
 
 
+def traverse_ast_postorder(root, visitor_fn):
+    def _traverse(node, parent, level):
+        for child in node.get("children", []):
+            _traverse(child, node, level + 1)
+        visitor_fn(node, parent, level)
+
+    _traverse(root, None, 0)
+
+
 def is_compilation_unit(node):
     return node.get("type") == "compilation-unit"
 
@@ -23,6 +32,7 @@ def create_ast_map(root):
     map = {}
 
     def visitor(node, parent, level):
+        pass
         map[node["uid"]] = node
 
     if root is not None:

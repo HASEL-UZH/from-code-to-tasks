@@ -6,3 +6,5 @@ _workspace
 _store
 __store
 _workspace.zip
+bin/mongodb
+/db
