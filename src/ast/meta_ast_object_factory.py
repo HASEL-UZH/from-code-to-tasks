@@ -1,6 +1,5 @@
-import hashlib
-
-from src.core.utils import hash_string
+from src.ast.meta_ast_utils import filter_json
+from src.core.utils import hash_string, hash_object
 
 
 def get_compilation_unit_obj(file_name):
@@ -47,12 +46,14 @@ def get_class_obj(parent_uid, c_node):
 
 def get_method_obj(parent_uid, m_node):
     method_name = m_node["name"]["identifier"]
-    fingerprint = generate_unique_hash(get_condensed_method_object(m_node))
+    condensed_method_object = get_condensed_method_object(m_node)
+    body_fingerprint = hash_object(condensed_method_object)
     return {
         "type": "method",
         "identifier": method_name,
         "id": f"m:{method_name}",
         "uid": f"{parent_uid}/m:{method_name}",
+        "body_fingerprint": body_fingerprint,
         "children": [],
     }
 
@@ -86,7 +87,7 @@ def build_name(node):
         return node.get("identifier")
 
 
-def get_condensed_method_object(m_node, sort=True):
+def get_condensed_method_object(method_object, sort=True):
     def accept_visitor(value, parent, key, level):
         if key == "range" and isinstance(value, dict) and "beginLine" in value:
             return False
@@ -100,10 +101,5 @@ def get_condensed_method_object(m_node, sort=True):
             return False
         return True
 
-
-def generate_unique_hash(condensed_method_object):
-    sha256_hash = hashlib.sha256()
-    sha256_hash.update(str(condensed_method_object).encode("utf-8"))
-    unique_hash = sha256_hash.hexdigest()
-    pass
-    return unique_hash
+    result = filter_json(method_object, accept_visitor, sort)
+    return result

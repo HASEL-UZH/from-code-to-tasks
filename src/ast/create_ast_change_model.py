@@ -25,7 +25,7 @@ def prepare_ast(commit_change, meta_ast, state):
             class_name = os.path.basename(path).replace(".java", "")
             node["is_main_class"] = class_name == node["identifier"]
             node["class_name"] = class_name
-            if node["identifier"] != cu["identifier"]:
+            if node["identifier"] != cu["identifier"] and node["is_main_class"]:
                 # Rename
                 uid_old = node["uid"]
                 uid_new = "/".join([uid_old.split("/")[0], "c:" + cu["identifier"]])
@@ -88,33 +88,3 @@ def create_ast_change_model(json_dict, commit):
             pass
         commit_change_object["code"]["details"].append(ast_compare_tree)
     return commit_change_object
-
-
-# def create_ast_change_model(json_dict, commit):
-#     pull_request = commit["pull_request"]
-#     commit_changes = {obj["filename"]: obj for obj in commit["changes"]}
-#     commit_compare_text = ""
-#     commit_change_object = {
-#         "pr": {"text": pull_request},
-#         "code": {"text": "", "details": []},
-#     }
-#     for file_name, change_tuple in json_dict.items():
-#         before_meta_ast_json, after_meta_ast_json = change_tuple
-#         before_meta_ast = json.loads(before_meta_ast_json)
-#         after_meta_ast = json.loads(after_meta_ast_json)
-#         commit_change = commit_changes[f"{file_name}.java"]
-#         prepare_ast(commit_change, before_meta_ast, "before")
-#         prepare_ast(commit_change, after_meta_ast, "after")
-#         ast_compare_flat = compare_ast(before_meta_ast, after_meta_ast)
-#         try:
-#             ast_compare_tree = build_change_tree(ast_compare_flat)
-#         except:
-#             ast_compare_tree = {}
-#             pass
-#         commit_change_object["code"]["details"].append(ast_compare_tree)
-#         ast_file_change_text = generate_change_text_for_file(
-#             file_name, ast_compare_tree
-#         )
-#         commit_compare_text += ast_file_change_text
-#         commit_change_object["code"]["text"] = commit_compare_text
-#     return commit_change_object

@@ -22,6 +22,10 @@ def compare_ast(before, after):
                     left_node.get("composite_fingerprint", None)
                     != right_node.get("composite_fingerprint", None)
                 )
+                or (
+                    left_node.get("body_fingerprint", None)
+                    != right_node.get("body_fingerprint", None)
+                )
                 else "none"
             )
             change = {
@@ -44,7 +48,11 @@ def compare_ast(before, after):
             change = {
                 "uid": key,
                 "type": left_node["type"],
-                "change": {"type": "delete", "before": left_node, "after": None,},
+                "change": {
+                    "type": "delete",
+                    "before": left_node,
+                    "after": None,
+                },
                 "children": [],
             }
             changes.append(change)
@@ -53,14 +61,19 @@ def compare_ast(before, after):
             change = {
                 "uid": key,
                 "type": right_node["type"],
-                "change": {"type": "add", "before": None, "after": right_node,},
+                "change": {
+                    "type": "add",
+                    "before": None,
+                    "after": right_node,
+                },
                 "children": [],
             }
             changes.append(change)
 
-    for change in changes:
+    for i, change in enumerate(changes):
+        change = change["change"]
         if change.get("before") and change.get("after"):
-            if change["type"] == "compilation-unit":
+            if change["before"]["type"] == "compilation-unit":
                 if change["before"]["filename"] != change["after"]["filename"]:
                     change["rename"] = {
                         "before": change["before"]["filename"],
@@ -71,13 +84,35 @@ def compare_ast(before, after):
                         "before": change["before"]["package"],
                         "after": change["after"]["package"],
                     }
-            elif change["type"] == "class":
+            elif change["before"]["type"] == "class":
                 if change["before"]["identifier"] != change["after"]["identifier"]:
                     change["rename"] = {
                         "before": change["before"]["identifier"],
                         "after": change["after"]["identifier"],
                     }
-
+        if change.get("before"):
+            if change["before"]["type"] == "comment" and change["type"] == "delete":
+                parent = change["before"]["uid"].rsplit("/", 1)[0]
+                matching_object = next(
+                    (
+                        obj
+                        for obj in changes
+                        if (
+                            obj.get("change", {}).get("after", {}) is not None
+                            and obj.get("change", {})
+                            .get("after", {})
+                            .get("uid", "")
+                            .rsplit("/", 1)[0]
+                            == parent
+                            and obj.get("type") == "comment"
+                            and obj.get("change", {}).get("type") == "add"
+                        )
+                    ),
+                    None,
+                )
+                if matching_object is not None:
+                    removed_item = changes.pop(i)
+                    matching_object["change"]["type"] = "modify"
     return changes
 
 

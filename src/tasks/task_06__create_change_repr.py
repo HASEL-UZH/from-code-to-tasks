@@ -6,6 +6,20 @@ from src.strategies.terms.meta_ast_code import create_meta_ast_code
 from src.strategies.terms.meta_ast_text import create_meta_ast_text
 
 
+def create_term_resource(commit, content, tpe, meta_strategy, term_strategy):
+    return ObjectFactory.resource(
+        commit,
+        {
+            "name": "change-repr",
+            "type": tpe,
+            "kind": "term",
+            "version": None,
+            "content": content,
+            "strategy": {"meta": meta_strategy, "terms": term_strategy},
+        },
+    )
+
+
 def change_term_creator_task():
 
     ast_strategies = [
@@ -44,20 +58,6 @@ def change_term_creator_task():
                 term_strategy=strategy["id"],
             )
             db.save_resource(term_resource, invalidate=False)
-
-
-def create_term_resource(commit, content, tpe, meta_strategy, term_strategy):
-    return ObjectFactory.resource(
-        commit,
-        {
-            "name": "change-repr",
-            "type": tpe,
-            "kind": "term",
-            "version": None,
-            "content": content,
-            "strategy": {"meta": meta_strategy, "terms": term_strategy},
-        },
-    )
 
 
 if __name__ == "__main__":
