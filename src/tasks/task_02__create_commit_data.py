@@ -1,3 +1,4 @@
+import logging
 import re
 
 import requests
@@ -5,150 +6,126 @@ from pydriller import Repository
 
 from src.core.profiler import Profiler
 from src.core.utils import get_date_string
-from src.core.workspace_context import HEADERS, get_file_base_name, is_java_file
+from src.core.workspace_context import get_file_base_name, is_java_file
 from src.store.object_factory import ObjectFactory
-from src.store.object_store import db
+from src.store.mdb_store import db, Collection
 
 
-def create_commit_data_task(limit=None):
-    print("create_commit_data_task started")
-    repositories = db.get_repositories()
+def create_commit_data_task():
+    repositories = list(db.get_repositories())
+    repositories = [
+        d for d in repositories if d["identifier"] == "iluwatar__java-design-patterns"
+    ]
+    profiler = Profiler("create_commit_data_task")
 
-    repository_count = 0
-    commit_count = 0
-    total_commit_count = 0
-    profiler = Profiler()
+    match_count = 0
+    mismatch_count = 0
 
     for repository in repositories:
-        repository_count += 1
         repo_url = repository["repository_url"]
-        print(f"Get commits for repository: {repo_url}")
+        profiler.info(f"Get commits for repository: {repo_url}")
+        prs = list(
+            Collection.github_pr.find({"identifier": repository.get("identifier")})
+        )
+        pr_commits = {
+            d.get("mergeCommit").get("oid"): d for d in prs if d.get("mergeCommit")
+        }
         git_repository = Repository(
             repo_url, only_modifications_with_file_types=[".java"]
         )
         for commit in git_repository.traverse_commits():
-            if (
-                has_pull_request(commit)
-                and commit.hash == "0ad44ced247191cc631100010ca40b4baa84d161"
-            ):
-                processed = process_commit(repository, commit)
-                if processed:
-                    commit_count += 1
-            if commit_count % 1 == 0:
-                profiler.checkpoint(f"process_commit: {commit_count}")
-            total_commit_count += commit_count
-            if limit and commit_count >= limit:
-                break
-
-    profiler.checkpoint(
-        f"create_commit_data_task done: total repositories: {len(repositories)}, total commits: {total_commit_count}"
-    )
-    db.invalidate()
+            pr_commit = pr_commits.get(commit.hash)
+            if pr_commit:
+                profiler.info(f"PR commit found: {commit.hash}")
+                save_commit_data(repository, pr_commit, commit)
+                match_count += 1
+            else:
+                profiler.debug(f"PR commit not found: {commit.hash}")
+                mismatch_count += 1
+        profiler.info(
+            f"  match: {match_count}, mismatch: {mismatch_count}, total: {match_count+mismatch_count}, PR count: {len(prs)}, with merge commit: {len(pr_commits)}"
+        )
 
 
-def process_commit(repository, git_commit):
-    repo_url = repository["repository_url"]
-    pull_request_number = get_pull_request_number(git_commit.msg)
+def save_commit_data(repository, pr_commit, pydriller_commit):
+    commit_date = get_date_string(pydriller_commit.author_date.date())
 
-    processed = False
-    try:
-        # print("PR number is Available")
-        pull_request_url = get_pull_request_url(repo_url, pull_request_number)
-        response = requests.get(pull_request_url, headers=HEADERS)
-        response_json = response.json()
-        if "title" in response_json:
-            pull_request_title = response_json["title"]
-            try:
-                results = save_commit_data(repository, git_commit, pull_request_title)
-                processed = len(results["resources"]) > 0
-            except Exception as e:
-                print(f"Error saving commit {git_commit} in {repo_url}, {e}")
-        else:
-            # print("NOT a PR (Issue): " + str(pull_request_number))
-            pass
-    except Exception as e:
-        print(f"An error occurred during PR fetching: {str(e)}")
-    return processed
-
-
-def save_commit_data(repository, git_commit, pull_request_title):
-    commit_date = get_date_string(git_commit.author_date.date())
-
+    pr_commit["merge_commit_hash"] = pr_commit.get("mergeCommit", {}).get("oid")
     commit_info = {
         "repository_url": repository["repository_url"],
-        "commit_hash": git_commit.hash,
-        "commit_message": git_commit.msg,
-        "pull_request": pull_request_title,
-        "commit_author": git_commit.author.name,
+        "commit_hash": pydriller_commit.hash,
+        "commit_message": pydriller_commit.msg,
+        "pull_request": pr_commit,
+        "pull_request_title": pr_commit.get("title"),
+        "commit_author": pydriller_commit.author.name,
         "commit_date": commit_date,
-        "in_main_branch": git_commit.in_main_branch,
-        "merge": git_commit.merge,
-        "added_lines": git_commit.insertions,
-        "deleted_lines": git_commit.deletions,
+        "in_main_branch": pydriller_commit.in_main_branch,
+        "merge": pydriller_commit.merge,
+        "added_lines": pydriller_commit.insertions,
+        "deleted_lines": pydriller_commit.deletions,
         "changes": [],
     }
 
     results = {"commit": None, "resources": []}
-    if None not in git_commit.modified_files:
-        commit = ObjectFactory.commit(commit_info)
-        db.save_commit(commit)
-        results["commit"] = commit
-        commit_file_count = 0
-        for modified_file in git_commit.modified_files:
-            file_name = modified_file.filename
-            base_file_name = get_file_base_name(file_name)
-            if is_java_file(file_name):
-                change = {
-                    "filename": modified_file.filename,
-                    "change_type": modified_file.change_type.name,
-                    "old_path": modified_file.old_path,
-                    "new_path": modified_file.new_path,
-                }
-                commit["changes"].append(change)
-                if modified_file.source_code_before:
-                    commit_file_count += 1
-                    source_before_resource = ObjectFactory.resource(
-                        commit,
-                        {
-                            "name": base_file_name,
-                            "type": "java",
-                            "kind": "source",
-                            "version": "before",
-                            "content": modified_file.source_code_before,
-                        },
-                    )
-                    db.save_resource(source_before_resource, commit)
-                    results["resources"].append(source_before_resource)
-                if modified_file.source_code:
-                    commit_file_count += 1
-                    source_after_resource = ObjectFactory.resource(
-                        commit,
-                        {
-                            "name": base_file_name,
-                            "type": "java",
-                            "kind": "source",
-                            "version": "after",
-                            "content": modified_file.source_code,
-                        },
-                    )
-                    db.save_resource(source_after_resource, commit)
-                    results["resources"].append(source_after_resource)
-                if modified_file.diff:
-                    commit_file_count += 1
-                    diff_resource = ObjectFactory.resource(
-                        commit,
-                        {
-                            "name": base_file_name,
-                            "type": "diff",
-                            "kind": "diff",
-                            "version": None,
-                            "content": modified_file.diff,
-                        },
-                    )
-                    db.save_resource(diff_resource, commit)
-                    results["resources"].append(diff_resource)
-        # }
-        db.save_commit(commit)
+    commit = ObjectFactory.commit(commit_info)
+    db.save_commit(commit)
+    results["commit"] = commit
+    commit_file_count = 0
+    for modified_file in pydriller_commit.modified_files:
+        file_name = modified_file.filename
+        base_file_name = get_file_base_name(file_name)
+        if is_java_file(file_name):
+            change = {
+                "filename": modified_file.filename,
+                "change_type": modified_file.change_type.name,
+                "old_path": modified_file.old_path,
+                "new_path": modified_file.new_path,
+            }
+            commit["changes"].append(change)
+            if modified_file.source_code_before:
+                commit_file_count += 1
+                source_before_resource = ObjectFactory.resource(
+                    commit,
+                    {
+                        "name": base_file_name,
+                        "type": "java",
+                        "kind": "source",
+                        "version": "before",
+                        "content": modified_file.source_code_before,
+                    },
+                )
+                db.save_resource(source_before_resource, commit)
+                results["resources"].append(source_before_resource)
+            if modified_file.source_code:
+                commit_file_count += 1
+                source_after_resource = ObjectFactory.resource(
+                    commit,
+                    {
+                        "name": base_file_name,
+                        "type": "java",
+                        "kind": "source",
+                        "version": "after",
+                        "content": modified_file.source_code,
+                    },
+                )
+                db.save_resource(source_after_resource, commit)
+                results["resources"].append(source_after_resource)
+            if modified_file.diff:
+                commit_file_count += 1
+                diff_resource = ObjectFactory.resource(
+                    commit,
+                    {
+                        "name": base_file_name,
+                        "type": "diff",
+                        "kind": "diff",
+                        "version": None,
+                        "content": modified_file.diff,
+                    },
+                )
+                db.save_resource(diff_resource, commit)
+                results["resources"].append(diff_resource)
+    # }
+    db.save_commit(commit)
     # }
     return results
 

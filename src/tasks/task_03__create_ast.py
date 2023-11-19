@@ -1,9 +1,10 @@
 import os
 import subprocess
+from typing import Iterable
 
 from src.core.profiler import Profiler
 from src.store.object_factory import ObjectFactory
-from src.store.object_store import db
+from src.store.mdb_store import db
 
 AST_PARSER_JAR_V1 = "./bin/ast-meta-werks-0.1.1.jar"
 AST_PARSER_JAR_V2 = "./bin/ast-meta-werks-0.2.4.jar"
@@ -11,7 +12,7 @@ AST_PARSER_JAR_V2 = "./bin/ast-meta-werks-0.2.4.jar"
 
 def create_ast_task():
     print("create_ast_task started")
-    ast_target_resources = db.find_many({"classifier": "resource", "kind": "ast"})
+    ast_target_resources = list(db.find_many({"classifier": "resource", "kind": "ast"}))
     db.delete_resources(ast_target_resources)
 
     count = 0
@@ -28,7 +29,7 @@ def create_ast_task():
 # }
 
 
-def create_ast_task_multi(java_resources, profiler, mode="parallel"):
+def create_ast_task_multi(java_resources: Iterable, profiler, mode="parallel"):
     print("execution strategy: multi")
 
     conversions = []
@@ -46,6 +47,7 @@ def create_ast_task_multi(java_resources, profiler, mode="parallel"):
             )
             source_file = db.get_resource_path(java_source_resource)
             target_file = db.get_resource_path(ast_target_resource)
+            db.save_resource(ast_target_resource, commit)
             conversions.append({"in_file": source_file, "out_file": target_file})
     # }
 

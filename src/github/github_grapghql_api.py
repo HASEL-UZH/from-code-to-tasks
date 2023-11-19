@@ -209,7 +209,7 @@ class GitHubGraphQlApi(GitHubApi):
     # n: int, (page size)
     def find_top_java_repositories(self, n=100, max_pages=None):
         def get_query(criteria):
-            query = f"language:Java stars:>{2000} {criteria} is:public mirror:false template:false"
+            query = f"language:Java stars:>{2500} {criteria} is:public mirror:false template:false"
             template = """
                 query SearchRepos($first: Int!, $query: String!, $cursor: String = null) {
                   search(
@@ -446,6 +446,23 @@ class GitHubGraphQlApi(GitHubApi):
             max_pages=max_pages,
         )
         return _result
+
+    def get_pull_request_count(self, owner, repository_name):
+        query = """
+            query GetPullRequestCount($owner: String!, $name: String!) {
+              repository(owner: $owner, name: $name) {
+                pullRequests {
+                  totalCount
+                }
+              }         
+            }
+        """
+        variables = {"owner": owner, "name": repository_name}
+        result = self.execute_grapqhql_query(query, variables)
+        if result["ok"]:
+            return result
+
+        return None
 
 
 github_graphql_api = GitHubGraphQlApi(GITHUB_TOKEN)

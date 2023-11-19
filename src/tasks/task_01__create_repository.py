@@ -1,90 +1,67 @@
-import time
-
-import requests
-
+from src.core.logger import log
 from src.core.profiler import Profiler
-from src.core.workspace_context import HEADERS
-from src.store.object_factory import ObjectFactory
-from src.store.object_store import db
+from src.store.object_factory import ObjectFactory, Classifier
+from src.store.mdb_store import db, Collection
+from src.store.mdb_store import db, Collection
+from src.github.github_grapghql_api import github_graphql_api
+from src.store.object_factory import get_repository_identifier
+
+api = github_graphql_api
 
 
-def create_repository_task(url_excludes=[]):
-    print("create_repository_task started")
+def create_repository_task():
+    repositories = get_top_repositories()
+    # Remove existing repository objects in the database
+    Collection.objects.delete_many({"classifier": Classifier.repository})
+    for repository in repositories:
+        repository_object = ObjectFactory.repository(repository["url"], repository)
+        db.save_repository(repository_object)
+
+
+def get_top_repositories():
+    pipeline = [
+        {"$match": {"language": "en"}},
+        # {
+        #     "$project": {
+        #         "identifier": 1,
+        #         "owner": 1,  # "$owner.login",  # Reshape the owner field
+        #         "name": 1,
+        #         "url": 1,
+        #         "createdAt": 1,
+        #         "updatedAt": 1,
+        #         "diskUsage": 1,
+        #         "forkCount": 1,
+        #         "stargazerCount": 1,
+        #         "stargazerCountPercent": 1,
+        #     }
+        # },
+        {"$sort": {"stargazerCount": -1}},  # Sort by stargazerCount in descending order
+        {"$limit": 9},  # Limit to the first 10 documents
+    ]
+    dc = Collection.github_repository.aggregate(pipeline)
+    documents = list(dc)
+    return documents
+
+
+def get_pull_requests(owner: str, repository_name):
     profiler = Profiler()
+    log.debug(f"get_pull_requests: owner: {owner}, name: {repository_name}")
+    result = api.get_pull_requests(owner, repository_name, n=100, max_pages=100)
+    identifier = get_repository_identifier(result["url"])
+    base = {"identifier": identifier}
 
-    url_excludes = url_excludes or ["https://github.com/Snailclimb/JavaGuide","https://github.com/facebook/react-native"]
-    number_of_repositories = 100 # Maximum is 100
-    issue_minimum = 500
-    pr_minimum = 500
-    repository_urls = fetch_most_popular_java_repositories_with_issues(
-        number_of_repositories, issue_minimum, pr_minimum
+    entries = []
+    for pr in result.get("data"):
+        entry = {**base, **pr["node"]}
+        commits = entry.get("commits", {}).get("edges", [])
+        commits = [d.get("node", {}).get("commit") for d in commits]
+        entry["commits"] = commits
+        entries.append(entry)
+
+    profiler.debug(
+        f"get_pull_requests: owner: {owner}, name: {repository_name}, count: {len(entries)}"
     )
-    filtered_urls = [value for value in repository_urls if value not in url_excludes]
-    for url in filtered_urls:
-        repository = ObjectFactory.repository(url)
-        db.save_repository(repository)
-
-    profiler.checkpoint(f"create_commit_data_task done: total repositories: {len(filtered_urls)}")
-    db.invalidate()
-
-
-def get_issue_pr_number(repo_owner: str, repo_name: str, type: str) -> int:
-    try:
-        issue_pr_url = f"https://api.github.com/search/issues?q=repo:{repo_owner}/{repo_name}+is:{type}"
-        response = requests.get(issue_pr_url, headers=HEADERS)
-        if response.status_code == 200:
-            if "total_count" in response.json():
-                number_of_issues_prs = response.json()["total_count"]
-            else:
-                return 0
-        else:
-            return 0
-    except requests.exceptions.RequestException as e:
-        return 0
-    # Limiting API requests to 30 requests per minute
-    time.sleep(2)
-    return number_of_issues_prs
-
-
-def fetch_most_popular_java_repositories_with_issues(
-    number_of_repositories, issue_minimum, pr_minimum
-):
-    print("FIXME - fetch_most_popular_java_repositories_with_issues: remove static data")
-    return [
-         "https://github.com/iluwatar/java-design-patterns",
-     ]
-
-    params = {
-        "q": f"language:java",
-        "sort": "stars",
-        "order": "desc",
-        "page": "1",
-        "per_page": str(number_of_repositories),
-        "since": "2022-01-01T00:00:00Z",
-        "before": "2021-01-01T00:00:00Z",
-    }
-    response = requests.get(
-        "https://api.github.com/search/repositories", headers=HEADERS, params=params
-    )
-    if response.status_code == 200:
-        data = response.json()
-        repositories = data["items"]
-        candidate_repositories = []
-        for repo in repositories:
-            repo_name = repo["name"]
-            print(repo_name)
-            repo_owner = repo["owner"]["login"]
-            issue_number = get_issue_pr_number(repo_owner, repo_name, "issue")
-            pr_number = get_issue_pr_number(repo_owner, repo_name, "pr")
-
-            if issue_number > issue_minimum and pr_number > pr_minimum:
-                repository_url = f"https://github.com/{repo_owner}/{repo_name}"
-                candidate_repositories.append(repository_url)
-            else:
-                continue
-        return candidate_repositories
-    else:
-        return None
+    return entries
 
 
 if __name__ == "__main__":

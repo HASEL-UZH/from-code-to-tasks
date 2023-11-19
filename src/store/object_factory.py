@@ -2,19 +2,14 @@ import os
 
 from src.core.utils import camel_to_snake
 
-CLASSIFIER_REPOSITORY = "repository"
-CLASSIFIER_COMMIT = "commit"
-CLASSIFIER_RESOURCE = "resource"
 
-CLASSIFIERS = {
-    CLASSIFIER_REPOSITORY: CLASSIFIER_REPOSITORY,
-    CLASSIFIER_COMMIT: CLASSIFIER_COMMIT,
-    CLASSIFIER_RESOURCE: CLASSIFIER_RESOURCE,
-}
+class Classifier:
+    repository = "repository"
+    commit = "commit"
+    resource = "resource"
 
 
 class ObjectFactory:
-
     # obj: dict | string (id)
     @staticmethod
     def _get_classifier(obj):
@@ -35,40 +30,29 @@ class ObjectFactory:
     @staticmethod
     def is_repository(obj):
         classifier = ObjectFactory._get_classifier(obj)
-        return classifier == CLASSIFIER_REPOSITORY
+        return classifier == Classifier.repository
 
     @staticmethod
     def is_commit(obj):
         classifier = ObjectFactory._get_classifier(obj)
-        return classifier == CLASSIFIER_COMMIT
+        return classifier == Classifier.commit
+
+    @staticmethod
+    def is_pr(obj):
+        classifier = ObjectFactory._get_classifier(obj)
+        return classifier == Classifier.pr
 
     @staticmethod
     def is_resource(obj):
         classifier = ObjectFactory._get_classifier(obj)
-        return classifier == CLASSIFIER_RESOURCE
-
-    @staticmethod
-    def folder(url, data=None):
-        if data is None:
-            data = {}
-        repo_id = get_repository_identifier(url)
-        classifier = CLASSIFIER_REPOSITORY
-        id = get_object_id(classifier, repo_id)
-        _object = {
-            "id": id,
-            "classifier": classifier,
-            "identifier": repo_id,
-            "repository_url": url,
-        }
-        _object = {**_object, **data, **_object}
-        return _object
+        return classifier == Classifier.resource
 
     @staticmethod
     def repository(url, data=None):
         if data is None:
             data = {}
         repo_id = get_repository_identifier(url)
-        classifier = CLASSIFIER_REPOSITORY
+        classifier = Classifier.repository
         id = get_object_id(classifier, repo_id)
         _object = {
             "id": id,
@@ -84,10 +68,10 @@ class ObjectFactory:
         if data is None:
             data = {}
         identifier = data["commit_hash"]
-        classifier = CLASSIFIER_COMMIT
+        classifier = Classifier.commit
         id = get_object_id(classifier, identifier)
         repo_identifier = get_repository_identifier(data["repository_url"])
-        repo_id = get_object_id(CLASSIFIER_REPOSITORY, repo_identifier)
+        repo_id = get_object_id(Classifier.repository, repo_identifier)
         _object = {
             "id": id,
             "classifier": classifier,
@@ -106,7 +90,7 @@ class ObjectFactory:
 
         filename = encode_resource_name(data)
         identifier = "#".join([container["identifier"], filename])
-        classifier = CLASSIFIER_RESOURCE
+        classifier = Classifier.resource
         id = get_object_id(classifier, identifier)
         _object = {
             "id": id,

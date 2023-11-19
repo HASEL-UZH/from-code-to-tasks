@@ -1,6 +1,7 @@
 import os
 import csv
 import json
+from openpyxl import Workbook
 
 STORE_ROOT = os.path.abspath("./_store")
 RESULTS_DIR = os.path.abspath("./results")
@@ -91,12 +92,24 @@ def write_text_file(file_path, file_content, opts={}):
         file.write(file_content)
 
 
-def write_csv_file(file_path, rows, opts=None):
+def write_csv_file(file_path: str, rows: [dict], opts=None):
     with open(file_path, mode="w", newline="", encoding="utf-8") as file:
         writer = csv.DictWriter(file, fieldnames=rows[0].keys())
         writer.writeheader()
         for item in rows:
             writer.writerow(item)
+
+
+def write_xlsx_file(file_path: str, rows: [dict], opts=None):
+    wb = Workbook()
+    ws = wb.active
+
+    if rows:
+        headers = list(rows[0].keys())
+        ws.append(headers)
+        for obj in rows:
+            ws.append([obj.get(header) for header in headers])
+    wb.save(file_path)
 
 
 def get_pull_request(file_path):
