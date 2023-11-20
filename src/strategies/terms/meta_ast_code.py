@@ -60,78 +60,79 @@ class JavaWriter:
 
 
 def create_meta_ast_code(resource):
-    cu_node = db.get_resource_content(resource)["code"]["details"][0]
-    cu_change = cu_node.get("change", {})
-    cu = cu_change.get("after")
-    if not cu:
-        return None
-
-    def get_after(node):
-        return node.get("change", {}).get("after") or None
-
-    def write_comments(parent):
-        comments = [
-            obj
-            for obj in parent.get("children", [])
-            if obj.get("type") == "comment" and obj.get("change", {}).get("after")
-        ]
-        for comment in comments:
-            _comment = get_after(comment)
-            multiline = "\n" in _comment["content"]
-            if multiline:
-                java.multiline_comment(_comment["content"])
-            else:
-                java.line_comment(_comment["content"])
-        pass
-
+    resource_content = db.get_resource_content(resource)
     java = JavaWriter()
-    write_comments(cu_node)
-    java.package_def(cu["package"])
-    imports = [
-        obj
-        for obj in cu_node["children"]
-        if obj.get("type") == "import" and obj.get("change", {}).get("after")
-    ]
-    classes = [
-        obj
-        for obj in cu_node["children"]
-        if obj.get("type") == "class" and obj.get("change", {}).get("after")
-    ]
+    for cu_node in resource_content["code"]["details"]:
+        cu_change = cu_node.get("change", {})
+        cu = cu_change.get("after")
+        if not cu:
+            return None
 
-    for imp in imports:
-        _imp = get_after(imp)
-        if _imp:
-            java.import_def(_imp["identifier"])
+        def get_after(node):
+            return node.get("change", {}).get("after") or None
 
-    for cl in classes:
-        _cl = get_after(cl)
-        if _cl:
-            java.class_def(_cl["identifier"])
-            write_comments(_cl)
-            methods = [
+        def write_comments(parent):
+            comments = [
                 obj
-                for obj in cl["children"]
-                if obj.get("type") == "method" and obj.get("change", {}).get("after")
+                for obj in parent.get("children", [])
+                if obj.get("type") == "comment" and obj.get("change", {}).get("after")
             ]
-            for method in methods:
-                _method = get_after(method)
-                if _method:
-                    java.method_def(_method["identifier"])
-                    write_comments(_method)
-                    identifiers = [
-                        obj
-                        for obj in method["children"]
-                        if obj.get("type") == "identifier"
-                        and obj.get("change", {}).get("after")
-                    ]
-                    for identifier in identifiers:
-                        _identifier = get_after(identifier)
-                        if _identifier:
-                            java.identifier_def(_identifier["identifier"])
-                            write_comments(_identifier)
-                    java.end_statement()
-            java.end_statement()
+            for comment in comments:
+                _comment = get_after(comment)
+                multiline = "\n" in _comment["content"]
+                if multiline:
+                    java.multiline_comment(_comment["content"])
+                else:
+                    java.line_comment(_comment["content"])
+            pass
 
-    # TODO comments
+        write_comments(cu_node)
+        java.package_def(cu["package"])
+        imports = [
+            obj
+            for obj in cu_node["children"]
+            if obj.get("type") == "import" and obj.get("change", {}).get("after")
+        ]
+        classes = [
+            obj
+            for obj in cu_node["children"]
+            if obj.get("type") == "class" and obj.get("change", {}).get("after")
+        ]
+
+        for imp in imports:
+            _imp = get_after(imp)
+            if _imp:
+                java.import_def(_imp["identifier"])
+
+        for cl in classes:
+            _cl = get_after(cl)
+            if _cl:
+                java.class_def(_cl["identifier"])
+                write_comments(_cl)
+                methods = [
+                    obj
+                    for obj in cl["children"]
+                    if obj.get("type") == "method"
+                    and obj.get("change", {}).get("after")
+                ]
+                for method in methods:
+                    _method = get_after(method)
+                    if _method:
+                        java.method_def(_method["identifier"])
+                        write_comments(_method)
+                        identifiers = [
+                            obj
+                            for obj in method["children"]
+                            if obj.get("type") == "identifier"
+                            and obj.get("change", {}).get("after")
+                        ]
+                        for identifier in identifiers:
+                            _identifier = get_after(identifier)
+                            if _identifier:
+                                java.identifier_def(_identifier["identifier"])
+                                write_comments(_identifier)
+                        java.end_statement()
+                java.end_statement()
+
     code = java.get_code()
     return code

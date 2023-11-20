@@ -1,6 +1,7 @@
 import os
 import uuid
 from datetime import datetime
+from typing import Union
 
 from src.core.profiler import Profiler
 from src.core.logger import log
@@ -192,7 +193,7 @@ class MdbStore:
             file_path = self.get_resource_path(resource)
             os.remove(file_path)
 
-    def delete_resources(self, resources):
+    def delete_resources(self, resources: Union[list, tuple]):
         if not isinstance(resources, (list, tuple)):
             raise RuntimeError("delete_resources: List required")
         profiler = Profiler()
@@ -284,32 +285,4 @@ db = MdbStore(ws)
 
 
 if __name__ == "__main__":
-    # print("object_store DISABLED")
-    # exit(0)
-    ws = get_store_dir()
-    db = MdbStore(ws)
-    db.sync()
-
-    repository = ObjectFactory.repository(
-        "https://github.com/iluwatar/java-design-patterns", {"hello": "foo"}
-    )
-    db.save_repository(repository)
-
-    git_commit = {
-        "identifier": "0ad44ced247191cc631100010ca40b4baa84d161",
-        "repository_identifier": "iluwatar__java-design-patterns",
-        "repository_url": "https://github.com/iluwatar/java-design-patterns",
-        "commit_hash": "0ad44ced247191cc631100010ca40b4baa84d161",
-        "commit_message": "docs: Fix typos spanish readme and factory (#1834)\n\n* Fix typos for Spanish README\r\n\r\n* Fix typos in the factory example",
-        "pull_request": "Fix typos spanish readme and factory",
-        "commit_author": "JCarlos",
-        "commit_date": "2021-10-15",
-        "in_main_branch": True,
-        "merge": True,
-        "added_lines": 5,
-        "deleted_lines": 5,
-    }
-    commit = ObjectFactory.commit(git_commit)
-    db.save_commit(commit)
-
     pass

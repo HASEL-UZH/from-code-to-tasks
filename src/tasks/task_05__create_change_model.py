@@ -2,16 +2,16 @@ from src.ast.create_ast_change_model import create_ast_change_model
 from src.core.profiler import Profiler
 from src.core.utils import group_by, accessor
 from src.store.object_factory import ObjectFactory
-from src.store.object_store import db
+from src.store.mdb_store import db
 
 
 def change_model_creator_task():
-    change_model_resources = db.find_resources({"kind": "change", "type": "json"})
+    change_model_resources = list(db.find_resources({"kind": "change", "type": "json"}))
     db.delete_resources(change_model_resources)
 
     profiler = Profiler()
 
-    meta_resources = db.find_resources({"kind": "meta"})
+    meta_resources = list(db.find_resources({"kind": "meta"}))
     group_key_lambda = lambda x: x.get("strategy").get("meta")
     grouped_meta_resources = group_by(meta_resources, group_key_lambda)
 
@@ -24,40 +24,41 @@ def change_model_creator_task():
         for commit_key, commit_resources in commit_groups.items():
             commit = db.find_object(commit_key)
 
-            meta_strategy_groups = group_by(
-                commit_resources, lambda d: accessor(d, "strategy", "meta")
-            )
-            for (
-                meta_strategy_key,
-                meta_strategy_resources,
-            ) in meta_strategy_groups.items():
-                resource_dict = {}
-                resource_groups = group_by(meta_strategy_resources, "name")
-                for resource_key, file_resources in resource_groups.items():
-                    resource_before = db.find_one({"version": "before"}, file_resources)
-                    resource_after = db.find_one({"version": "after"}, file_resources)
-                    meta_before = db.get_resource_content(resource_before)
-                    meta_after = db.get_resource_content(resource_after)
-                    resource_dict[resource_key] = (meta_before, meta_after)
-                change_object = create_ast_change_model(resource_dict, commit)
-                change_resource = ObjectFactory.resource(
-                    commit,
-                    {
-                        "name": "change-model",
-                        "type": "json",
-                        "kind": "change",
-                        "version": None,
-                        "content": change_object,
-                        "strategy": {"meta": meta_strategy_key},
-                    },
+            profiler.log(commit["id"])
+            if commit["id"] == "commit::c8a2ef01d3f2d57998d631cba71e8c5c5a9d4d62":
+                pass
+
+            resource_dict = {}
+            resource_groups = group_by(commit_resources, "name")
+            for resource_name, file_resources in resource_groups.items():
+                resource_before = next(
+                    (d for d in file_resources if d.get("version") == "before"), None
                 )
-                db.save_resource(change_resource, invalidate=False)
-                count += 1
-                if count % 10 == 0:
-                    profiler.checkpoint(f"Change model progress: {count}")
+                resource_after = next(
+                    (d for d in file_resources if d.get("version") == "after"), None
+                )
+                meta_before = db.get_resource_content(resource_before)
+                meta_after = db.get_resource_content(resource_after)
+                resource_dict[resource_name] = (meta_before, meta_after)
+            change_object = create_ast_change_model(resource_dict, commit)
+            change_resource = ObjectFactory.resource(
+                commit,
+                {
+                    "name": "change-model",
+                    "type": "json",
+                    "kind": "change",
+                    "version": None,
+                    "content": change_object,
+                    "strategy": {"meta": meta_key},
+                },
+            )
+            db.save_resource(change_resource, commit)
+            count += 1
+            if count % 10 == 0:
+                profiler.debug(f"Change model progress: {count}")
 
         # }
-        profiler.checkpoint(f"change_model_creator_task done: {count}")
+        profiler.info(f"change_model_creator_task done: {count}")
         db.invalidate()
 
 

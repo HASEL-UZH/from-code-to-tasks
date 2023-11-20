@@ -49,7 +49,15 @@ def create_commit_data_task():
 
 def save_commit_data(repository, pr_commit, pydriller_commit):
     commit_date = get_date_string(pydriller_commit.author_date.date())
-
+    seen = set()
+    # code for accept first
+    unique_modified_files = [
+        d
+        for d in (pydriller_commit.modified_files or [])
+        if d.filename not in seen and not seen.add(d.filename)
+    ]
+    # code for accept last
+    # unique_modified_files = {d.filename: d for d in (pydriller_commit.modified_files or [])}.values()
     pr_commit["merge_commit_hash"] = pr_commit.get("mergeCommit", {}).get("oid")
     commit_info = {
         "repository_url": repository["repository_url"],
@@ -71,7 +79,7 @@ def save_commit_data(repository, pr_commit, pydriller_commit):
     db.save_commit(commit)
     results["commit"] = commit
     commit_file_count = 0
-    for modified_file in pydriller_commit.modified_files:
+    for modified_file in unique_modified_files:
         file_name = modified_file.filename
         base_file_name = get_file_base_name(file_name)
         if is_java_file(file_name):

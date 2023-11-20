@@ -20,7 +20,7 @@ COMMENT_LINE = "com.github.javaparser.ast.comments.LineComment"
 COMMENT_BLOCK = "com.github.javaparser.ast.comments.BlockComment"
 COMMENT_JAVADOC = "com.github.javaparser.ast.comments.JavadocComment"
 
-CONTAINER_CLASSES = [COMPILATION_UNIT, PACKAGE, CLASS, METHOD, IDENTIFIER]
+CONTAINER_CLASSES = [COMPILATION_UNIT, PACKAGE, CLASS, METHOD]
 
 
 class IVisitor(Protocol):
@@ -142,7 +142,6 @@ class MetaAstBuilder(IVisitor):
                         container = self.peek()
                         obj = get_identifier_obj(container["uid"], value)
                         container["children"].append(obj)
-                        self.push(obj)
                     else:
                         return False
 

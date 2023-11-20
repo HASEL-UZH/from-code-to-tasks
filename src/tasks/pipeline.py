@@ -16,16 +16,16 @@ def run_pipeline():
     # create_repository_task()
 
     # 02
-    # create_commit_data_task()
+    create_commit_data_task()
 
     # 03
-    # create_ast_task()
+    create_ast_task()
 
     # 04
     create_meta_ast_task()
 
     # 05
-    # change_model_creator_task()
+    change_model_creator_task()
 
     # 06
     # change_term_creator_task()

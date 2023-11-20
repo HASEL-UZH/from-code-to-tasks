@@ -21,13 +21,12 @@ def create_term_resource(commit, content, tpe, meta_strategy, term_strategy):
 
 
 def change_term_creator_task():
-
     ast_strategies = [
         {"id": "meta_ast_text", "type": "text", "handler": create_meta_ast_text},
         {"id": "meta_ast_code", "type": "java", "handler": create_meta_ast_code},
     ]
     diff_strategies = [
-        {"id": "diff_text", "handler": create_diff_text},
+        {"id": "diff_text", "type": "text", "handler": create_diff_text},
     ]
 
     meta_resources = db.find_resources({"kind": "change"})
