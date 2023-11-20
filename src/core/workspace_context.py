@@ -2,6 +2,7 @@ import os
 import csv
 import json
 from openpyxl import Workbook
+from src.core.logger import log
 
 STORE_ROOT = os.path.abspath("./_store")
 RESULTS_DIR = os.path.abspath("./results")
@@ -86,6 +87,7 @@ def write_json_file(file_path, file_content, format=True):
 
 
 def write_text_file(file_path, file_content, opts={}):
+    log.debug(f"write_text_file: {file_path}")
     if opts and opts["no_empty_file"] and file_content is None:
         return
     with open(file_path, "w") as file:

@@ -1,4 +1,5 @@
-from src.store.object_store import db
+from src.store.mdb_store import db
+from src.core.logger import log
 
 
 class JavaWriter:
@@ -62,7 +63,12 @@ class JavaWriter:
 def create_meta_ast_code(resource):
     resource_content = db.get_resource_content(resource)
     java = JavaWriter()
-    for cu_node in resource_content["code"]["details"]:
+    for i, cu_node in enumerate(resource_content["code"]["details"]):
+        if not cu_node:
+            log.error(
+                f"No code.details in resource {resource_content.get('filename')} at index {i}"
+            )
+            continue
         cu_change = cu_node.get("change", {})
         cu = cu_change.get("after")
         if not cu:

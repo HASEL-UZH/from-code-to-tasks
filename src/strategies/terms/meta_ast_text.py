@@ -1,5 +1,5 @@
 from src.ast.ast_utils import create_ast_map
-from src.store.object_store import db
+from src.store.mdb_store import db
 
 
 def get_change_type(change_obj):

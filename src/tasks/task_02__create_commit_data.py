@@ -12,7 +12,7 @@ from src.store.mdb_store import db, Collection
 
 
 def create_commit_data_task():
-    repositories = list(db.get_repositories())
+    repositories = list(db.find_repositories())
     repositories = [
         d for d in repositories if d["identifier"] == "iluwatar__java-design-patterns"
     ]

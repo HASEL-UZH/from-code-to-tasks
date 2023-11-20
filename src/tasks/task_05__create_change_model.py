@@ -6,10 +6,9 @@ from src.store.mdb_store import db
 
 
 def change_model_creator_task():
-    change_model_resources = list(db.find_resources({"kind": "change", "type": "json"}))
-    db.delete_resources(change_model_resources)
+    db.delete_resources_where({"kind": "change", "type": "json"})
 
-    profiler = Profiler()
+    profiler = Profiler("create_meta_ast_task")
 
     meta_resources = list(db.find_resources({"kind": "meta"}))
     group_key_lambda = lambda x: x.get("strategy").get("meta")
@@ -17,14 +16,14 @@ def change_model_creator_task():
 
     for meta_key in grouped_meta_resources:
         meta_ast_group = grouped_meta_resources[meta_key]
-        print(f"create change model for: {meta_key}")
+        profiler.info(f"create change model for: {meta_key}")
 
         count = 0
         commit_groups = group_by(meta_ast_group, "@container")
         for commit_key, commit_resources in commit_groups.items():
             commit = db.find_object(commit_key)
 
-            profiler.log(commit["id"])
+            profiler.debug(f"Commit: {commit['id']}")
             if commit["id"] == "commit::c8a2ef01d3f2d57998d631cba71e8c5c5a9d4d62":
                 pass
 
@@ -40,6 +39,7 @@ def change_model_creator_task():
                 meta_before = db.get_resource_content(resource_before)
                 meta_after = db.get_resource_content(resource_after)
                 resource_dict[resource_name] = (meta_before, meta_after)
+
             change_object = create_ast_change_model(resource_dict, commit)
             change_resource = ObjectFactory.resource(
                 commit,
@@ -59,7 +59,6 @@ def change_model_creator_task():
 
         # }
         profiler.info(f"change_model_creator_task done: {count}")
-        db.invalidate()
 
 
 # }

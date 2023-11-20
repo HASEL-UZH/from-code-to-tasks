@@ -12,7 +12,7 @@ api = github_graphql_api
 def create_repository_task():
     repositories = get_top_repositories()
     # Remove existing repository objects in the database
-    Collection.objects.delete_many({"classifier": Classifier.repository})
+    db.delete_repositories()
     for repository in repositories:
         repository_object = ObjectFactory.repository(repository["url"], repository)
         db.save_repository(repository_object)

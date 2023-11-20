@@ -1,7 +1,7 @@
 import os
 import uuid
 from datetime import datetime
-from typing import Union
+from typing import Union, Iterable
 
 from src.core.profiler import Profiler
 from src.core.logger import log
@@ -16,12 +16,18 @@ from src.core.workspace_context import (
 from src.store.object_factory import decode_resource_name, ObjectFactory, Classifier
 from src.store.mdb import mdb
 
-REPOSITORIES_DIR_NAME = "repositories"
-COMMITS_DIR_NAME = "commits"
+IDbCursor = Iterable
+
+
+class StoreFolderName:
+    repositories = "repositories"
+    commits = "commits"
 
 
 class Collection:
-    objects = mdb.get_collection("objects")
+    repository = mdb.get_collection("repository")
+    commit = mdb.get_collection("commit")
+    resource = mdb.get_collection("resource")
     github_pr = mdb.get_collection("github_pr")
     github_query = mdb.get_collection("github_query")
     github_repository = mdb.get_collection("github_repository")
@@ -68,8 +74,6 @@ class Collection:
 class MdbStore:
     def __init__(self, store_dir):
         self.store_dir = store_dir
-        self.dirty = True
-        self.objects = {}
 
     def sync(self, force=False):
         log.warning("MdbStore.sync() is a NOP")
@@ -78,55 +82,57 @@ class MdbStore:
     def set_dirty(self, dirty, cause=None):
         self.dirty = dirty
 
-    # @deprecated
-    def invalidate(self):
-        self.set_dirty(True, "invalidate")
-
     # --- Query
 
-    def _get_objects(self, logging: bool = False):
-        profiler = Profiler()
-        objects = Collection.objects.find()
-        logging and profiler.checkpoint("db._get_objects")
-        return objects
+    def _get_collection(self, id: str):
+        collection = id.split("::")[0]
+        return mdb.get_collection(collection)
 
     def find_object(self, id: str, logging: bool = False) -> dict:
         profiler = Profiler()
-        obj = Collection.objects.find_one({"id": id})
+        collection = self._get_collection(id)
+        obj = collection.find_one({"id": id})
         logging and profiler.debug("db.find_object")
         return obj
 
-    def find_many(self, criteria: dict, logging: bool = False) -> [dict]:
+    def find_many(
+        self, collection: str, criteria: dict, logging: bool = False
+    ) -> IDbCursor:
         profiler = Profiler()
-        objects = Collection.objects.find(criteria or {})
+        objects = mdb.get_collection(collection).find(criteria or {})
         logging and profiler.debug("db.find_many")
         return objects
 
-    def find_one(self, criteria: dict, logging: bool = False) -> dict:
+    def find_one(self, collection: str, criteria: dict, logging: bool = False) -> dict:
         profiler = Profiler()
-        obj = Collection.objects.find_one(criteria or {})
+        obj = mdb.get_collection(collection).find_one(criteria or {})
         logging and profiler.checkpoint("db.find_one")
         return obj
 
-    def find_resources(self, criteria: dict, logging: bool = False) -> dict:
-        query = {**(criteria or {}), "classifier": Classifier.resource}
-        return self.find_many(query, logging)
+    def find_repositories(
+        self, criteria: dict = None, logging: bool = False
+    ) -> IDbCursor:
+        profiler = Profiler()
+        objects = Collection.repository.find(criteria or {})
+        logging and profiler.debug("db.find_repositories")
+        return objects
 
-    def get_repositories(self, criteria: dict = None, logging: bool = False):
-        query = {**(criteria or {}), "classifier": Classifier.repository}
-        return self.find_many(query, logging)
+    def find_commits(self, criteria: dict = None, logging=False) -> IDbCursor:
+        profiler = Profiler()
+        objects = Collection.commit.find(criteria or {})
+        logging and profiler.debug("db.find_commits")
+        return objects
 
-    def get_commits(self, criteria: dict = None, logging=False):
-        query = {**(criteria or {}), "classifier": Classifier.commit}
-        return self.find_many(query, logging)
-
-    def get_resources(self, criteria: dict = None, logging=False):
-        query = {**(criteria or {}), "classifier": Classifier.resource}
-        return self.find_many(query, logging)
+    def find_resources(self, criteria: dict, logging: bool = False) -> IDbCursor:
+        profiler = Profiler()
+        objects = Collection.resource.find(criteria or {})
+        logging and profiler.debug("db.find_resources")
+        return objects
 
     def delete_object(self, id: str, logging: bool = False):
+        collection = self._get_collection(id)
         profiler = Profiler()
-        Collection.objects.delete_one({id: id})
+        collection.delete_one({id: id})
         logging and profiler.debug("db.delete_object")
 
     # --- IO
@@ -146,9 +152,11 @@ class MdbStore:
     def save_repository(self, repository: dict):
         if not ObjectFactory.is_repository(repository):
             raise RuntimeError()
-        directory = get_or_create_dir(self.get_repository_dir(repository["identifier"]))
+        directory = get_or_create_dir(
+            self.find_repository_dir(repository["identifier"])
+        )
         repository["_location"] = os.path.relpath(directory, get_store_dir())
-        Collection.objects.update_one(
+        Collection.repository.update_one(
             {"id": repository["id"], "classifier": Classifier.repository},
             {"$set": repository},
             upsert=True,
@@ -162,7 +170,7 @@ class MdbStore:
             self.get_commit_dir(commit["repository_identifier"], commit["identifier"])
         )
         commit["_location"] = os.path.relpath(directory, get_store_dir())
-        Collection.objects.update_one(
+        Collection.commit.update_one(
             {"id": commit["id"], "classifier": Classifier.commit},
             {"$set": commit},
             upsert=True,
@@ -180,27 +188,58 @@ class MdbStore:
 
         _resource = resource.copy()
         _resource.pop("content", None)
-        Collection.objects.update_one(
+        Collection.resource.update_one(
             {"id": resource["id"], "classifier": Classifier.resource},
             {"$set": _resource},
             upsert=True,
         )
 
-    def delete_resource(self, resource_id):
+    def delete_repository(
+        self, repository_id, fs_objects: bool = False, recursive: bool = False
+    ):
+        # TODO file system objects, recursion
+        Collection.repository.delete_one({"idt": repository_id})
+
+    def delete_repositories(
+        self,
+        criteria: dict = None,
+        fs_objects: bool = False,
+        recursive: bool = False,
+        logging=False,
+    ):
+        # TODO file system objects, recursion
+        Collection.repository.delete_many(criteria or {})
+
+    def delete_commit(
+        self, commit_id, fs_objects: bool = False, recursive: bool = False
+    ):
+        # TODO file system objects, recursion
+        Collection.commit.delete_one({"idt": commit_id})
+
+    def delete_resource(self, resource_id, fs_remove: bool = True):
         resource = self.find_object(resource_id)
         if resource:
-            self.delete_object(resource["id"])
-            file_path = self.get_resource_path(resource)
-            os.remove(file_path)
+            self.delete_object(resource_id)
+            if fs_remove:
+                file_path = self.get_resource_path(resource)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
 
-    def delete_resources(self, resources: Union[list, tuple]):
+    def delete_resources_where(self, criteria: dict = None):
+        profiler = Profiler()
+        result = Collection.resource.delete_many(criteria)
+        profiler.debug(
+            f"delete_resources_where: {criteria or ''}, count: {result.deleted_count}"
+        )
+
+    def delete_resources(self, resources: Union[list, tuple], fs_remove: bool = True):
         if not isinstance(resources, (list, tuple)):
             raise RuntimeError("delete_resources: List required")
         profiler = Profiler()
         count = 0
         for resource in resources:
             if resource:
-                self.delete_resource(resource)
+                self.delete_resource(resource["id"], fs_remove)
                 count += 1
         profiler.debug(f"{count} resources deleted")
 
@@ -230,7 +269,11 @@ class MdbStore:
 
     # absolute path
     def get_repository_dir(self, repo_id=None):
-        paths = [REPOSITORIES_DIR_NAME, repo_id] if repo_id else [REPOSITORIES_DIR_NAME]
+        paths = (
+            [StoreFolderName.repositories, repo_id]
+            if repo_id
+            else [StoreFolderName.repositories]
+        )
         repository_dir = get_or_create_dir(
             self.get_fs_path(os.path.join(self.store_dir, *paths))
         )
@@ -240,7 +283,7 @@ class MdbStore:
     def get_commit_dir(self, repo_id, commit_id):
         repo_dir = self.get_repository_dir(repo_id)
         commit_dir = get_or_create_dir(
-            os.path.join(repo_dir, COMMITS_DIR_NAME, "commit_" + commit_id)
+            os.path.join(repo_dir, StoreFolderName.commits, "commit_" + commit_id)
         )
         return commit_dir
 
