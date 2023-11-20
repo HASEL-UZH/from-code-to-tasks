@@ -1,9 +1,10 @@
 import os
 import subprocess
+from typing import Iterable
 
 from src.core.profiler import Profiler
 from src.store.object_factory import ObjectFactory
-from src.store.object_store import db
+from src.store.mdb_store import db
 
 AST_PARSER_JAR_V1 = "./bin/ast-meta-werks-0.1.1.jar"
 AST_PARSER_JAR_V2 = "./bin/ast-meta-werks-0.2.4.jar"
@@ -11,26 +12,24 @@ AST_PARSER_JAR_V2 = "./bin/ast-meta-werks-0.2.4.jar"
 
 def create_ast_task():
     print("create_ast_task started")
-    ast_target_resources = db.find_many({"classifier": "resource", "kind": "ast"})
-    db.delete_resources(ast_target_resources)
+    db.delete_resources_where({"kind": "ast"})
 
     count = 0
     profiler = Profiler()
 
-    java_resources = db.find_many({"classifier": "resource", "kind": "source"})
+    java_resources = db.find_resources({"kind": "source"})
     create_ast_task_multi(java_resources, profiler, mode="parallel")
     # create_ast_task_single(java_resources, profiler)
 
     profiler.checkpoint(f"create_ast_task done: {count}")
-    db.invalidate()
 
 
 # }
 
 
-def create_ast_task_multi(java_resources, profiler, mode="parallel"):
+def create_ast_task_multi(java_resources: Iterable, profiler, mode="parallel"):
     print("execution strategy: multi")
-
+    profiler = Profiler("create_ast_task_multi")
     conversions = []
     for java_source_resource in java_resources:
         commit = db.find_object(java_source_resource.get("@container"))
@@ -46,7 +45,10 @@ def create_ast_task_multi(java_resources, profiler, mode="parallel"):
             )
             source_file = db.get_resource_path(java_source_resource)
             target_file = db.get_resource_path(ast_target_resource)
+            db.save_resource(ast_target_resource, commit)
             conversions.append({"in_file": source_file, "out_file": target_file})
+            if len(conversions) % 100 == 0:
+                profiler.debug(f"Count: {len(conversions)}")
     # }
 
     # TODO - support for multi-batch
@@ -59,6 +61,7 @@ def create_ast_task_multi(java_resources, profiler, mode="parallel"):
             # Write the 'in_file' and 'out_file' values to the file, separated by a comma
             file.write(f"{conversion['in_file']},{conversion['out_file']}\n")
 
+    profiler.info("Invoke java AST parser")
     try:
         _create_multi_ast(temp_file_path, mode=mode)
     except Exception as e:
@@ -67,6 +70,7 @@ def create_ast_task_multi(java_resources, profiler, mode="parallel"):
         if os.path.exists(temp_file_path):
             # os.remove(temp_file_path)
             pass
+    profiler.info("done")
 
 
 # }

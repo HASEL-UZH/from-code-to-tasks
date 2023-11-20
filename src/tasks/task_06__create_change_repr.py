@@ -1,6 +1,7 @@
+from src.core.profiler import Profiler
 from src.core.utils import group_by
 from src.store.object_factory import ObjectFactory
-from src.store.object_store import db
+from src.store.mdb_store import db
 from src.strategies.terms.diff_text import create_diff_text
 from src.strategies.terms.meta_ast_code import create_meta_ast_code
 from src.strategies.terms.meta_ast_text import create_meta_ast_text
@@ -29,11 +30,15 @@ def change_term_creator_task():
         {"id": "diff_text", "type": "text", "handler": create_diff_text},
     ]
 
+    profiler = Profiler("change_term_creator_task")
+    count = 0
     meta_resources = db.find_resources({"kind": "change"})
     for resource in meta_resources:
+        count += 1
+        profiler.debug(f"Count: {count}, resource: {resource['filename']}")
         for strategy in ast_strategies:
             commit = db.find_object(resource["@container"])
-            content = strategy["handler"](resource)
+            content = strategy["handler"](resource) or ""
             term_resource = create_term_resource(
                 commit,
                 content,
@@ -41,14 +46,14 @@ def change_term_creator_task():
                 meta_strategy=resource["strategy"]["meta"],
                 term_strategy=strategy["id"],
             )
-            db.save_resource(term_resource, invalidate=False)
+            db.save_resource(term_resource, commit)
 
     diff_resources = db.find_resources({"kind": "diff"})
     diff_groups = group_by(diff_resources, "@container")
-    for key, diff_group_resources in diff_groups.items():
+    for commit_id, diff_group_resources in diff_groups.items():
+        commit = db.find_object(commit_id)
         for strategy in diff_strategies:
-            commit = db.find_object(resource["@container"])
-            content = strategy["handler"](diff_group_resources)
+            content = strategy["handler"](diff_group_resources) or ""
             term_resource = create_term_resource(
                 commit,
                 content,
@@ -56,7 +61,7 @@ def change_term_creator_task():
                 meta_strategy=None,
                 term_strategy=strategy["id"],
             )
-            db.save_resource(term_resource, invalidate=False)
+            db.save_resource(term_resource, commit)
 
 
 if __name__ == "__main__":

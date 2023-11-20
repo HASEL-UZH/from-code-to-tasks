@@ -3,10 +3,13 @@ import os
 
 from src.ast.ast_compare import compare_ast, build_change_tree
 from src.ast.ast_utils import create_ast_map, traverse_ast, traverse_ast_postorder
+from src.core.profiler import Profiler
 from src.core.utils import hash_string, hash_object
 
 
 def prepare_ast(commit_change, meta_ast, state):
+    if not meta_ast:
+        return
     flat_meta_ast = create_ast_map(meta_ast)
     path = commit_change["old_path"] if state == "before" else commit_change["new_path"]
     cu = meta_ast
@@ -44,6 +47,7 @@ def prepare_ast(commit_change, meta_ast, state):
                     for key in ["identifier", "class_name", "is_main_class"]
                 }
             )
+        cu["package"] = cu.get("package", "default")
 
     def fingerprint_visitor(node, parent, level):
         if node.get("children"):
@@ -54,29 +58,38 @@ def prepare_ast(commit_change, meta_ast, state):
                 ",".join(sorted(fingerprint_list))
             )
         else:
-            print(node["uid"])
             node["composite_fingerprint"] = node.get("fingerprint", "undefined")
 
-    cu["filename"] = os.path.basename(path)
-    cu["fingerprint"] = hash_object(
-        {key: cu[key] for key in ["identifier", "filename", "package"]}
-    )
-    cu["children"] = [item for item in cu["children"] if item.get("type") != "package"]
-    traverse_ast_postorder(cu, fingerprint_visitor)
+    if not path:
+        pass
+
+    try:
+        cu["filename"] = os.path.basename(path)
+        cu["fingerprint"] = hash_object(
+            {key: cu[key] for key in ["identifier", "filename", "package"]}
+        )
+        cu["children"] = [
+            item for item in cu["children"] if item.get("type") != "package"
+        ]
+        traverse_ast_postorder(cu, fingerprint_visitor)
+    except Exception as e:
+        pass
     pass
 
 
 def create_ast_change_model(json_dict, commit):
-    pull_request = commit["pull_request"]
+    profiler = Profiler("create_ast_change_model")
+    pull_request_title = commit["pull_request_title"]
     commit_changes = {obj["filename"]: obj for obj in commit["changes"]}
     commit_change_object = {
-        "pr": {"text": pull_request},
+        "pr": {"text": pull_request_title},
         "code": {"text": "", "details": []},
     }
     for file_name, change_tuple in json_dict.items():
+        profiler.debug(file_name)
         before_meta_ast_json, after_meta_ast_json = change_tuple
-        before_meta_ast = json.loads(before_meta_ast_json)
-        after_meta_ast = json.loads(after_meta_ast_json)
+        before_meta_ast = before_meta_ast_json or None
+        after_meta_ast = after_meta_ast_json or None
         commit_change = commit_changes[f"{file_name}.java"]
         prepare_ast(commit_change, before_meta_ast, "before")
         prepare_ast(commit_change, after_meta_ast, "after")
@@ -87,4 +100,6 @@ def create_ast_change_model(json_dict, commit):
             ast_compare_tree = {}
             pass
         commit_change_object["code"]["details"].append(ast_compare_tree)
+    if not commit_change_object["code"]["details"]:
+        pass
     return commit_change_object

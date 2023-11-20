@@ -1,5 +1,5 @@
 from src.ast.ast_utils import create_ast_map
-from src.store.object_store import db
+from src.store.mdb_store import db
 
 
 def get_change_type(change_obj):
@@ -58,20 +58,24 @@ def create_meta_ast_text(resource):
 
             # ADD
             if change_type == "add":
-                if (change_obj["type"] == "comment"):
-                    text_per_change += f'Add {get_change_type(change_obj['type'])}  {change_obj["change"]["after"]["content"]} {get_change_context(change_obj)}. '
+                if change_obj["type"] == "comment":
+                    text_per_change += f'Add {get_change_type(change_obj["type"])}  {change_obj["change"]["after"]["content"]} {get_change_context(change_obj)}. '
                 else:
                     text_per_change += f'Add {get_change_type(change_obj["type"])} {change_obj["change"]["after"]["identifier"]} {get_change_context(change_obj)}. '
             # DELETE
             elif change_type == "delete":
-                if (change_obj["type"] == "comment"):
-                    text_per_change += f'Delete {get_change_type(change_obj['type'])}  {change_obj["change"]["before"]["content"]} {get_change_context(change_obj)}. '
+                if change_obj["type"] == "comment":
+                    text_per_change += f'Delete {get_change_type(change_obj["type"])}  {change_obj["change"]["before"]["content"]} {get_change_context(change_obj)}. '
                 else:
                     text_per_change += f'Delete {get_change_type(change_obj["type"])} {change_obj["change"]["before"]["identifier"]} {get_change_context(change_obj)}. '
             # MODIFY
-            elif change_type == "modify" and "rename" not in change_obj.get("change", {}) and "move" not in change_obj.get("change", {}):
-                if (change_obj["type"] == "comment"):
-                    text_per_change += f'Modify {get_change_type(change_obj['type'])}  {change_obj["change"]["after"]["content"]} {get_change_context(change_obj)}. '
+            elif (
+                change_type == "modify"
+                and "rename" not in change_obj.get("change", {})
+                and "move" not in change_obj.get("change", {})
+            ):
+                if change_obj["type"] == "comment":
+                    text_per_change += f'Modify {get_change_type(change_obj["type"])}  {change_obj["change"]["after"]["content"]} {get_change_context(change_obj)}. '
                 else:
                     text_per_change += f'Modify {get_change_type(change_obj["type"])} {change_obj["change"]["before"]["identifier"]} {get_change_context(change_obj)}. '
             meta_ast_text += text_per_change

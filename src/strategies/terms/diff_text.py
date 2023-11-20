@@ -1,4 +1,4 @@
-from src.store.object_store import db
+from src.store.mdb_store import db
 
 
 def create_diff_text(diff_resources):
