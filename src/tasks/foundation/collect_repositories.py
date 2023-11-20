@@ -116,7 +116,7 @@ def update_top_repositories_with_pr_count():
             )
             Collection.github_repository.update_one({"_id": d["_id"]}, {"$set": d})
     # }
-    profiler.info(update_top_repositories_with_pr_count)
+    profiler.info("update_top_repositories_with_pr_count")
 
 
 DetectorFactory.seed = 0

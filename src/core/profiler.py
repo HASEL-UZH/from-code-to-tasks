@@ -48,7 +48,11 @@ class Profiler:
         elapsed_since_start = current_time - self.start_time
         self.last_time = current_time
 
-        info = self.name + "::" + description if self.name else description
+        info = (
+            self.name + "::" + (isinstance(description, str) or "")
+            if self.name
+            else description
+        )
 
         if self.count == 1:
             log_fn(f"{info}: {elapsed_since_last:.4f}")
