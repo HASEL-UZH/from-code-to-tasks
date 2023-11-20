@@ -1,8 +1,11 @@
 import re
+import time
 import requests
 from urllib.parse import urlencode, urlunparse, urlparse, parse_qs
 from dotenv import load_dotenv
 import os
+
+from src.core.logger import log
 
 load_dotenv()  # This loads the .env file into the environment
 
@@ -32,6 +35,8 @@ class GitHubApi:
         return url
 
     def _get_request_result(self, response):
+        if not response:
+            return {"ok": False, "data": None, "headers": None, "exception": True}
         data = None
         url = response.url
         ok = 200 <= response.status_code < 300
@@ -53,11 +58,39 @@ class GitHubApi:
         return results
 
     def post_request(
-        self, endpoint="", data=None, json=None, params=None, headers=None
+        self,
+        endpoint="",
+        data=None,
+        json=None,
+        params=None,
+        headers=None,
+        retry_count=0,
+        retry_ms=0,
     ):
         request_headers = self._get_request_heaaders()
         url = self._get_request_url(endpoint, params)
-        response = requests.post(url, data=data, json=json, headers=request_headers)
+        retry_counter = 0
+        response = None
+        while retry_counter <= retry_count:
+            if retry_counter:
+                log.warn(f"github_api retry: {retry_counter}")
+            try:
+                response = requests.post(
+                    url, data=data, json=json, headers=request_headers
+                )
+            except Exception as e:
+                response = None
+                break
+            finally:
+                if response.status_code == 502:
+                    retry_counter += 1
+                    response = None
+                    if retry_ms and retry_counter <= retry_count:
+                        time.sleep(retry_counter * retry_ms / 1000)
+                else:
+                    break
+        # }
+
         results = self._get_request_result(response)
         return results
 

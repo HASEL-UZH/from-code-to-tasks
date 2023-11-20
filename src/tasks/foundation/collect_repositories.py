@@ -150,9 +150,9 @@ def get_text_language_info(s):
             languages.append(info["language"])
             languages.append("zh")
             if info["language"].startswith("zh"):
-                print("CHINESE")
+                log.info("Chinese")
             else:
-                print("MIXED")
+                log.info("Mixed")
 
     if languages:
         info["languages"] = ", ".join(languages)

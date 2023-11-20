@@ -12,14 +12,27 @@ from src.core.workspace_context import write_json_file
 # @see https://medium.com/swlh/introduction-to-graphql-with-github-api-64ee8bb11630
 # @see https://github.com/altair-graphql/altair
 class GitHubGraphQlApi(GitHubApi):
-    def __init__(self, token=None, headers=None):
+    def __init__(
+        self,
+        token=None,
+        headers=None,
+        retry_count=10,
+        retry_ms=100,
+    ):
         super().__init__(token, headers)
+        self.retry_count = retry_count or 0
+        self.retry_ms = retry_ms or 100
 
     def execute_grapqhql_query(self, query, variables=None, log=False):
         if not variables:
             variables = {}
         payload = {"query": query, "variables": variables}
-        result = self.post_request(GITHUB_API_GRAPHQL_ENDPOINT, json=payload)
+        result = self.post_request(
+            GITHUB_API_GRAPHQL_ENDPOINT,
+            json=payload,
+            retry_count=self.retry_count,
+            retry_ms=self.retry_ms,
+        )
         data = result.get("data")
         if data and "data" in data:
             # unpack wrapped data
@@ -314,7 +327,8 @@ class GitHubGraphQlApi(GitHubApi):
 
         q0 = get_query("")
         base_result = self.execute_grapqhql_query(
-            query=q0["query"], variables=q0["variables"]
+            query=q0["query"],
+            variables=q0["variables"],
         )
 
         # We have to divide the query into separate executions because there is a limit of 10 pages, each containing a maximum of 100 entries.
@@ -334,7 +348,6 @@ class GitHubGraphQlApi(GitHubApi):
             next_fn=next,
             max_pages=max_pages,
         )
-
         _result["timestamp"] = datetime.now().isoformat()
         _result["quid"] = str(uuid.uuid4())
         _result["query"] = {
