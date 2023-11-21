@@ -152,9 +152,7 @@ class MdbStore:
     def save_repository(self, repository: dict):
         if not ObjectFactory.is_repository(repository):
             raise RuntimeError()
-        directory = get_or_create_dir(
-            self.find_repository_dir(repository["identifier"])
-        )
+        directory = get_or_create_dir(self.get_repository_dir(repository["identifier"]))
         repository["_location"] = os.path.relpath(directory, get_store_dir())
         Collection.repository.update_one(
             {"id": repository["id"], "classifier": Classifier.repository},
