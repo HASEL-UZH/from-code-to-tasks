@@ -3,8 +3,8 @@ from .logger import log
 
 
 class Profiler:
-    def __init__(self, name=None, start=True, log_fn=None):
-        self.name = name
+    def __init__(self, name: str = None, start=True, log_fn=None):
+        self.name = name or ""
         self.start_time = None
         self.last_time = None
         self.count = 0
@@ -48,10 +48,9 @@ class Profiler:
         elapsed_since_start = current_time - self.start_time
         self.last_time = current_time
 
+        info = str(description) if description else ""
         info = (
-            self.name + "::" + (isinstance(description, str) or "")
-            if self.name
-            else description
+            self.name + "::" + info if self.name and info else self.name or description
         )
 
         if self.count == 1:
