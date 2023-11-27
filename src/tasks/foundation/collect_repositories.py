@@ -1,13 +1,15 @@
 import os
+
 from langdetect import detect, DetectorFactory
 from pydriller import Repository
+
 from src.core.logger import log
-from src.store.mdb import mdb
 from src.core.profiler import Profiler
 from src.core.workspace_context import get_results_dir, write_csv_file, write_xlsx_file
+from src.github.github_grapghql_api import github_graphql_api
+from src.store.mdb import mdb
 from src.store.mdb_store import Collection
 from src.store.object_factory import get_repository_identifier
-from src.github.github_grapghql_api import github_graphql_api
 
 api = github_graphql_api
 
@@ -273,11 +275,11 @@ def verify_commit_consistencies(owner: str, repository_name: str):
 
 if __name__ == "__main__":
     print(f"Rate limit: {api.get_rate_limit()}")
-    insert_top_repositories()
-    update_top_repositories_with_language()
-    update_top_repositories_with_stats()
+    # insert_top_repositories()
+    # update_top_repositories_with_language()
+    # update_top_repositories_with_stats()
     update_top_repositories_with_pr_count()
-    insert_pull_requests(owner="iluwatar", repository_name="java-design-patterns")
+    # insert_pull_requests(owner="iluwatar", repository_name="java-design-patterns")
     # insert_pull_requests(owner="apache", repository_name="commons-lang")
     # insert_pull_requests(owner="vavr-io", repository_name="vavr")
     # verify_commit_consistencies(

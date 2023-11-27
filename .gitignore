@@ -1,5 +1,6 @@
 .env
 /venv
+/venv-3.12
 /tmp
 /_tmp
 **/__pycache__/

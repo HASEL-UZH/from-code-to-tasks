@@ -1,11 +1,13 @@
 import re
+
 from pydriller import Repository
+
 from src.core.profiler import Profiler
 from src.core.utils import get_date_string
 from src.core.workspace_context import get_file_base_name, is_java_file
-from src.store.object_factory import ObjectFactory
-from src.store.mdb_store import db, Collection
 from src.github.defs import RepositoryIdentifier
+from src.store.mdb_store import db, Collection
+from src.store.object_factory import ObjectFactory
 
 
 def create_commit_data_task():
@@ -79,7 +81,7 @@ def save_commit_data(repository, pr_commit, pydriller_commit):
     db.save_commit(commit)
     results["commit"] = commit
     commit_file_count = 0
-    for modified_file in []:  # unique_modified_files:
+    for modified_file in unique_modified_files:
         file_name = modified_file.filename
         base_file_name = get_file_base_name(file_name)
         if is_java_file(file_name):
