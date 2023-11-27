@@ -3,6 +3,7 @@ import subprocess
 from typing import Iterable
 
 from src.core.profiler import Profiler
+from src.github.defs import RepositoryIdentifier
 from src.store.object_factory import ObjectFactory
 from src.store.mdb_store import db
 
@@ -17,7 +18,12 @@ def create_ast_task():
     count = 0
     profiler = Profiler()
 
-    java_resources = db.find_resources({"kind": "source"})
+    java_resources = db.find_resources(
+        {
+            "kind": "source",
+            "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
+        }
+    )
     create_ast_task_multi(java_resources, profiler, mode="parallel")
     # create_ast_task_single(java_resources, profiler)
 

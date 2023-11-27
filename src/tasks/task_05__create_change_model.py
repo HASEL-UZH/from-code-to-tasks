@@ -1,6 +1,7 @@
 from src.ast.create_ast_change_model import create_ast_change_model
 from src.core.profiler import Profiler
 from src.core.utils import group_by, accessor
+from src.github.defs import RepositoryIdentifier
 from src.store.object_factory import ObjectFactory
 from src.store.mdb_store import db
 
@@ -10,7 +11,14 @@ def change_model_creator_task():
 
     profiler = Profiler("create_meta_ast_task")
 
-    meta_resources = list(db.find_resources({"kind": "meta"}))
+    meta_resources = list(
+        db.find_resources(
+            {
+                "kind": "meta",
+                "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
+            }
+        )
+    )
     group_key_lambda = lambda x: x.get("strategy").get("meta")
     grouped_meta_resources = group_by(meta_resources, group_key_lambda)
 

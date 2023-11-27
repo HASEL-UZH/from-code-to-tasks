@@ -1,0 +1,967 @@
+{
+    "classifier": "Commit",
+    "fields": [
+        {
+            "name": "abbreviatedOid",
+            "description": "An abbreviated version of the Git object ID",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "additions",
+            "description": "The number of additions in this commit.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Int",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "associatedPullRequests",
+            "description": "The merged Pull Request that introduced the commit to the repository. If the commit is not present in the default branch, additionally returns open Pull Requests associated with the commit",
+            "type": {
+                "name": "PullRequestConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for pull requests.",
+                    "type": {
+                        "name": "PullRequestOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: CREATED_AT, direction: ASC}"
+                }
+            ]
+        },
+        {
+            "name": "author",
+            "description": "Authorship details of the commit.",
+            "type": {
+                "name": "GitActor",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "authoredByCommitter",
+            "description": "Check if the committer and the author match.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "authoredDate",
+            "description": "The datetime when this commit was authored.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DateTime",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "authors",
+            "description": "The list of authors for this commit based on the git author and the Co-authored-by\nmessage trailer. The git author will always be first.\n",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "GitActorConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "blame",
+            "description": "Fetches `git blame` information.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Blame",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "path",
+                    "description": "The file whose Git blame information you want.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "String",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "changedFilesIfAvailable",
+            "description": "The number of changed files in this commit. If GitHub is unable to calculate the number of changed files (for example due to a timeout), this will return `null`. We recommend using this field instead of `changedFiles`.",
+            "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "checkSuites",
+            "description": "The check suites associated with a commit.",
+            "type": {
+                "name": "CheckSuiteConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "filterBy",
+                    "description": "Filters the check suites by this type.",
+                    "type": {
+                        "name": "CheckSuiteFilter",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "comments",
+            "description": "Comments made on the commit.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "CommitCommentConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "commitResourcePath",
+            "description": "The HTTP path for this Git object",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "commitUrl",
+            "description": "The HTTP URL for this Git object",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "committedDate",
+            "description": "The datetime when this commit was committed.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DateTime",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "committedViaWeb",
+            "description": "Check if committed via GitHub web UI.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "committer",
+            "description": "Committer details of the commit.",
+            "type": {
+                "name": "GitActor",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "deletions",
+            "description": "The number of deletions in this commit.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Int",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "deployments",
+            "description": "The deployments associated with a commit.",
+            "type": {
+                "name": "DeploymentConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "environments",
+                    "description": "Environments to list deployments for",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for deployments returned from the connection.",
+                    "type": {
+                        "name": "DeploymentOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: CREATED_AT, direction: ASC}"
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "file",
+            "description": "The tree entry representing the file located at the given path.",
+            "type": {
+                "name": "TreeEntry",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "path",
+                    "description": "The path for the file",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "String",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "history",
+            "description": "The linear commit history starting from (and including) this commit, in the same order as `git log`.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "CommitHistoryConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "path",
+                    "description": "If non-null, filters history to only show commits touching files under this path.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "author",
+                    "description": "If non-null, filters history to only show commits with matching authorship.",
+                    "type": {
+                        "name": "CommitAuthor",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "since",
+                    "description": "Allows specifying a beginning time or date for fetching commits.",
+                    "type": {
+                        "name": "GitTimestamp",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "until",
+                    "description": "Allows specifying an ending time or date for fetching commits.",
+                    "type": {
+                        "name": "GitTimestamp",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "id",
+            "description": null,
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ID",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "message",
+            "description": "The Git commit message",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "messageBody",
+            "description": "The Git commit message body",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "messageBodyHTML",
+            "description": "The commit message body rendered to HTML.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "HTML",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "messageHeadline",
+            "description": "The Git commit message headline",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "messageHeadlineHTML",
+            "description": "The commit message headline rendered to HTML.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "HTML",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "oid",
+            "description": "The Git object ID",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "GitObjectID",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "onBehalfOf",
+            "description": "The organization this commit was made on behalf of.",
+            "type": {
+                "name": "Organization",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "parents",
+            "description": "The parents of a commit.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "CommitConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "repository",
+            "description": "The Repository this commit belongs to",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Repository",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "resourcePath",
+            "description": "The HTTP path for this commit",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "signature",
+            "description": "Commit signing information, if present.",
+            "type": {
+                "name": "GitSignature",
+                "kind": "INTERFACE",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "status",
+            "description": "Status information for this commit",
+            "type": {
+                "name": "Status",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "statusCheckRollup",
+            "description": "Check and Status rollup information for this commit.",
+            "type": {
+                "name": "StatusCheckRollup",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "submodules",
+            "description": "Returns a list of all submodules in this repository as of this Commit parsed from the .gitmodules file.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "SubmoduleConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "tarballUrl",
+            "description": "Returns a URL to download a tarball archive for a repository.\nNote: For private repositories, these links are temporary and expire after five minutes.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "tree",
+            "description": "Commit's root Tree",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Tree",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "treeResourcePath",
+            "description": "The HTTP path for the tree of this commit",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "treeUrl",
+            "description": "The HTTP URL for the tree of this commit",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "url",
+            "description": "The HTTP URL for this commit",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanSubscribe",
+            "description": "Check if the viewer is able to change their subscription status for the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerSubscription",
+            "description": "Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.",
+            "type": {
+                "name": "SubscriptionState",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "zipballUrl",
+            "description": "Returns a URL to download a zipball archive for a repository.\nNote: For private repositories, these links are temporary and expire after five minutes.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        }
+    ]
+}

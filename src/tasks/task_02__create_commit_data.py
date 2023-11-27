@@ -1,20 +1,19 @@
-import logging
 import re
-
-import requests
 from pydriller import Repository
-
 from src.core.profiler import Profiler
 from src.core.utils import get_date_string
 from src.core.workspace_context import get_file_base_name, is_java_file
 from src.store.object_factory import ObjectFactory
 from src.store.mdb_store import db, Collection
+from src.github.defs import RepositoryIdentifier
 
 
 def create_commit_data_task():
     repositories = list(db.find_repositories())
     repositories = [
-        d for d in repositories if d["identifier"] == "iluwatar__java-design-patterns"
+        d
+        for d in repositories
+        if d["identifier"] == RepositoryIdentifier.iluwatar__java_design_patterns
     ]
     profiler = Profiler("create_commit_data_task")
 
@@ -65,6 +64,7 @@ def save_commit_data(repository, pr_commit, pydriller_commit):
         "commit_message": pydriller_commit.msg,
         "pull_request": pr_commit,
         "pull_request_title": pr_commit.get("title"),
+        "pull_request_text": pr_commit.get("bodyText"),
         "commit_author": pydriller_commit.author.name,
         "commit_date": commit_date,
         "in_main_branch": pydriller_commit.in_main_branch,
@@ -79,7 +79,7 @@ def save_commit_data(repository, pr_commit, pydriller_commit):
     db.save_commit(commit)
     results["commit"] = commit
     commit_file_count = 0
-    for modified_file in unique_modified_files:
+    for modified_file in []:  # unique_modified_files:
         file_name = modified_file.filename
         base_file_name = get_file_base_name(file_name)
         if is_java_file(file_name):

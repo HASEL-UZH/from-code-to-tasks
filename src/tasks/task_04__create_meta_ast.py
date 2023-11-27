@@ -2,6 +2,7 @@ import json
 
 from src.core.profiler import Profiler
 from src.core.logger import log
+from src.github.defs import RepositoryIdentifier
 from src.store.object_factory import ObjectFactory
 from src.store.mdb_store import db
 from src.strategies.meta.meta_ast_strategy import (
@@ -27,7 +28,15 @@ def get_ast_meta_resource(ast_resource, commit, ast_meta_strategy, content):
 def create_meta_ast_task():
     print("create_meta_ast_task started")
     db.delete_resources_where({"kind": "meta", "type": "json"})
-    ast_resources = list(db.find_resources({"kind": "ast", "type": "json"}))
+    ast_resources = list(
+        db.find_resources(
+            {
+                "kind": "ast",
+                "type": "json",
+                "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
+            }
+        )
+    )
     count = 0
     profiler = Profiler("create_meta_ast_task")
 

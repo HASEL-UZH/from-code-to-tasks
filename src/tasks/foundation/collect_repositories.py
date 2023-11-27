@@ -277,7 +277,9 @@ if __name__ == "__main__":
     update_top_repositories_with_language()
     update_top_repositories_with_stats()
     update_top_repositories_with_pr_count()
-    # insert_pull_requests(owner="iluwatar", repository_name="java-design-patterns")
+    insert_pull_requests(owner="iluwatar", repository_name="java-design-patterns")
+    # insert_pull_requests(owner="apache", repository_name="commons-lang")
+    # insert_pull_requests(owner="vavr-io", repository_name="vavr")
     # verify_commit_consistencies(
     #     owner="iluwatar", repository_name="java-design-patterns"
     # )

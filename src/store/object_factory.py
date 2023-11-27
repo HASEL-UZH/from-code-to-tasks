@@ -98,6 +98,7 @@ class ObjectFactory:
             "identifier": identifier,
             "filename": filename,
             "@container": container.get("id"),
+            "repository_identifier": container.get("repository_identifier"),
         }
         _object = {**_object, **data, **_object}
         if not "content" in _object:

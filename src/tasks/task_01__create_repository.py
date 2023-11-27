@@ -1,5 +1,6 @@
 from src.core.logger import log
 from src.core.profiler import Profiler
+from src.github.defs import RepositoryIdentifier
 from src.store.object_factory import ObjectFactory, Classifier
 from src.store.mdb_store import db, Collection
 from src.store.mdb_store import db, Collection
@@ -20,7 +21,12 @@ def create_repository_task():
 
 def get_top_repositories():
     pipeline = [
-        {"$match": {"language": "en"}},
+        {
+            "$match": {
+                "language": "en",
+                "identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
+            },
+        },
         # {
         #     "$project": {
         #         "identifier": 1,

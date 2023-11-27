@@ -1,5 +1,6 @@
 from src.core.profiler import Profiler
 from src.core.utils import group_by
+from src.github.defs import RepositoryIdentifier
 from src.store.object_factory import ObjectFactory
 from src.store.mdb_store import db
 from src.strategies.terms.diff_text import create_diff_text
@@ -32,7 +33,12 @@ def change_term_creator_task():
 
     profiler = Profiler("change_term_creator_task")
     count = 0
-    meta_resources = db.find_resources({"kind": "change"})
+    meta_resources = db.find_resources(
+        {
+            "kind": "change",
+            "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
+        }
+    )
     for resource in meta_resources:
         count += 1
         profiler.debug(f"Count: {count}, resource: {resource['filename']}")

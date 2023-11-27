@@ -7,6 +7,7 @@ from src.calculations.create_results import (
 from src.core.logger import log
 from src.core.profiler import Profiler
 from src.core.utils import group_by
+from src.github.defs import RepositoryIdentifier
 from src.store.mdb_store import db
 from src.strategies.embeddings.define_vocabulary import (
     corpus_subword_with_numbers_provider,
@@ -20,7 +21,15 @@ from src.strategies.embeddings.tf_idf_concept import create_tf_idf_concept
 
 # FIXME use iterator
 def get_commit_infos() -> [dict]:
-    change_resources = db.find_resources({"kind": "term"})
+    change_resources = db.find_resources(
+        {
+            "strategy.meta": "ast-lg",
+            "kind": "term",
+            "type": "text",
+            "strategy.terms": "meta_ast_text",
+            "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
+        }
+    )
     commit_infos = []
     for change_resource in change_resources:
         commit = db.find_object(change_resource.get("@container"))

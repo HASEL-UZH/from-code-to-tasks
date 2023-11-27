@@ -408,7 +408,7 @@ class GitHubGraphQlApi(GitHubApi):
         variables = {
             "owner": owner,
             "name": repository_name,
-            "states": ["MERGED"],
+            "states": ["MERGED", "CLOSED"],
             "first": n,
             "cursor": None,
         }
@@ -467,7 +467,7 @@ class GitHubGraphQlApi(GitHubApi):
                 pullRequests {
                   totalCount
                 }
-              }         
+              }
             }
         """
         variables = {"owner": owner, "name": repository_name}
@@ -493,16 +493,16 @@ if __name__ == "__main__":
     react_repository = api.get_repository(owner="facebook", name="react")
 
     write_json_file(
-        "./docs/github-api/github-repository-schema.json", repository_schema
+        "./src/github/docs/github-repository-schema.json", repository_schema
     )
-    write_json_file("./docs/github-api/github-commit-schema.json", commit_schema)
-    write_json_file("./docs/github-api/github-pr-schema.json", pr_schema)
+    write_json_file("./src/github/docs/github-commit-schema.json", commit_schema)
+    write_json_file("./src/github/docs/github-pr-schema.json", pr_schema)
 
     write_json_file(
-        "./docs/github-api/github-repository-fields.json", repository_fields
+        "./src/github/docs/github-repository-fields.json", repository_fields
     )
-    write_json_file("./docs/github-api/github-commit-fields.json", commit_fields)
-    write_json_file("./docs/github-api/github-object-types.json", object_types)
+    write_json_file("./src/github/docs/github-commit-fields.json", commit_fields)
+    write_json_file("./src/github/docs/github-object-types.json", object_types)
 
     # top_repositories = (
     #     api.find_top_java_repositories(n=100, min_stars=2000, max_pages=1) or []
