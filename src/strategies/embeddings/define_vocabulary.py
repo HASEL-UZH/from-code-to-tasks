@@ -1,21 +1,15 @@
 import re
 
-from src.github.defs import RepositoryIdentifier
 from src.store.mdb_store import db
 
 
 def get_corpus_standard_with_numbers():
     corpus = []
-    change_text_resources = db.find_resources(
-        {
-            "kind": "change",
-            "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
-        }
-    )
-    pr_resources = get_pull_request_titles()
-    for change_text_resource in change_text_resources:
-        change_text = db.get_resource_content(change_text_resource)["code"]["text"]
+    term_resources = db.find_resources({"kind": "term", "type": "text"})
+    for term_resource in term_resources:
+        change_text = db.get_resource_content(term_resource)
         corpus.append(change_text)
+    pr_resources = get_pull_request_titles()
     for pr_resource in pr_resources:
         corpus.append(pr_resource)
     return corpus
@@ -23,16 +17,11 @@ def get_corpus_standard_with_numbers():
 
 def get_corpus_standard_without_numbers():
     corpus = []
-    change_text_resources = db.find_resources(
-        {
-            "kind": "change",
-            "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
-        }
-    )
-    pr_resources = get_pull_request_titles()
-    for change_text_resource in change_text_resources:
-        change_text = db.get_resource_content(change_text_resource)["code"]["text"]
+    term_resources = db.find_resources({"kind": "term", "type": "text"})
+    for term_resource in term_resources:
+        change_text = db.get_resource_content(term_resource)
         corpus.append(change_text)
+    pr_resources = get_pull_request_titles()
     for pr_resource in pr_resources:
         corpus.append(pr_resource)
     return remove_numbers(corpus)
@@ -40,17 +29,12 @@ def get_corpus_standard_without_numbers():
 
 def get_corpus_subword_with_numbers():
     corpus = []
-    change_text_resources = db.find_resources(
-        {
-            "kind": "change",
-            "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
-        }
-    )
-    pr_resources = get_pull_request_titles()
-    for change_text_resource in change_text_resources:
-        change_text = db.get_resource_content(change_text_resource)["code"]["text"]
+    term_resources = db.find_resources({"kind": "term", "type": "text"})
+    for term_resource in term_resources:
+        change_text = db.get_resource_content(term_resource)
         change_text_subword_split = subword_splitter(change_text)
         corpus.append(change_text_subword_split)
+    pr_resources = get_pull_request_titles()
     for pr_resource in pr_resources:
         pr_subword_split = subword_splitter(pr_resource)
         corpus.append(pr_subword_split)
@@ -59,17 +43,12 @@ def get_corpus_subword_with_numbers():
 
 def get_corpus_subword_without_numbers():
     corpus = []
-    change_text_resources = db.find_resources(
-        {
-            "kind": "change",
-            "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
-        }
-    )
-    pr_resources = get_pull_request_titles()
-    for change_text_resource in change_text_resources:
-        change_text = db.get_resource_content(change_text_resource)["code"]["text"]
+    term_resources = db.find_resources({"kind": "term", "type": "text"})
+    for term_resource in term_resources:
+        change_text = db.get_resource_content(term_resource)
         change_text_subword_split = subword_splitter(change_text)
         corpus.append(change_text_subword_split)
+    pr_resources = get_pull_request_titles()
     for pr_resource in pr_resources:
         pr_subword_split = subword_splitter(pr_resource)
         corpus.append(pr_subword_split)
@@ -124,7 +103,6 @@ def corpus_subword_without_numbers_provider():
     return create_corpus
 
 
-# TODO move function
 def get_pull_request_titles():
     pull_request_titles = []
     commits = db.find_commits()
@@ -132,7 +110,6 @@ def get_pull_request_titles():
         pull_request_titles.append(commit["pull_request_title"])
         if commit.get("pull_request_text"):
             pull_request_titles.append(commit.get("pull_request_text"))
-
     return pull_request_titles
 
 
