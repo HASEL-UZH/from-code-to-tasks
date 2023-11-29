@@ -202,6 +202,22 @@ def insert_pull_requests(owner: str, repository_name: str):
     Collection.github_pr.insert_many(entries)
 
 
+def insert_issues(owner: str, repository_name: str):
+    result = api.get_issues(owner, repository_name, n=100, max_pages=100)
+    identifier = get_repository_identifier(result["url"])
+    base = {"identifier": identifier}
+
+    entries = []
+    for issue in result.get("data"):
+        entry = {**base, **issue}
+        entries.append(entry)
+
+    Collection.github_issue.delete_many({"identifier": identifier})
+    if entries:
+        Collection.github_issue.insert_many(entries)
+    log.info(f"Insert issues for {result['url']} ({len(entries)})")
+
+
 def verify_commit_consistencies(owner: str, repository_name: str):
     profiler = Profiler()
     repo_url = f"https://github.com/{owner}/{repository_name}"
@@ -278,11 +294,14 @@ if __name__ == "__main__":
     # insert_top_repositories()
     # update_top_repositories_with_language()
     # update_top_repositories_with_stats()
-    update_top_repositories_with_pr_count()
+    # update_top_repositories_with_pr_count()
     # insert_pull_requests(owner="iluwatar", repository_name="java-design-patterns")
     # insert_pull_requests(owner="apache", repository_name="commons-lang")
     # insert_pull_requests(owner="vavr-io", repository_name="vavr")
     # verify_commit_consistencies(
     #     owner="iluwatar", repository_name="java-design-patterns"
     # )
+    insert_issues(owner="iluwatar", repository_name="java-design-patterns")
+    insert_issues(owner="apache", repository_name="commons-lang")
+    insert_issues(owner="vavr-io", repository_name="vavr")
     print("Done.")

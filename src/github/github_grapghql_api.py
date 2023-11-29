@@ -481,6 +481,84 @@ class GitHubGraphQlApi(GitHubApi):
 
         return None
 
+    def get_issues(self, owner, repository_name, n=100, max_pages=None):
+        template = """
+            query getIssues(
+              $owner: String!
+              $name: String!
+              $first: Int!
+              $cursor: String
+            ) {
+              repository(owner: $owner, name: $name) {
+                url
+                issues(first: $first, after: $cursor) {
+                  totalCount
+                  edges {
+                    node {
+                      title
+                      number
+                      createdAt
+                      bodyText
+                      state
+                    }
+                    cursor
+                  }
+                  pageInfo {
+                    endCursor
+                    hasNextPage
+                  }
+                }
+              }
+            }
+        """
+        variables = {
+            "owner": owner,
+            "name": repository_name,
+            "first": n,
+            "cursor": None,
+        }
+        _result = {
+            "ok": False,
+            "data": [],
+            "headers": None,
+            "issue_count": None,
+            "url": None,
+        }
+
+        def next(data):
+            _next = None
+            page_info = data.get("repository", {}).get("issues", {}).get("pageInfo")
+            if page_info:
+                _next = (
+                    page_info.get("endCursor") if page_info.get("hasNextPage") else None
+                )
+            return _next
+
+        def handler(context, result):
+            nonlocal _result
+            if result["ok"]:
+                data = result.get("data", {})
+                if _result["issue_count"] is None:
+                    _result["issue_count"] = data["repository"]["issues"]["totalCount"]
+                    _result["url"] = data["repository"]["url"]
+                issues = data.get("repository", {}).get("issues", {}).get("edges", [])
+                issues = [d["node"] for d in issues]
+                _result["data"].extend(issues)
+                _result["headers"] = result["headers"]
+                _result["page_count"] = context["page_count"]
+            else:
+                return None
+            pass
+
+        self.execute_grapqhql_iteration_query(
+            query=template,
+            variables=variables,
+            handler=handler,
+            next_fn=next,
+            max_pages=max_pages,
+        )
+        return _result
+
     def get_pull_request_closing_issues(self, owner, repository_name, pr_nr):
         query = """
             query GetPullRequestClosingIssues($owner: String!, $name: String!, $prNumber: Int!) {
@@ -524,8 +602,11 @@ if __name__ == "__main__":
     repository_schema = api.get_schema("Repository")
     pr_schema = api.get_schema("PullRequest")
     commit_schema = api.get_schema("Commit")
+    issue_schema = api.get_schema("Issue")
     object_types = api.get_types()
     react_repository = api.get_repository(owner="facebook", name="react")
+
+    github_graphql_api.get_issues("iluwatar", "java-design-patterns")
 
     write_json_file(
         "./src/github/docs/github-repository-schema.json", repository_schema
@@ -538,6 +619,7 @@ if __name__ == "__main__":
     )
     write_json_file("./src/github/docs/github-commit-fields.json", commit_fields)
     write_json_file("./src/github/docs/github-object-types.json", object_types)
+    write_json_file("./src/github/docs/github-issue-schema.json", issue_schema)
 
     # top_repositories = (
     #     api.find_top_java_repositories(n=100, min_stars=2000, max_pages=1) or []

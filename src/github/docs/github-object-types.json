@@ -1337,6 +1337,8 @@
     "UnpinnedEvent",
     "UnresolveReviewThreadInput",
     "UnresolveReviewThreadPayload",
+    "UnsubscribeFromNotificationsInput",
+    "UnsubscribeFromNotificationsPayload",
     "UnsubscribedEvent",
     "Updatable",
     "UpdatableComment",

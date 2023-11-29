@@ -1087,7 +1087,7 @@
         },
         {
             "name": "id",
-            "description": null,
+            "description": "The Node ID of this object",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",

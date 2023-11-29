@@ -1,5 +1,5 @@
 {
-    "classifier": "PullRequest",
+    "classifier": "Issue",
     "fields": [
         {
             "name": "activeLockReason",
@@ -8,19 +8,6 @@
                 "name": "LockReason",
                 "kind": "ENUM",
                 "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "additions",
-            "description": "The number of additions in this pull request.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Int",
-                    "kind": "SCALAR"
-                }
             },
             "args": []
         },
@@ -102,64 +89,8 @@
             "args": []
         },
         {
-            "name": "autoMergeRequest",
-            "description": "Returns the auto-merge request object if one exists for this pull request.",
-            "type": {
-                "name": "AutoMergeRequest",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "baseRef",
-            "description": "Identifies the base Ref associated with the pull request.",
-            "type": {
-                "name": "Ref",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "baseRefName",
-            "description": "Identifies the name of the base Ref associated with the pull request, even if the ref has been deleted.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "String",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "baseRefOid",
-            "description": "Identifies the oid of the base ref associated with the pull request, even if the ref has been deleted.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "GitObjectID",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "baseRepository",
-            "description": "The repository associated with this pull request's base Ref.",
-            "type": {
-                "name": "Repository",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
             "name": "body",
-            "description": "The body as Markdown.",
+            "description": "Identifies the body of the issue.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -184,34 +115,8 @@
             "args": []
         },
         {
-            "name": "bodyText",
-            "description": "The body rendered to text.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "String",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "changedFiles",
-            "description": "The number of changed files in this pull request.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Int",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "checksResourcePath",
-            "description": "The HTTP path for the checks of this pull request.",
+            "name": "bodyResourcePath",
+            "description": "The http path for this issue body",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -223,8 +128,21 @@
             "args": []
         },
         {
-            "name": "checksUrl",
-            "description": "The HTTP URL for the checks of this pull request.",
+            "name": "bodyText",
+            "description": "Identifies the body of the issue rendered to text.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "bodyUrl",
+            "description": "The http URL for this issue body",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -237,7 +155,7 @@
         },
         {
             "name": "closed",
-            "description": "`true` if the pull request is closed",
+            "description": "Indicates if the object is closed (definition of closed may depend on type)",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -259,79 +177,8 @@
             "args": []
         },
         {
-            "name": "closingIssuesReferences",
-            "description": "List of issues that were may be closed by this pull request",
-            "type": {
-                "name": "IssueConnection",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": [
-                {
-                    "name": "userLinkedOnly",
-                    "description": "Return only manually linked Issues",
-                    "type": {
-                        "name": "Boolean",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": "false"
-                },
-                {
-                    "name": "after",
-                    "description": "Returns the elements in the list that come after the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "before",
-                    "description": "Returns the elements in the list that come before the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "first",
-                    "description": "Returns the first _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "last",
-                    "description": "Returns the last _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "orderBy",
-                    "description": "Ordering options for issues returned from the connection",
-                    "type": {
-                        "name": "IssueOrder",
-                        "kind": "INPUT_OBJECT",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ]
-        },
-        {
             "name": "comments",
-            "description": "A list of comments associated with the pull request.",
+            "description": "A list of comments associated with the Issue.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -351,60 +198,6 @@
                     },
                     "defaultValue": null
                 },
-                {
-                    "name": "after",
-                    "description": "Returns the elements in the list that come after the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "before",
-                    "description": "Returns the elements in the list that come before the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "first",
-                    "description": "Returns the first _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "last",
-                    "description": "Returns the last _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ]
-        },
-        {
-            "name": "commits",
-            "description": "A list of commits present in this pull request's head branch not present in the base branch.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "PullRequestCommitConnection",
-                    "kind": "OBJECT"
-                }
-            },
-            "args": [
                 {
                     "name": "after",
                     "description": "Returns the elements in the list that come after the specified cursor.",
@@ -484,21 +277,8 @@
             "args": []
         },
         {
-            "name": "deletions",
-            "description": "The number of deletions in this pull request.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Int",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
             "name": "editor",
-            "description": "The actor who edited this pull request's body.",
+            "description": "The actor who edited the comment.",
             "type": {
                 "name": "Actor",
                 "kind": "INTERFACE",
@@ -507,108 +287,11 @@
             "args": []
         },
         {
-            "name": "files",
-            "description": "Lists the files changed within this pull request.",
+            "name": "fullDatabaseId",
+            "description": "Identifies the primary key from the database as a BigInt.",
             "type": {
-                "name": "PullRequestChangedFileConnection",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": [
-                {
-                    "name": "after",
-                    "description": "Returns the elements in the list that come after the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "before",
-                    "description": "Returns the elements in the list that come before the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "first",
-                    "description": "Returns the first _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "last",
-                    "description": "Returns the last _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ]
-        },
-        {
-            "name": "headRef",
-            "description": "Identifies the head Ref associated with the pull request.",
-            "type": {
-                "name": "Ref",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "headRefName",
-            "description": "Identifies the name of the head Ref associated with the pull request, even if the ref has been deleted.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "String",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "headRefOid",
-            "description": "Identifies the oid of the head ref associated with the pull request, even if the ref has been deleted.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "GitObjectID",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "headRepository",
-            "description": "The repository associated with this pull request's head Ref.",
-            "type": {
-                "name": "Repository",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "headRepositoryOwner",
-            "description": "The owner of the repository associated with this pull request's head Ref.",
-            "type": {
-                "name": "RepositoryOwner",
-                "kind": "INTERFACE",
+                "name": "BigInt",
+                "kind": "SCALAR",
                 "ofType": null
             },
             "args": []
@@ -664,34 +347,18 @@
             "args": []
         },
         {
-            "name": "isCrossRepository",
-            "description": "The head and base repositories are different.",
+            "name": "isPinned",
+            "description": "Indicates whether or not this issue is currently pinned to the repository issues list",
             "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "isDraft",
-            "description": "Identifies if the pull request is a draft.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
             },
             "args": []
         },
         {
             "name": "isReadByViewer",
-            "description": "Is this pull request read by the viewer",
+            "description": "Is this issue read by the viewer",
             "type": {
                 "name": "Boolean",
                 "kind": "SCALAR",
@@ -771,73 +438,15 @@
             "args": []
         },
         {
-            "name": "latestOpinionatedReviews",
-            "description": "A list of latest reviews per user associated with the pull request.",
+            "name": "linkedBranches",
+            "description": "Branches linked to this issue.",
             "type": {
-                "name": "PullRequestReviewConnection",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": [
-                {
-                    "name": "after",
-                    "description": "Returns the elements in the list that come after the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "before",
-                    "description": "Returns the elements in the list that come before the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "first",
-                    "description": "Returns the first _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "last",
-                    "description": "Returns the last _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "writersOnly",
-                    "description": "Only return reviews from user who have write access to the repository",
-                    "type": {
-                        "name": "Boolean",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": "false"
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "LinkedBranchConnection",
+                    "kind": "OBJECT"
                 }
-            ]
-        },
-        {
-            "name": "latestReviews",
-            "description": "A list of latest reviews per user associated with the pull request that are not also pending review.",
-            "type": {
-                "name": "PullRequestReviewConnection",
-                "kind": "OBJECT",
-                "ofType": null
             },
             "args": [
                 {
@@ -884,7 +493,7 @@
         },
         {
             "name": "locked",
-            "description": "`true` if the pull request is locked",
+            "description": "`true` if the object is locked",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -892,91 +501,12 @@
                     "name": "Boolean",
                     "kind": "SCALAR"
                 }
-            },
-            "args": []
-        },
-        {
-            "name": "maintainerCanModify",
-            "description": "Indicates whether maintainers can modify the pull request.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "mergeCommit",
-            "description": "The commit that was created when this pull request was merged.",
-            "type": {
-                "name": "Commit",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "mergeQueueEntry",
-            "description": "The merge queue entry of the pull request in the base branch's merge queue",
-            "type": {
-                "name": "MergeQueueEntry",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "mergeable",
-            "description": "Whether or not the pull request can be merged based on the existence of merge conflicts.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "MergeableState",
-                    "kind": "ENUM"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "merged",
-            "description": "Whether or not the pull request was merged.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "mergedAt",
-            "description": "The date and time that the pull request was merged.",
-            "type": {
-                "name": "DateTime",
-                "kind": "SCALAR",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "mergedBy",
-            "description": "The actor who merged the pull request.",
-            "type": {
-                "name": "Actor",
-                "kind": "INTERFACE",
-                "ofType": null
             },
             "args": []
         },
         {
             "name": "milestone",
-            "description": "Identifies the milestone associated with the pull request.",
+            "description": "Identifies the milestone associated with the issue.",
             "type": {
                 "name": "Milestone",
                 "kind": "OBJECT",
@@ -986,7 +516,7 @@
         },
         {
             "name": "number",
-            "description": "Identifies the pull request number.",
+            "description": "Identifies the issue number.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -999,7 +529,7 @@
         },
         {
             "name": "participants",
-            "description": "A list of Users that are participating in the Pull Request conversation.",
+            "description": "A list of Users that are participating in the Issue conversation.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -1052,31 +582,8 @@
             ]
         },
         {
-            "name": "permalink",
-            "description": "The permalink to the pull request.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "URI",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "potentialMergeCommit",
-            "description": "The commit that GitHub automatically generated to test if this pull request could be merged. This field will not return a value if the pull request is merged, or if the test merge commit is still being generated. See the `mergeable` field for more details on the mergeability of the pull request.",
-            "type": {
-                "name": "Commit",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
             "name": "projectCards",
-            "description": "List of project cards associated with this pull request.",
+            "description": "List of project cards associated with this issue.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -1143,7 +650,7 @@
         },
         {
             "name": "projectItems",
-            "description": "List of project items associated with this pull request.",
+            "description": "List of project items associated with this issue.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -1415,7 +922,7 @@
         },
         {
             "name": "resourcePath",
-            "description": "The HTTP path for this pull request.",
+            "description": "The HTTP path for this issue",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -1425,256 +932,38 @@
                 }
             },
             "args": []
-        },
-        {
-            "name": "revertResourcePath",
-            "description": "The HTTP path for reverting this pull request.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "URI",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "revertUrl",
-            "description": "The HTTP URL for reverting this pull request.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "URI",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "reviewDecision",
-            "description": "The current status of this pull request with respect to code review.",
-            "type": {
-                "name": "PullRequestReviewDecision",
-                "kind": "ENUM",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "reviewRequests",
-            "description": "A list of review requests associated with the pull request.",
-            "type": {
-                "name": "ReviewRequestConnection",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": [
-                {
-                    "name": "after",
-                    "description": "Returns the elements in the list that come after the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "before",
-                    "description": "Returns the elements in the list that come before the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "first",
-                    "description": "Returns the first _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "last",
-                    "description": "Returns the last _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ]
-        },
-        {
-            "name": "reviewThreads",
-            "description": "The list of all review threads for this pull request.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "PullRequestReviewThreadConnection",
-                    "kind": "OBJECT"
-                }
-            },
-            "args": [
-                {
-                    "name": "after",
-                    "description": "Returns the elements in the list that come after the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "before",
-                    "description": "Returns the elements in the list that come before the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "first",
-                    "description": "Returns the first _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "last",
-                    "description": "Returns the last _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ]
-        },
-        {
-            "name": "reviews",
-            "description": "A list of reviews associated with the pull request.",
-            "type": {
-                "name": "PullRequestReviewConnection",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": [
-                {
-                    "name": "after",
-                    "description": "Returns the elements in the list that come after the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "before",
-                    "description": "Returns the elements in the list that come before the specified cursor.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "first",
-                    "description": "Returns the first _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "last",
-                    "description": "Returns the last _n_ elements from the list.",
-                    "type": {
-                        "name": "Int",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "states",
-                    "description": "A list of states to filter the reviews.",
-                    "type": {
-                        "name": null,
-                        "kind": "LIST",
-                        "ofType": {
-                            "name": null,
-                            "kind": "NON_NULL"
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "author",
-                    "description": "Filter by author of the review.",
-                    "type": {
-                        "name": "String",
-                        "kind": "SCALAR",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ]
         },
         {
             "name": "state",
-            "description": "Identifies the state of the pull request.",
+            "description": "Identifies the state of the issue.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
                 "ofType": {
-                    "name": "PullRequestState",
+                    "name": "IssueState",
                     "kind": "ENUM"
                 }
             },
             "args": []
         },
         {
-            "name": "suggestedReviewers",
-            "description": "A list of reviewer suggestions based on commit history and past review comments.",
+            "name": "stateReason",
+            "description": "Identifies the reason for the issue state.",
             "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": null,
-                    "kind": "LIST"
-                }
+                "name": "IssueStateReason",
+                "kind": "ENUM",
+                "ofType": null
             },
             "args": []
         },
         {
             "name": "timelineItems",
-            "description": "A list of events, comments, commits, etc. associated with the pull request.",
+            "description": "A list of events, comments, commits, etc. associated with the issue.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
                 "ofType": {
-                    "name": "PullRequestTimelineItemsConnection",
+                    "name": "IssueTimelineItemsConnection",
                     "kind": "OBJECT"
                 }
             },
@@ -1756,7 +1045,7 @@
         },
         {
             "name": "title",
-            "description": "Identifies the pull request title.",
+            "description": "Identifies the issue title.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -1769,26 +1058,151 @@
         },
         {
             "name": "titleHTML",
-            "description": "Identifies the pull request title rendered to HTML.",
+            "description": "Identifies the issue title rendered to HTML.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
                 "ofType": {
-                    "name": "HTML",
+                    "name": "String",
                     "kind": "SCALAR"
                 }
             },
             "args": []
         },
         {
-            "name": "totalCommentsCount",
-            "description": "Returns a count of how many comments this pull request has received.",
+            "name": "trackedInIssues",
+            "description": "A list of issues that track this issue",
             "type": {
-                "name": "Int",
-                "kind": "SCALAR",
-                "ofType": null
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "IssueConnection",
+                    "kind": "OBJECT"
+                }
             },
-            "args": []
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "trackedIssues",
+            "description": "A list of issues tracked inside the current issue",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "IssueConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "trackedIssuesCount",
+            "description": "The number of tracked issues for this issue",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Int",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": [
+                {
+                    "name": "states",
+                    "description": "Limit the count to tracked issues with the specified states.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": "TrackedIssueStates",
+                            "kind": "ENUM"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
         },
         {
             "name": "updatedAt",
@@ -1805,7 +1219,7 @@
         },
         {
             "name": "url",
-            "description": "The HTTP URL for this pull request.",
+            "description": "The HTTP URL for this issue",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -1868,19 +1282,6 @@
             ]
         },
         {
-            "name": "viewerCanApplySuggestion",
-            "description": "Whether or not the viewer can apply suggestion.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
             "name": "viewerCanClose",
             "description": "Indicates if the object can be closed by the viewer.",
             "type": {
@@ -1894,60 +1295,8 @@
             "args": []
         },
         {
-            "name": "viewerCanDeleteHeadRef",
-            "description": "Check if the viewer can restore the deleted head ref.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "viewerCanDisableAutoMerge",
-            "description": "Whether or not the viewer can disable auto-merge",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "viewerCanEditFiles",
-            "description": "Can the viewer edit files within this pull request.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "viewerCanEnableAutoMerge",
-            "description": "Whether or not the viewer can enable auto-merge",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
-            "name": "viewerCanMergeAsAdmin",
-            "description": "Indicates whether the viewer can bypass branch protections and merge the pull request immediately",
+            "name": "viewerCanDelete",
+            "description": "Check if the current viewer can delete this object.",
             "type": {
                 "name": null,
                 "kind": "NON_NULL",
@@ -2011,19 +1360,6 @@
             "args": []
         },
         {
-            "name": "viewerCanUpdateBranch",
-            "description": "Whether or not the viewer can update the head ref of this PR, by merging or rebasing the base ref.\nIf the head ref is up to date or unable to be updated by this user, this will return false.\n",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "Boolean",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": []
-        },
-        {
             "name": "viewerCannotUpdateReasons",
             "description": "Reasons why the current viewer can not update this comment.",
             "type": {
@@ -2050,78 +1386,30 @@
             "args": []
         },
         {
-            "name": "viewerLatestReview",
-            "description": "The latest review given from the viewer.",
-            "type": {
-                "name": "PullRequestReview",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "viewerLatestReviewRequest",
-            "description": "The person who has requested the viewer for review on this pull request.",
-            "type": {
-                "name": "ReviewRequest",
-                "kind": "OBJECT",
-                "ofType": null
-            },
-            "args": []
-        },
-        {
-            "name": "viewerMergeBodyText",
-            "description": "The merge body text for the viewer and method.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "String",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": [
-                {
-                    "name": "mergeType",
-                    "description": "The merge method for the message.",
-                    "type": {
-                        "name": "PullRequestMergeMethod",
-                        "kind": "ENUM",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ]
-        },
-        {
-            "name": "viewerMergeHeadlineText",
-            "description": "The merge headline text for the viewer and method.",
-            "type": {
-                "name": null,
-                "kind": "NON_NULL",
-                "ofType": {
-                    "name": "String",
-                    "kind": "SCALAR"
-                }
-            },
-            "args": [
-                {
-                    "name": "mergeType",
-                    "description": "The merge method for the message.",
-                    "type": {
-                        "name": "PullRequestMergeMethod",
-                        "kind": "ENUM",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ]
-        },
-        {
             "name": "viewerSubscription",
             "description": "Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.",
             "type": {
                 "name": "SubscriptionState",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "viewerThreadSubscriptionFormAction",
+            "description": "Identifies the viewer's thread subscription form action.",
+            "type": {
+                "name": "ThreadSubscriptionFormAction",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "viewerThreadSubscriptionStatus",
+            "description": "Identifies the viewer's thread subscription status.",
+            "type": {
+                "name": "ThreadSubscriptionState",
                 "kind": "ENUM",
                 "ofType": null
             },
