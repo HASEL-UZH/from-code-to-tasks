@@ -28,6 +28,7 @@ class Collection:
     repository = mdb.get_collection("repository")
     commit = mdb.get_collection("commit")
     resource = mdb.get_collection("resource")
+    accuracy = mdb.get_collection("accuracy")
     github_pr = mdb.get_collection("github_pr")
     github_query = mdb.get_collection("github_query")
     github_repository = mdb.get_collection("github_repository")

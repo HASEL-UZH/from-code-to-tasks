@@ -56,14 +56,8 @@ def split_string(s):
 def hash_string(s):
     if s is None:
         s = ""
-    encoded_string = s.encode("utf-8")
-    md5hash = hashlib.md5()
-
-    # Generate hash
-    md5hash.update(encoded_string)
-
-    # Return the hexadecimal representation of the hash
-    return md5hash.hexdigest()
+    md5_hash = hashlib.md5(s.encode()).hexdigest()
+    return md5_hash
 
 
 def hash_object(obj):

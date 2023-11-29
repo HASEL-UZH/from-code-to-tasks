@@ -20,6 +20,7 @@ def run_pipeline():
         opts={
             "repositories": [RepositoryIdentifier.iluwatar__java_design_patterns],
             # "repositories": [RepositoryIdentifier.vavr_io__vavr],
+            "log_accuracy_flag": False,
         }
     )
     log.info(f"Pipeline: {context.get_opts()}")

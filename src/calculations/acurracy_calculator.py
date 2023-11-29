@@ -20,50 +20,69 @@ class AccuracyCalculator:
         similarity_strategy=None,
     ):
         accuracies_over_all_windows = []
+        sliding_window_index = 0
         for sliding_window in SlidingWindowProvider(commit_infos, window_size):
             accuracy_per_window = self.get_accuracy_per_window(
-                sliding_window, k, embedding_strategy, similarity_strategy
+                sliding_window_index,
+                sliding_window,
+                k,
+                embedding_strategy,
+                similarity_strategy,
             )
             accuracies_over_all_windows.append(accuracy_per_window)
+            sliding_window_index += 1
         return accuracies_over_all_windows
 
     def get_accuracy_per_window(
         self,
+        sliding_window_index: int,
         sliding_window: [ICommitInfo],
         k,
         embedding_strategy,
         similarity_strategy=None,
     ):
         correct_predictions = 0
-        for commit_info in sliding_window:
-            item_text_commit = commit_info["commit_hash"]
-            item_text_change_comparison = {}
-            item_change_text = commit_info["change_text"]
-            item_change_text_embedding = embedding_strategy(item_change_text)
-            for item_pr in sliding_window:
-                item__pr_commit = item_pr["commit_hash"]
-                item_pull_request_text = item_pr["pull_request_text"]
-                item_pull_request_embedding = embedding_strategy(item_pull_request_text)
+        sliding_window_items = {d["commit_hash"]: d for d in sliding_window}
+        for item_pr in sliding_window:
+            item__pr_commit_hash = item_pr["commit_hash"]
+            item_pull_request_text = item_pr["pull_request_text"]
+            item_pull_request_embedding = embedding_strategy(item_pull_request_text)
+            item_pr_change_comparison = {}
+            for commit_info in sliding_window:
+                item_text_commit_hash = commit_info["commit_hash"]
+                item_change_text = commit_info["change_text"]
+                item_change_text_embedding = embedding_strategy(item_change_text)
 
                 try:
                     similarity = similarity_strategy(
-                        item_change_text_embedding, item_pull_request_embedding
+                        item_pull_request_embedding, item_change_text_embedding
                     )
-                    item_text_change_comparison[item__pr_commit] = similarity
+                    item_pr_change_comparison[item_text_commit_hash] = similarity
                 except Exception as e:
                     _data = {"k": k}
                     self._context.error(
                         scope="get_accuracy_per_window", message=str(e), data=_data
                     )
 
-            top_k_keys = sorted(
-                item_text_change_comparison,
-                key=item_text_change_comparison.get,
+            top_keys = sorted(
+                item_pr_change_comparison,
+                key=item_pr_change_comparison.get,
                 reverse=True,
-            )[:k]
+            )
+            top_k_keys = top_keys[:k]
 
-            if item_text_commit in top_k_keys:
+            match = item__pr_commit_hash in top_k_keys
+            if match:
                 correct_predictions += 1
+
+            self._context.log_accuracy(
+                item_pr,
+                sliding_window_index,
+                sliding_window_items,
+                match=match,
+                accuracies=item_pr_change_comparison,
+                top_keys=top_keys,
+            )
 
         accuracy_per_window = correct_predictions / len(sliding_window)
         return accuracy_per_window

@@ -10,6 +10,9 @@ class IEmbeddingStrategy(Protocol):
     def calculate_simularity(self, embedding1: Any, embedding2: Any) -> float:
         ...
 
+    def get_tokens(self, text: str) -> [str]:
+        return None
+
     def get_corpus(self) -> Optional[str]:
         """
         Retrieves the corpus data used by the embedding strategy.

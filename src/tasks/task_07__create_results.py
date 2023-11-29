@@ -94,6 +94,15 @@ def create_results_task(context: PipelineContext):
                         local_result["meta_strategy"] = content_strategy["meta"]
                         local_result["term_strategy"] = content_strategy["terms"]
 
+                        context.set_scope(
+                            {
+                                "embedding_concept": embedding_concept,
+                                "embedding_strategy": embedding_strategy,
+                                "content_strategy": content_strategy,
+                                "window_size": window_size,
+                                "k": k,
+                            }
+                        )
                         accuracy_calculator = AccuracyCalculator(context)
                         total_accuracies = accuracy_calculator.get_total_accuracy(
                             commit_infos,

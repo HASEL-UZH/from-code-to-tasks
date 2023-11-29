@@ -48,6 +48,9 @@ class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
         similarity = nominator / denominator
         return similarity
 
+    def get_tokens(self, text: str) -> [str]:
+        return self._tokenizer.tokenize(text)
+
     def _ensure_vectorizer(self):
         if not self._vectorizer:
             self._vectorizer = TfidfVectorizer()
