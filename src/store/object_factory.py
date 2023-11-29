@@ -88,6 +88,9 @@ class ObjectFactory:
         if not all(key in data for key in requirements):
             raise Exception("Instantiation error for class 'Resource'")
 
+        if not container:
+            pass
+
         filename = encode_resource_name(data)
         identifier = "#".join([container["identifier"], filename])
         classifier = Classifier.resource

@@ -1,5 +1,6 @@
 from src.calculations.acurracy_calculator import AccuracyCalculator
 from src.core.profiler import Profiler
+from src.core.workspace_context import get_results_file, write_text_file
 from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 from src.calculations.create_results import (
@@ -19,7 +20,6 @@ def create_results_task(context: PipelineContext):
     profiler = Profiler()
 
     embedding_concepts = [TfConcept(), TfIdfConcept()]
-    embedding_concepts = [TfIdfConcept()]
 
     window_sizes = [10]  # , 20, 30]
     k_values = [1]  # ,3,5]
@@ -59,6 +59,12 @@ def create_results_task(context: PipelineContext):
                 embedding_strategy = (
                     embedding_strategy_factory.create_embedding_strategy(content.value)
                 )
+
+                embedding_corpus = embedding_strategy.get_corpus()
+                if embedding_corpus:
+                    corpus_filename = f"corpus_{embedding_concept.name}-{embedding_strategy.name}--{content_strategy['meta']}-{content_strategy['terms']}.text"
+                    corpus_filepath = get_results_file(corpus_filename)
+                    write_text_file(corpus_filepath, embedding_corpus)
 
                 def get_embedding(text):
                     embedding = embedding_cache.get_value(

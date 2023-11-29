@@ -1,4 +1,4 @@
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Optional
 from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -31,16 +31,7 @@ class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
         self.name = "tf-idf-embedding--" + tokenizer.name
 
     def create_embedding(self, text) -> Any:
-        if not self._vectorizer:
-            self._vectorizer = TfidfVectorizer()
-            content = " ".join(self._content_provider())
-            corpus_tokens = self._tokenizer.tokenize(content)
-            log.debug(
-                f"TfIdfEmbeddingStrategy.create_embedding ({self.name}), create corpus: {corpus_tokens[0:10]}"
-            )
-            X = self._vectorizer.fit_transform(corpus_tokens)
-            # shape = X.shape
-            # feature_names = self._vectorizer.get_feature_names_out()
+        self._ensure_vectorizer()
 
         tokens = self._tokenizer.tokenize(text)
         token_text = " ".join(tokens)
@@ -56,6 +47,30 @@ class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
             )
         similarity = nominator / denominator
         return similarity
+
+    def _ensure_vectorizer(self):
+        if not self._vectorizer:
+            self._vectorizer = TfidfVectorizer()
+            corpus_tokens = self._get_corpus_tokens()
+            log.debug(
+                f"TfIdfEmbeddingStrategy.create_embedding ({self.name}), create corpus: {corpus_tokens[0:10]}"
+            )
+            X = self._vectorizer.fit_transform(corpus_tokens)
+            # shape = X.shape
+            # feature_names = self._vectorizer.get_feature_names_out()
+            return corpus_tokens
+        return None
+
+    def _get_corpus_tokens(self) -> [str]:
+        content = " ".join(self._content_provider())
+        corpus_tokens = self._tokenizer.tokenize(content)
+        return corpus_tokens
+
+    def get_corpus(self) -> Optional[str]:
+        tokens = self._ensure_vectorizer()
+        if not tokens:
+            tokens = self._get_corpus_tokens()
+        return "\n".join(tokens)
 
 
 class TfIdfEmbeddingStrategyFactory(IEmbeddingStrategyFactory):
