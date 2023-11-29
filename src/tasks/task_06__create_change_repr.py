@@ -6,23 +6,10 @@ from src.store.mdb_store import db
 from src.strategies.terms.diff_text import create_diff_text
 from src.strategies.terms.meta_ast_code import create_meta_ast_code
 from src.strategies.terms.meta_ast_text import create_meta_ast_text
+from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 
-def create_term_resource(commit, content, tpe, meta_strategy, term_strategy):
-    return ObjectFactory.resource(
-        commit,
-        {
-            "name": "change-repr",
-            "type": tpe,
-            "kind": "term",
-            "version": None,
-            "content": content,
-            "strategy": {"meta": meta_strategy, "terms": term_strategy},
-        },
-    )
-
-
-def change_term_creator_task():
+def change_term_creator_task(context: PipelineContext):
     ast_strategies = [
         {"id": "meta_ast_text", "type": "text", "handler": create_meta_ast_text},
         {"id": "meta_ast_code", "type": "java", "handler": create_meta_ast_code},
@@ -34,10 +21,11 @@ def change_term_creator_task():
     profiler = Profiler("change_term_creator_task")
     count = 0
     meta_resources = db.find_resources(
-        {
-            "kind": "change",
-            "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
-        }
+        context.create_resource_criteria(
+            {
+                "kind": "change",
+            }
+        )
     )
     for resource in meta_resources:
         count += 1
@@ -54,7 +42,9 @@ def change_term_creator_task():
             )
             db.save_resource(term_resource, commit)
 
-    diff_resources = db.find_resources({"kind": "diff"})
+    diff_resources = db.find_resources(
+        context.create_resource_criteria({"kind": "diff"})
+    )
     diff_groups = group_by(diff_resources, "@container")
     for commit_id, diff_group_resources in diff_groups.items():
         commit = db.find_object(commit_id)
@@ -70,5 +60,19 @@ def change_term_creator_task():
             db.save_resource(term_resource, commit)
 
 
+def create_term_resource(commit, content, tpe, meta_strategy, term_strategy):
+    return ObjectFactory.resource(
+        commit,
+        {
+            "name": "change-repr",
+            "type": tpe,
+            "kind": "term",
+            "version": None,
+            "content": content,
+            "strategy": {"meta": meta_strategy, "terms": term_strategy},
+        },
+    )
+
+
 if __name__ == "__main__":
-    change_term_creator_task()
+    change_term_creator_task(DEFAULT_PIPELINE_CONTEXT)

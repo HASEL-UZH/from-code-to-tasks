@@ -1,85 +1,92 @@
+from typing import Any, Callable, List
 from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from src.strategies.embeddings.defs import ContentStrategies, CacheStrategy
+from src.core.logger import log
+from src.strategies.tokenization.nltk_tokenizer import (
+    NltkTokenizer,
+    NltkTokenizerOptimized,
+)
+from src.strategies.tokenization.standard_tokenizer import (
+    StandardTokenizer,
+)
+from src.strategies.defs import (
+    ContentStrategies,
+    CacheStrategy,
+    IEmbeddingConcept,
+)
+from src.strategies.embeddings.defs import IEmbeddingStrategy, IEmbeddingStrategyFactory
+from src.strategies.tokenization.defs import ITokenizer
+from src.strategies.tokenization.subword_tokenizer import SubwordTokenizerNoNumbers
 
 
-def _tf_idf_embedding_strategy(vectorizer, text):
-    tf_idf_text_vector = vectorizer.transform([text]).toarray()[0]
-    return tf_idf_text_vector
+class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
+    def __init__(
+        self, tokenizer: ITokenizer, content_provider: Callable[[], List[str]]
+    ):
+        self._tokenizer = tokenizer
+        self._content_provider = content_provider
+        self._vectorizer: TfidfVectorizer = None
+        self.name = "tf-idf-embedding--" + tokenizer.name
+
+    def create_embedding(self, text) -> Any:
+        if not self._vectorizer:
+            self._vectorizer = TfidfVectorizer()
+            content = " ".join(self._content_provider())
+            corpus_tokens = self._tokenizer.tokenize(content)
+            log.debug(
+                f"TfIdfEmbeddingStrategy.create_embedding ({self.name}), create corpus: {corpus_tokens[0:10]}"
+            )
+            X = self._vectorizer.fit_transform(corpus_tokens)
+            # shape = X.shape
+            # feature_names = self._vectorizer.get_feature_names_out()
+
+        tokens = self._tokenizer.tokenize(text)
+        token_text = " ".join(tokens)
+        tf_idf_text_vector = self._vectorizer.transform([token_text]).toarray()[0]
+        return tf_idf_text_vector
+
+    def calculate_simularity(self, embedding1: Any, embedding2: Any) -> float:
+        nominator = dot(embedding1, embedding2)
+        denominator = norm(embedding1) * norm(embedding2)
+        if denominator == 0:
+            raise Exception(
+                "TF-IDF concept cosine similarity calculation - ZeroDivision Error"
+            )
+        similarity = nominator / denominator
+        return similarity
 
 
-def _create_strategy(corpus_provider):
-    vectorizer = None
+class TfIdfEmbeddingStrategyFactory(IEmbeddingStrategyFactory):
+    def __init__(self, tokenizer: ITokenizer):
+        self._tokenizer = tokenizer
 
-    def create_embedding(text):
-        nonlocal vectorizer
-        if not vectorizer:
-            vectorizer = TfidfVectorizer()
-            X = vectorizer.fit_transform(corpus_provider())
-            shape = X.shape
-            feature_names = vectorizer.get_feature_names_out()
-
-        return _tf_idf_embedding_strategy(vectorizer, text)
-
-    return create_embedding
+    def create_embedding_strategy(
+        self, content_provider: Callable[[], List[str]]
+    ) -> IEmbeddingStrategy:
+        return TfIdfEmbeddingStrategy(self._tokenizer, content_provider)
 
 
-def _calculate_cosine_similarity(embedding1, embedding2):
-    nominator = dot(embedding1, embedding2)
-    denominator = norm(embedding1) * norm(embedding2)
-    if denominator == 0:
-        raise Exception(
-            "TF-IDF concept cosine similarity calculation - ZeroDivision Error"
+class TfIdfConcept(IEmbeddingConcept):
+    name = "tf_idf"
+
+    def __init__(self):
+        self.embedding_strategies = []
+        self.content_strategies = ContentStrategies.TfxCore
+        self.cache_strategy = CacheStrategy.Memory
+        # self.embedding_strategies.append(
+        #     TfIdfEmbeddingStrategyFactory(StandardTokenizer())
+        # )
+        # self.embedding_strategies.append(
+        #     TfIdfEmbeddingStrategyFactory(SubwordTokenizerNoNumbers())
+        # )
+        # self.embedding_strategies.append(TfIdfEmbeddingStrategyFactory(StandardTokenizerNoNumbers()))
+        # self.embedding_strategies.append(TfIdfEmbeddingStrategyFactory(SubwordTokenizer()))
+        self.embedding_strategies.append(
+            TfIdfEmbeddingStrategyFactory(SubwordTokenizerNoNumbers())
         )
-    similarity = nominator / denominator
-    return similarity
-
-
-# corpus_providers: {java_corpus: ICorpusProvider, java_subword_corpus: ICorpusProvider}
-class ConceptStrategy:
-    pass
-
-
-def create_tf_idf_concept(corpus_providers):
-    strategies = []
-    strategies.append(
-        {
-            "id": "corpus_standard_with_numbers",
-            "create_embedding": _create_strategy(
-                corpus_providers["corpus_standard_with_numbers"]
-            ),
-        }
-    )
-    strategies.append(
-        {
-            "id": "corpus_standard_without_numbers",
-            "create_embedding": _create_strategy(
-                corpus_providers["corpus_standard_without_numbers"]
-            ),
-        }
-    )
-    strategies.append(
-        {
-            "id": "corpus_subword_with_numbers",
-            "create_embedding": _create_strategy(
-                corpus_providers["corpus_subword_with_numbers"]
-            ),
-        }
-    )
-    strategies.append(
-        {
-            "id": "corpus_subword_without_numbers",
-            "create_embedding": _create_strategy(
-                corpus_providers["corpus_subword_without_numbers"]
-            ),
-        }
-    )
-    return {
-        "id": "tf_idf",
-        "strategies": strategies,
-        "calculate_similarity": _calculate_cosine_similarity,
-        "content_strategies": ContentStrategies.Tfx,
-        "cache_strategy": CacheStrategy.Memory,
-    }
+        # self.embedding_strategies.append(TfIdfEmbeddingStrategyFactory(NltkTokenizer()))
+        self.embedding_strategies.append(
+            TfIdfEmbeddingStrategyFactory(NltkTokenizerOptimized())
+        )

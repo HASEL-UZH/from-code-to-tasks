@@ -22,6 +22,7 @@ def parse_diff_content(content):
     additions = []
     deletions = []
     modifications = []
+    content = content or ""
 
     lines = content.split("\n")
     for line in lines:

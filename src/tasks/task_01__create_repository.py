@@ -6,27 +6,29 @@ from src.store.mdb_store import db, Collection
 from src.store.mdb_store import db, Collection
 from src.github.github_grapghql_api import github_graphql_api
 from src.store.object_factory import get_repository_identifier
+from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 api = github_graphql_api
 
 
-def create_repository_task():
-    repositories = get_top_repositories()
+def create_repository_task(context: PipelineContext):
     # Remove existing repository objects in the database
-    db.delete_repositories()
+    db.delete_repositories(context.create_repository_criteria())
+
+    repositories = get_top_repositories(context)
     for repository in repositories:
         repository_object = ObjectFactory.repository(repository["url"], repository)
         db.save_repository(repository_object)
 
 
-def get_top_repositories():
+def get_top_repositories(context: PipelineContext):
+    criteria = {
+        "language": "en",
+        "languages": None,
+    }
+    match = context.create_repository_criteria(criteria)
     pipeline = [
-        {
-            "$match": {
-                "language": "en",
-                "identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
-            },
-        },
+        {"$match": match},
         # {
         #     "$project": {
         #         "identifier": 1,
@@ -72,4 +74,4 @@ def get_pull_requests(owner: str, repository_name):
 
 if __name__ == "__main__":
     # print("TASK DISABLED"); exit(0)
-    create_repository_task()
+    create_repository_task(DEFAULT_PIPELINE_CONTEXT)

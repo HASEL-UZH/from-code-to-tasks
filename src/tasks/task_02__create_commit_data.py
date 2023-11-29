@@ -2,21 +2,19 @@ import re
 
 from pydriller import Repository
 
+from src.core.logger import log
 from src.core.profiler import Profiler
 from src.core.utils import get_date_string
 from src.core.workspace_context import get_file_base_name, is_java_file
 from src.github.defs import RepositoryIdentifier
+from src.github.github_grapghql_api import github_graphql_api
 from src.store.mdb_store import db, Collection
 from src.store.object_factory import ObjectFactory
+from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 
-def create_commit_data_task():
-    repositories = list(db.find_repositories())
-    repositories = [
-        d
-        for d in repositories
-        if d["identifier"] == RepositoryIdentifier.iluwatar__java_design_patterns
-    ]
+def create_commit_data_task(context: PipelineContext):
+    repositories = list(db.find_repositories(context.create_repository_criteria()))
     profiler = Profiler("create_commit_data_task")
 
     match_count = 0
@@ -168,6 +166,34 @@ def get_pull_request_url(repository_url, pull_request_number):
     return pull_request_url
 
 
+def update_pull_requests_with_issue_information(context: PipelineContext):
+    repositories = {}
+    commits = db.find_commits(context.create_commit_criteria())
+    for commit in commits:
+        repository_identifier = commit.get("@repository")
+        repository = repositories.get(repository_identifier)
+        if not repository:
+            repository = Collection.repository.find_one({"id": repository_identifier})
+            repositories[repository_identifier] = repository
+
+        pr_number = commit["pull_request"]["number"]
+        issues = github_graphql_api.get_pull_request_closing_issues(
+            repository["owner"], repository["name"], pr_number
+        )
+
+        # FIXME look also for issues which are possible references in the title
+        if issues:
+            log.debug(
+                f"Issues for PR {commit['pull_request']['number']: {len(issues)}}"
+            )
+            commit["issues"] = issues
+            Collection.commit.update_one({"_id": commit["_id"]}, {"$set": commit})
+
+        else:
+            log.debug(f"No issues for PR {commit['pull_request']['number']}")
+    pass
+
+
 if __name__ == "__main__":
     # print("TASK DISABLED"); exit(0)
-    create_commit_data_task()
+    create_commit_data_task(DEFAULT_PIPELINE_CONTEXT)

@@ -86,7 +86,7 @@ def create_ast_change_model(json_dict, commit):
         "code": {"text": "", "details": []},
     }
     for file_name, change_tuple in json_dict.items():
-        profiler.debug(file_name)
+        # profiler.debug(file_name)
         before_meta_ast_json, after_meta_ast_json = change_tuple
         before_meta_ast = before_meta_ast_json or None
         after_meta_ast = after_meta_ast_json or None

@@ -4,19 +4,23 @@ from src.core.utils import group_by, accessor
 from src.github.defs import RepositoryIdentifier
 from src.store.object_factory import ObjectFactory
 from src.store.mdb_store import db
+from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 
-def change_model_creator_task():
-    db.delete_resources_where({"kind": "change", "type": "json"})
+def change_model_creator_task(context: PipelineContext):
+    db.delete_resources_where(
+        context.create_resource_criteria({"kind": "change", "type": "json"})
+    )
 
-    profiler = Profiler("create_meta_ast_task")
+    profiler = Profiler("change_model_creator_task")
 
     meta_resources = list(
         db.find_resources(
-            {
-                "kind": "meta",
-                "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
-            }
+            context.create_resource_criteria(
+                {
+                    "kind": "meta",
+                }
+            )
         )
     )
     group_key_lambda = lambda x: x.get("strategy").get("meta")
@@ -32,8 +36,6 @@ def change_model_creator_task():
             commit = db.find_object(commit_key)
 
             profiler.debug(f"Commit: {commit['id']}")
-            if commit["id"] == "commit::c8a2ef01d3f2d57998d631cba71e8c5c5a9d4d62":
-                pass
 
             resource_dict = {}
             resource_groups = group_by(commit_resources, "name")
@@ -73,4 +75,4 @@ def change_model_creator_task():
 
 
 if __name__ == "__main__":
-    change_model_creator_task()
+    change_model_creator_task(DEFAULT_PIPELINE_CONTEXT)

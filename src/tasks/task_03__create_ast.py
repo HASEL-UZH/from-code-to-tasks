@@ -6,24 +6,25 @@ from src.core.profiler import Profiler
 from src.github.defs import RepositoryIdentifier
 from src.store.object_factory import ObjectFactory
 from src.store.mdb_store import db
+from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 AST_PARSER_JAR_V1 = "./bin/ast-meta-werks-0.1.1.jar"
 AST_PARSER_JAR_V2 = "./bin/ast-meta-werks-0.2.4.jar"
 
 
-def create_ast_task():
+def create_ast_task(context: PipelineContext):
     print("create_ast_task started")
-    db.delete_resources_where({"kind": "ast"})
+    db.delete_resources_where(context.create_resource_criteria({"kind": "ast"}))
 
     count = 0
     profiler = Profiler()
 
-    java_resources = db.find_resources(
+    criteria = context.create_resource_criteria(
         {
             "kind": "source",
-            "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
         }
     )
+    java_resources = db.find_resources(criteria)
     create_ast_task_multi(java_resources, profiler, mode="parallel")
     # create_ast_task_single(java_resources, profiler)
 
@@ -160,4 +161,4 @@ def _create_ast(in_file, out_file):
 
 
 if __name__ == "__main__":
-    create_ast_task()
+    create_ast_task(DEFAULT_PIPELINE_CONTEXT)

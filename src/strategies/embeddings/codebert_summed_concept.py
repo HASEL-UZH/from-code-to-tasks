@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer
 
-from src.strategies.embeddings.defs import ContentStrategies, CacheStrategy
+from src.strategies.defs import ContentStrategies, CacheStrategy
 
 model = AutoModel.from_pretrained("microsoft/codebert-base")
 tokenizer = AutoTokenizer.from_pretrained("microsoft/codebert-base")

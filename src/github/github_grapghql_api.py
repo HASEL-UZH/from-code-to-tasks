@@ -23,9 +23,13 @@ class GitHubGraphQlApi(GitHubApi):
         self.retry_count = retry_count or 0
         self.retry_ms = retry_ms or 100
 
-    def execute_grapqhql_query(self, query, variables=None, log=False):
+    def execute_grapqhql_query(self, query, variables=None, log_flag=False):
         if not variables:
             variables = {}
+        if log_flag:
+            log.debug(
+                f"Execute graphql query{query}, variables: {json.dumps(variables)}"
+            )
         payload = {"query": query, "variables": variables}
         result = self.post_request(
             GITHUB_API_GRAPHQL_ENDPOINT,
@@ -474,6 +478,37 @@ class GitHubGraphQlApi(GitHubApi):
         result = self.execute_grapqhql_query(query, variables)
         if result["ok"]:
             return result
+
+        return None
+
+    def get_pull_request_closing_issues(self, owner, repository_name, pr_nr):
+        query = """
+            query GetPullRequestClosingIssues($owner: String!, $name: String!, $prNumber: Int!) {
+              repository(owner: $owner, name: $name) {
+                pullRequest(number: $prNumber) {
+                  title
+                  body
+                  url
+                  closingIssuesReferences(first: 10) {
+                    nodes {
+                      title
+                      bodyText
+                      number
+                      url
+                    }
+                  }
+                }
+              }
+            }
+
+        """
+        variables = {"owner": owner, "name": repository_name, "prNumber": pr_nr}
+        result = self.execute_grapqhql_query(query, variables)
+        if result["ok"]:
+            issues = result["data"]["repository"]["pullRequest"][
+                "closingIssuesReferences"
+            ]["nodes"]
+            return issues
 
         return None
 

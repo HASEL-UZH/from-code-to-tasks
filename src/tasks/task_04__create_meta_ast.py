@@ -9,32 +9,23 @@ from src.strategies.meta.meta_ast_strategy import (
     MetaAstBuilder,
     traverse_json_structure,
 )
+from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 
-def get_ast_meta_resource(ast_resource, commit, ast_meta_strategy, content):
-    return ObjectFactory.resource(
-        commit,
-        {
-            "name": ast_resource.get("name"),
-            "type": "json",
-            "kind": "meta",
-            "version": ast_resource.get("version"),
-            "strategy": {"meta": ast_meta_strategy},
-            "content": content,
-        },
-    )
-
-
-def create_meta_ast_task():
+def create_meta_ast_task(context: PipelineContext):
     print("create_meta_ast_task started")
-    db.delete_resources_where({"kind": "meta", "type": "json"})
+
+    db.delete_resources_where(
+        context.create_resource_criteria({"kind": "meta", "type": "json"})
+    )
     ast_resources = list(
         db.find_resources(
-            {
-                "kind": "ast",
-                "type": "json",
-                "repository_identifier": RepositoryIdentifier.iluwatar__java_design_patterns,
-            }
+            context.create_resource_criteria(
+                {
+                    "kind": "ast",
+                    "type": "json",
+                }
+            )
         )
     )
     count = 0
@@ -77,17 +68,17 @@ def create_meta_ast_task():
             ast_md = ast_builder_md.get_root()
             ast_lg = ast_builder_lg.get_root()
 
-            ast_meta_target_resource_sm = get_ast_meta_resource(
+            ast_meta_target_resource_sm = create_ast_meta_resource(
                 ast_resource, commit, "ast-sm", ast_sm
             )
             db.save_resource(ast_meta_target_resource_sm, commit)
 
-            ast_meta_target_resource_md = get_ast_meta_resource(
+            ast_meta_target_resource_md = create_ast_meta_resource(
                 ast_resource, commit, "ast-md", ast_md
             )
             db.save_resource(ast_meta_target_resource_md, commit)
 
-            ast_meta_target_resource_lg = get_ast_meta_resource(
+            ast_meta_target_resource_lg = create_ast_meta_resource(
                 ast_resource, commit, "ast-lg", ast_lg
             )
             db.save_resource(ast_meta_target_resource_lg, commit)
@@ -95,5 +86,19 @@ def create_meta_ast_task():
     profiler.info(f"create_meta_ast_task done: {count}")
 
 
+def create_ast_meta_resource(ast_resource, commit, ast_meta_strategy, content):
+    return ObjectFactory.resource(
+        commit,
+        {
+            "name": ast_resource.get("name"),
+            "type": "json",
+            "kind": "meta",
+            "version": ast_resource.get("version"),
+            "strategy": {"meta": ast_meta_strategy},
+            "content": content,
+        },
+    )
+
+
 if __name__ == "__main__":
-    create_meta_ast_task()
+    create_meta_ast_task(DEFAULT_PIPELINE_CONTEXT)

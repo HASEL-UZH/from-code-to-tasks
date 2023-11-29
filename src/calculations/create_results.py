@@ -4,6 +4,7 @@ import statistics
 
 from src.core.utils import group_by
 from src.core.workspace_context import get_results_dir
+from src.tasks.pipeline_context import PipelineContext
 
 
 def get_total_accuracy(
@@ -22,7 +23,11 @@ def get_total_accuracy(
 
 
 def get_accuracy_per_window(
-    context, sliding_window, k, embedding_strategy, similarity_strategy=None
+    context: PipelineContext,
+    sliding_window,
+    k,
+    embedding_strategy,
+    similarity_strategy=None,
 ):
     correct_predictions = 0
     for item_text in sliding_window["items"]:
@@ -41,7 +46,10 @@ def get_accuracy_per_window(
                 )
                 item_text_change_comparison[item__pr_commit] = similarity
             except Exception as e:
-                context["errors"].append(e)
+                _data = {"k": k}
+                context.error(
+                    scope="get_accuracy_per_window", message=str(e), data=_data
+                )
 
         top_k_keys = sorted(
             item_text_change_comparison,
