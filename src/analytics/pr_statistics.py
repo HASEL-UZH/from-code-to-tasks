@@ -11,7 +11,7 @@ class IPrInfo(TypedDict):
     number_unique_files: int
     number_test_files: int
     duplicate_title: bool
-    number_of_lines: int
+    number_lines: int
 
 
 class IPrStatistics(TypedDict):
@@ -58,7 +58,7 @@ def get_pr_statistics(repository_identifier: str) -> IPrStatistics:
                 [d for d in unique_file_names if "test" in d.lower()]
             ),
             "duplicate_title": pr_title_statistics[pr_title] > 1,
-            "number_of_lines": added_deleted_lines,
+            "number_lines": added_deleted_lines,
         }
         pr_statistics["pr_infos"].append(pr_info)
 
@@ -73,7 +73,7 @@ def get_pr_statistics(repository_identifier: str) -> IPrStatistics:
 
     # TODO modify bandwidth of accepted lines
     lines_values = [
-        pr_info.get("number_of_lines", 0) for pr_info in pr_statistics["pr_infos"]
+        pr_info.get("number_lines", 0) for pr_info in pr_statistics["pr_infos"]
     ]
     lines_average_value = statistics.mean(lines_values)
     lines_std_deviation = statistics.stdev(lines_values)

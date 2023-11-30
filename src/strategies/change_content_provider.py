@@ -81,12 +81,17 @@ class PrFilter:
         if pr_info["duplicate_title"]:
             return False
         # # Remove PRs where majority of files are test files
-        if pr_info["number_of_test_files"] / pr_info["number_of_src_files"] > 0.5:
+        if pr_info["number_test_files"] / pr_info["number_source_files"] > 0.5:
             return False
         # Remove PRs with too many or too little files
         if (
-            pr_info["number_of_src_files"] > self._pr_statistics["src_files_max"]
-            or pr_info["number_of_src_files"] < self._pr_statistics["src_files_min"]
+            pr_info["number_source_files"] > self._pr_statistics["src_files_max"]
+            or pr_info["number_source_files"] < self._pr_statistics["src_files_min"]
+        ):
+            return False
+        if (
+            pr_info["number_lines"] > self._pr_statistics["lines_max"]
+            or pr_info["number_lines"] < self._pr_statistics["lines_min"]
         ):
             return False
         return True
