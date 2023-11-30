@@ -42,6 +42,25 @@ def get_change_context(cu_node, change_obj):
     return context_str.rstrip()
 
 
+def is_license_comment(change_obj):
+    change_comment_before = (
+        change_obj.get("change").get("before").get("content")
+        if change_obj.get("change").get("before")
+        else ""
+    )
+    change_comment_after = (
+        change_obj.get("change").get("after").get("content")
+        if change_obj.get("change").get("after")
+        else ""
+    )
+    if ("license" not in str(change_comment_before).lower()) and (
+        "license" not in str(change_comment_after).lower()
+    ):
+        return False
+    else:
+        return True
+
+
 def create_meta_ast_text(resource):
     resource_content = db.get_resource_content(resource)
     meta_ast_text = ""
@@ -68,13 +87,15 @@ def create_meta_ast_text(resource):
             # ADD
             if change_type == "add":
                 if change_obj["type"] == "comment":
-                    text_per_change += f'Add {get_change_type(change_obj["type"])}  {change_obj["change"]["after"]["content"]} {get_change_context(cu_node, change_obj)}. '
+                    if not is_license_comment(change_obj):
+                        text_per_change += f'Add {get_change_type(change_obj["type"])}  {change_obj["change"]["after"]["content"]} {get_change_context(cu_node, change_obj)}. '
                 else:
                     text_per_change += f'Add {get_change_type(change_obj["type"])} {change_obj["change"]["after"]["identifier"]} {get_change_context(cu_node, change_obj)}. '
             # DELETE
             elif change_type == "delete":
                 if change_obj["type"] == "comment":
-                    text_per_change += f'Delete {get_change_type(change_obj["type"])}  {change_obj["change"]["before"]["content"]} {get_change_context(cu_node, change_obj)}. '
+                    if not is_license_comment(change_obj):
+                        text_per_change += f'Delete {get_change_type(change_obj["type"])}  {change_obj["change"]["before"]["content"]} {get_change_context(cu_node, change_obj)}. '
                 else:
                     text_per_change += f'Delete {get_change_type(change_obj["type"])} {change_obj["change"]["before"]["identifier"]} {get_change_context(cu_node, change_obj)}. '
             # MODIFY
@@ -84,7 +105,8 @@ def create_meta_ast_text(resource):
                 and "move" not in change_obj.get("change", {})
             ):
                 if change_obj["type"] == "comment":
-                    text_per_change += f'Modify {get_change_type(change_obj["type"])}  {change_obj["change"]["after"]["content"]} {get_change_context(cu_node, change_obj)}. '
+                    if not is_license_comment(change_obj):
+                        text_per_change += f'Modify {get_change_type(change_obj["type"])}  {change_obj["change"]["after"]["content"]} {get_change_context(cu_node, change_obj)}. '
                 else:
                     text_per_change += f'Modify {get_change_type(change_obj["type"])} {change_obj["change"]["before"]["identifier"]} {get_change_context(cu_node, change_obj)}. '
             meta_ast_text += text_per_change

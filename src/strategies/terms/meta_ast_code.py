@@ -1,5 +1,5 @@
-from src.store.mdb_store import db
 from src.core.logger import log
+from src.store.mdb_store import db
 
 
 class JavaWriter:
@@ -85,6 +85,8 @@ def create_meta_ast_code(resource):
             ]
             for comment in comments:
                 _comment = get_after(comment)
+                if "license" in _comment["content"]:
+                    continue
                 multiline = "\n" in _comment["content"]
                 if multiline:
                     java.multiline_comment(_comment["content"])
