@@ -1,6 +1,7 @@
 import statistics
 
 from src.strategies.defs import ICommitInfo
+from src.strategies.embeddings.defs import IEmbeddingStrategy
 from src.strategies.sliding_window_provider import SlidingWindowProvider
 from src.tasks.pipeline_context import PipelineContext
 
@@ -16,8 +17,7 @@ class AccuracyCalculator:
         commit_infos: [ICommitInfo],
         k,
         window_size,
-        embedding_strategy,
-        similarity_strategy=None,
+        embedding_strategy: IEmbeddingStrategy,
     ):
         accuracies_over_all_windows = []
         sliding_window_index = 0
@@ -27,7 +27,6 @@ class AccuracyCalculator:
                 sliding_window,
                 k,
                 embedding_strategy,
-                similarity_strategy,
             )
             accuracies_over_all_windows.append(accuracy_per_window)
             sliding_window_index += 1
@@ -37,24 +36,27 @@ class AccuracyCalculator:
         self,
         sliding_window_index: int,
         sliding_window: [ICommitInfo],
-        k,
-        embedding_strategy,
-        similarity_strategy=None,
+        k: int,
+        embedding_strategy: IEmbeddingStrategy,
     ):
         correct_predictions = 0
         sliding_window_items = {d["commit_hash"]: d for d in sliding_window}
         for item_pr in sliding_window:
             item__pr_commit_hash = item_pr["commit_hash"]
             item_pull_request_text = item_pr["pull_request_text"]
-            item_pull_request_embedding = embedding_strategy(item_pull_request_text)
+            item_pull_request_embedding = embedding_strategy.get_embedding(
+                item_pull_request_text
+            )
             item_pr_change_comparison = {}
             for commit_info in sliding_window:
                 item_text_commit_hash = commit_info["commit_hash"]
                 item_change_text = commit_info["change_text"]
-                item_change_text_embedding = embedding_strategy(item_change_text)
+                item_change_text_embedding = embedding_strategy.get_embedding(
+                    item_change_text
+                )
 
                 try:
-                    similarity = similarity_strategy(
+                    similarity = embedding_strategy.calculate_simularity(
                         item_pull_request_embedding, item_change_text_embedding
                     )
                     item_pr_change_comparison[item_text_commit_hash] = similarity

@@ -22,17 +22,34 @@ from src.strategies.tokenization.subword_tokenizer import SubwordTokenizerNoNumb
 
 
 class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
-    def __init__(
-        self, tokenizer: ITokenizer, content_provider: Callable[[], List[str]]
-    ):
+    def __init__(self, tokenizer: ITokenizer):
         self._tokenizer = tokenizer
-        self._content_provider = content_provider
-        self._vectorizer: TfidfVectorizer = None
+        self._vectorizer: Optional[TfidfVectorizer] = None
         self.name = "tf-idf-embedding--" + tokenizer.name
+        self._cache = {}
 
-    def create_embedding(self, text) -> Any:
-        self._ensure_vectorizer()
+    def init(self, corpus_text: [str]) -> [str]:
+        self._cache = {}
+        self._vectorizer = TfidfVectorizer()
 
+        content = " ".join(corpus_text)
+        corpus_tokens = self._tokenizer.tokenize(content)
+        log.debug(
+            f"TfIdfEmbeddingStrategy.create_embedding ({self.name}), create corpus: {corpus_tokens[0:10]}"
+        )
+        X = self._vectorizer.fit_transform(corpus_tokens)
+        # shape = X.shape
+        # feature_names = self._vectorizer.get_feature_names_out()
+        return corpus_tokens
+
+    def get_embedding(self, text) -> Any:
+        embedding = self._cache.get(text)
+        if embedding is None:
+            embedding = self._create_embedding(text)
+            self._cache[text] = embedding
+        return embedding
+
+    def _create_embedding(self, text) -> Any:
         tokens = self._tokenizer.tokenize(text)
         token_text = " ".join(tokens)
         tf_idf_text_vector = self._vectorizer.transform([token_text]).toarray()[0]
@@ -51,40 +68,6 @@ class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
     def get_tokens(self, text: str) -> [str]:
         return self._tokenizer.tokenize(text)
 
-    def _ensure_vectorizer(self):
-        if not self._vectorizer:
-            self._vectorizer = TfidfVectorizer()
-            corpus_tokens = self._get_corpus_tokens()
-            log.debug(
-                f"TfIdfEmbeddingStrategy.create_embedding ({self.name}), create corpus: {corpus_tokens[0:10]}"
-            )
-            X = self._vectorizer.fit_transform(corpus_tokens)
-            # shape = X.shape
-            # feature_names = self._vectorizer.get_feature_names_out()
-            return corpus_tokens
-        return None
-
-    def _get_corpus_tokens(self) -> [str]:
-        content = " ".join(self._content_provider())
-        corpus_tokens = self._tokenizer.tokenize(content)
-        return corpus_tokens
-
-    def get_corpus(self) -> Optional[str]:
-        tokens = self._ensure_vectorizer()
-        if not tokens:
-            tokens = self._get_corpus_tokens()
-        return "\n".join(tokens)
-
-
-class TfIdfEmbeddingStrategyFactory(IEmbeddingStrategyFactory):
-    def __init__(self, tokenizer: ITokenizer):
-        self._tokenizer = tokenizer
-
-    def create_embedding_strategy(
-        self, content_provider: Callable[[], List[str]]
-    ) -> IEmbeddingStrategy:
-        return TfIdfEmbeddingStrategy(self._tokenizer, content_provider)
-
 
 class TfIdfConcept(IEmbeddingConcept):
     name = "tf_idf"
@@ -94,17 +77,17 @@ class TfIdfConcept(IEmbeddingConcept):
         self.content_strategies = ContentStrategies.TfxCore
         self.cache_strategy = CacheStrategy.Memory
         # self.embedding_strategies.append(
-        #     TfIdfEmbeddingStrategyFactory(StandardTokenizer())
+        #     TfIdfEmbeddingStrategy(StandardTokenizer())
         # )
         # self.embedding_strategies.append(
-        #     TfIdfEmbeddingStrategyFactory(SubwordTokenizerNoNumbers())
+        #     TfIdfEmbeddingStrategy(SubwordTokenizerNoNumbers())
         # )
-        # self.embedding_strategies.append(TfIdfEmbeddingStrategyFactory(StandardTokenizerNoNumbers()))
-        # self.embedding_strategies.append(TfIdfEmbeddingStrategyFactory(SubwordTokenizer()))
+        # self.embedding_strategies.append(TfIdfEmbeddingStrategy(StandardTokenizerNoNumbers()))
+        # self.embedding_strategies.append(TfIdfEmbeddingStrategy(SubwordTokenizer()))
         self.embedding_strategies.append(
-            TfIdfEmbeddingStrategyFactory(SubwordTokenizerNoNumbers())
+            TfIdfEmbeddingStrategy(SubwordTokenizerNoNumbers())
         )
-        # self.embedding_strategies.append(TfIdfEmbeddingStrategyFactory(NltkTokenizer()))
+        # self.embedding_strategies.append(TfIdfEmbeddingStrategy(NltkTokenizer()))
         self.embedding_strategies.append(
-            TfIdfEmbeddingStrategyFactory(NltkTokenizerOptimized())
+            TfIdfEmbeddingStrategy(NltkTokenizerOptimized())
         )

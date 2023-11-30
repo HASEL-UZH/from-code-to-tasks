@@ -1,57 +1,57 @@
-from typing import Iterator, TypedDict
-from src.store.mdb_store import db
-from src.strategies.defs import IContentStrategy
+import re
+from src.store.mdb_store import db, Collection
+from src.strategies.defs import IContentStrategy, ICommitInfo
 from src.tasks.pipeline_context import PipelineContext
 
 
 class ChangeContentProvider:
-    _context: PipelineContext
-    _content_strategy: IContentStrategy
-    _cursor: Iterator[dict]
-
-    def __init__(self, context: PipelineContext, content_strategy: IContentStrategy):
-        self._context = context
-        self._content_strategy = content_strategy
-
-    def __iter__(self):
-        self._cursor = self._get_db_cursor()
-        return self
-
-    def __next__(self):
-        while True:
-            item = self._get_next()
-            if item is not None:
-                return item
-
-    def _get_db_cursor(self):
+    def get_content(
+        self, context: PipelineContext, content_strategy: IContentStrategy
+    ) -> [ICommitInfo]:
         file_type = "text"
-        if self._content_strategy["terms"] == "meta_ast_code":
+        if content_strategy["terms"] == "meta_ast_code":
             file_type = "java"
 
-        criteria = self._context.create_resource_criteria(
+        criteria = context.create_resource_criteria(
             {
-                "strategy.meta": self._content_strategy["meta"],
+                "strategy.meta": content_strategy["meta"],
                 "kind": "term",
                 "type": file_type,
-                "strategy.terms": self._content_strategy["terms"],
+                "strategy.terms": content_strategy["terms"],
             }
         )
         change_resources = db.find_resources(criteria)
-        return change_resources
+        commit_infos: [ICommitInfo] = []
+        for change_resource in change_resources:
+            commit_info = self._get_commit_info(context, change_resource)
+            if commit_info is not None:
+                commit_infos.append(commit_info)
+        return commit_infos
 
-    def _get_next(self):
-        change_resource = next(self._cursor)
-        item = self._get_commit_info(change_resource)
-        return item
-
-    def _get_commit_info(self, change_resource):
+    def _get_commit_info(
+        self, context: PipelineContext, change_resource
+    ) -> ICommitInfo:
         change_content = db.get_resource_content(change_resource, volatile=True)
         change_text = change_content.strip() if change_content else ""
         commit = db.find_object(change_resource.get("@container"))
-        pull_request_text = (
-            commit.get("pull_request_title", "")
-            + " "
-            + commit.get("pull_request_text", "")
+        pull_request_title = commit.get("pull_request_title", "")
+        pull_request_text = commit.get("pull_request_text", "")
+        issue_text = ""
+        numbers = [int(d) for d in re.findall(r"\d+", pull_request_title)]
+        if len(numbers):
+            issues = list(
+                Collection.github_issue.find(
+                    context.create_issue_criteria({"number": {"$in": numbers}})
+                )
+            )
+            issue_items = []
+            for issue in issues:
+                issue_items.append(issue["title"])
+                # issue_items.append(issue["bodyText"])
+            issue_text = " ".join(issue_items)
+
+        pull_request_text = " ".join(
+            [pull_request_title, pull_request_text, issue_text]
         )
         commit_info = {
             "commit_hash": commit.get("commit_hash"),

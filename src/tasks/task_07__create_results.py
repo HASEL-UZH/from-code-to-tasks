@@ -8,7 +8,6 @@ from src.calculations.create_results import (
     save_results_to_csv,
 )
 from src.core.logger import log
-from src.store.memory_cache import MemoryCache, Memento
 from src.strategies.change_content_provider import ChangeContentProvider
 from src.strategies.defs import CacheStrategy
 from src.strategies.embeddings.tf_concept import TfConcept
@@ -19,7 +18,8 @@ def create_results_task(context: PipelineContext):
     print("create_results_task started")
     profiler = Profiler()
 
-    embedding_concepts = [TfConcept(), TfIdfConcept()]
+    # embedding_concepts = [TfConcept(), TfIdfConcept()]
+    embedding_concepts = [TfIdfConcept()]
 
     window_sizes = [10]  # , 20, 30]
     k_values = [1]  # ,3,5]
@@ -27,50 +27,26 @@ def create_results_task(context: PipelineContext):
     profiler.info(f"commit foundation created")
 
     results = []
+    accuracy_calculator = AccuracyCalculator(context)
     for embedding_concept in embedding_concepts:
-        embedding_strategy_factories = embedding_concept.embedding_strategies
-        for embedding_strategy_factory in embedding_strategy_factories:
-            content_strategies = embedding_concept.content_strategies
-            cache_strategy = embedding_concept.cache_strategy
-            for content_strategy in content_strategies:
+        for embedding_strategy in embedding_concept.embedding_strategies:
+            for content_strategy in embedding_concept.content_strategies:
+                content_provider = ChangeContentProvider()
+                commit_infos = content_provider.get_content(context, content_strategy)
 
-                def get_embedding_cache():
-                    # nonlocal cache_strategy
-                    if cache_strategy == CacheStrategy.Memory:
-                        return MemoryCache()
-                    elif cache_strategy == CacheStrategy.Npy:
-                        pass
-                    else:
-                        raise Exception
+                # INSERT COMMIT FILTER HERE - or in the ChangeContentProvider
+                # commit_infos = commit_infos[:20]
 
-                embedding_cache = get_embedding_cache()
+                corpus_text = []
+                for commit_info in commit_infos:
+                    corpus_text.append(commit_info["pull_request_text"])
+                    corpus_text.append(commit_info["change_text"])
 
-                content_provider = ChangeContentProvider(context, content_strategy)
-                commit_infos = list(content_provider)
-
-                def content_provider():
-                    content = []
-                    for commit_info in commit_infos:
-                        content.append(commit_info["pull_request_text"])
-                        content.append(commit_info["change_text"])
-                    return content
-
-                content = Memento(content_provider)
-                embedding_strategy = (
-                    embedding_strategy_factory.create_embedding_strategy(content.value)
-                )
-
-                embedding_corpus = embedding_strategy.get_corpus()
-                if embedding_corpus:
+                corpus_tokens = embedding_strategy.init(corpus_text)
+                if corpus_tokens:
                     corpus_filename = f"corpus_{embedding_concept.name}-{embedding_strategy.name}--{content_strategy['meta']}-{content_strategy['terms']}.text"
                     corpus_filepath = get_results_file(corpus_filename)
-                    write_text_file(corpus_filepath, embedding_corpus)
-
-                def get_embedding(text):
-                    embedding = embedding_cache.get_value(
-                        text, lambda: embedding_strategy.create_embedding(text)
-                    )
-                    return embedding
+                    write_text_file(corpus_filepath, "\n".join(corpus_tokens))
 
                 for window_size in window_sizes:
                     if window_size > len(commit_infos):
@@ -103,13 +79,11 @@ def create_results_task(context: PipelineContext):
                                 "k": k,
                             }
                         )
-                        accuracy_calculator = AccuracyCalculator(context)
                         total_accuracies = accuracy_calculator.get_total_accuracy(
                             commit_infos,
                             k,
                             window_size,
-                            get_embedding,
-                            embedding_strategy.calculate_simularity,
+                            embedding_strategy,
                         )
                         if total_accuracies:
                             statistics_object = get_statistics_object(total_accuracies)

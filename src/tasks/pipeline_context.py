@@ -53,6 +53,10 @@ class PipelineContext:
         criteria = self._create_db_filter_criteria("repository_identifier", criteria)
         return criteria
 
+    def create_issue_criteria(self, criteria: Optional[dict] = None):
+        criteria = self._create_db_filter_criteria("identifier", criteria)
+        return criteria
+
     def get_opts(self):
         return self._opts.copy()
 

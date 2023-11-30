@@ -4,28 +4,18 @@ from typing import Protocol, Any, Callable, List, Optional
 class IEmbeddingStrategy(Protocol):
     name: str
 
-    def create_embedding(self, text) -> Any:
+    def init(self, corpus_text: [str]) -> [str]:
+        """
+        Initializes the strategy with the given corpus text and returns the tokens used to build the internal corpus
+        """
+
+    def get_embedding(self, text) -> Any:
         ...
 
     def calculate_simularity(self, embedding1: Any, embedding2: Any) -> float:
         ...
 
     def get_tokens(self, text: str) -> [str]:
-        return None
-
-    def get_corpus(self) -> Optional[str]:
-        """
-        Retrieves the corpus data used by the embedding strategy.
-
-        This method provides a default implementation that can be overridden
-        by concrete implementations of the IEmbeddingStrategy protocol.
-        The method should return the corpus data in a format suitable for
-        the embedding strategy, or None if not applicable.
-
-        Returns:
-            Any: The corpus data used by the embedding strategy, or None
-            if the corpus is not defined or not applicable for this strategy.
-        """
         return None
 
 
