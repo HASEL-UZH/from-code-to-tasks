@@ -6,3 +6,6 @@ class ITokenizer(Protocol):
 
     def tokenize(self, text: str) -> [str]:
         ...
+
+    def tokenize_corpus_texts(self, texts: [str]) -> [str]:
+        ...

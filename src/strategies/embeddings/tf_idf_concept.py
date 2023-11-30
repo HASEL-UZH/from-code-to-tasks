@@ -1,24 +1,21 @@
-from typing import Any, Callable, List, Optional
+from typing import Any, Optional
+
 from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-from src.core.logger import log
-from src.strategies.tokenization.nltk_tokenizer import (
-    NltkTokenizer,
-    NltkTokenizerOptimized,
-)
-from src.strategies.tokenization.standard_tokenizer import (
-    StandardTokenizer,
-)
 from src.strategies.defs import (
     ContentStrategies,
     CacheStrategy,
     IEmbeddingConcept,
 )
-from src.strategies.embeddings.defs import IEmbeddingStrategy, IEmbeddingStrategyFactory
+from src.strategies.embeddings.defs import IEmbeddingStrategy
 from src.strategies.tokenization.defs import ITokenizer
-from src.strategies.tokenization.subword_tokenizer import SubwordTokenizerNoNumbers
+from src.strategies.tokenization.test_tokenizer import (
+    BasicTestTokenizer,
+    SubwordTestTokenizer,
+    RemovedNumberTestTokenizer,
+)
 
 
 class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
@@ -28,19 +25,24 @@ class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
         self.name = "tf-idf-embedding--" + tokenizer.name
         self._cache = {}
 
-    def init(self, corpus_text: [str]) -> [str]:
+    def init(self, corpus_texts: [str]) -> [str]:
         self._cache = {}
         self._vectorizer = TfidfVectorizer()
+        tokenized_corpus_text = self._tokenizer.tokenize_corpus_texts(corpus_texts)
+        # log.debug(
+        #     f"TfIdfEmbeddingStrategy.create_embedding ({self.name}), create corpus: {corpus_tokens[0:10]}"
+        # )
+        X = self._vectorizer.fit_transform(tokenized_corpus_text)
+        shape = X.shape
+        feature_names = self._vectorizer.get_feature_names_out()
+        return feature_names
 
-        content = " ".join(corpus_text)
-        corpus_tokens = self._tokenizer.tokenize(content)
-        log.debug(
-            f"TfIdfEmbeddingStrategy.create_embedding ({self.name}), create corpus: {corpus_tokens[0:10]}"
-        )
-        X = self._vectorizer.fit_transform(corpus_tokens)
-        # shape = X.shape
-        # feature_names = self._vectorizer.get_feature_names_out()
-        return corpus_tokens
+    # def init(self, corpus_texts: [str]) -> [str]:
+    #     self._cache = {}
+    #     self._vectorizer = TfidfVectorizer()
+    #     X = self._vectorizer.fit_transform(corpus_texts)
+    #     feature_names = self._vectorizer.get_feature_names_out()
+    #     return feature_names
 
     def get_embedding(self, text) -> Any:
         embedding = self._cache.get(text)
@@ -84,10 +86,12 @@ class TfIdfConcept(IEmbeddingConcept):
         # )
         # self.embedding_strategies.append(TfIdfEmbeddingStrategy(StandardTokenizerNoNumbers()))
         # self.embedding_strategies.append(TfIdfEmbeddingStrategy(SubwordTokenizer()))
-        self.embedding_strategies.append(
-            TfIdfEmbeddingStrategy(SubwordTokenizerNoNumbers())
-        )
+        # self.embedding_strategies.append(
+        #     TfIdfEmbeddingStrategy(SubwordTokenizerNoNumbers())
+        # )
         # self.embedding_strategies.append(TfIdfEmbeddingStrategy(NltkTokenizer()))
+        self.embedding_strategies.append(TfIdfEmbeddingStrategy(BasicTestTokenizer()))
+        self.embedding_strategies.append(TfIdfEmbeddingStrategy(SubwordTestTokenizer()))
         self.embedding_strategies.append(
-            TfIdfEmbeddingStrategy(NltkTokenizerOptimized())
+            TfIdfEmbeddingStrategy(RemovedNumberTestTokenizer())
         )

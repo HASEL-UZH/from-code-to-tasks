@@ -24,12 +24,12 @@ class ChangeContentProvider:
         )
         change_resources = db.find_resources(criteria)
         commit_infos: [ICommitInfo] = []
+        # pr_filter = PrFilter(context)
         for change_resource in change_resources:
             commit_info = self._get_commit_info(context, change_resource)
             if commit_info is not None:
-                pr_filter = PrFilter(context)
-                if pr_filter.accept_commit_info(commit_info["commit_hash"]):
-                    commit_infos.append(commit_info)
+                # if pr_filter.accept_commit_info(commit_info["commit_hash"]):
+                commit_infos.append(commit_info)
         return commit_infos
 
     def _get_commit_info(
@@ -84,16 +84,16 @@ class PrFilter:
         if pr_info["number_test_files"] / pr_info["number_source_files"] > 0.5:
             return False
         # Remove PRs with too many or too little files
-        if (
-            pr_info["number_source_files"] > self._pr_statistics["src_files_max"]
-            or pr_info["number_source_files"] < self._pr_statistics["src_files_min"]
-        ):
-            return False
-        if (
-            pr_info["number_lines"] > self._pr_statistics["lines_max"]
-            or pr_info["number_lines"] < self._pr_statistics["lines_min"]
-        ):
-            return False
+        # if (
+        #     pr_info["number_source_files"] > self._pr_statistics["src_files_max"]
+        #     or pr_info["number_source_files"] < self._pr_statistics["src_files_min"]
+        # ):
+        #     return False
+        # if (
+        #     pr_info["number_lines"] > self._pr_statistics["lines_max"]
+        #     or pr_info["number_lines"] < self._pr_statistics["lines_min"]
+        # ):
+        #     return False
         return True
 
     def create_lookup_dict(self, context):

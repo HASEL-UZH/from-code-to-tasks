@@ -32,6 +32,9 @@ def get_pr_statistics(repository_identifier: str) -> IPrStatistics:
         "lines_max": 0,
         "lines_min": 0,
     }
+    # resources = Collection.resource.find(
+    #     context.create_resource_criteria({"kind": "source"})
+    # )
     resources = Collection.resource.find(
         {"kind": "source", "repository_identifier": repository_identifier}
     )
@@ -87,9 +90,9 @@ def get_pr_statistics(repository_identifier: str) -> IPrStatistics:
     )
 
     total_files = len(src_files_values)
-    print(
-        f"Files within bandwidth ({src_files_min} to {src_files_max}): {files_within_bandwidth} out of {total_files}"
-    )
+    # print(
+    #     f"Files within bandwidth ({src_files_min} to {src_files_max}): {files_within_bandwidth} out of {total_files}"
+    # )
 
     pr_statistics["src_files_max"] = src_files_max
     pr_statistics["src_files_min"] = src_files_min
