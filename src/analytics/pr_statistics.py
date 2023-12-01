@@ -3,10 +3,12 @@ from typing import TypedDict, Any
 
 from src.core.utils import group_by
 from src.store.mdb_store import Collection
+from src.tasks.pipeline_context import PipelineContext
 
 
 class IPrInfo(TypedDict):
     pr: Any
+    repository: str
     number_source_files: int
     number_unique_files: int
     number_test_files: int
@@ -15,7 +17,6 @@ class IPrInfo(TypedDict):
 
 
 class IPrStatistics(TypedDict):
-    repository_identifier: str
     pr_infos: [IPrInfo]
     src_files_max: int
     src_files_min: int
@@ -23,20 +24,16 @@ class IPrStatistics(TypedDict):
     lines_min: int
 
 
-def get_pr_statistics(repository_identifier: str) -> IPrStatistics:
+def get_pr_statistics(context: PipelineContext) -> IPrStatistics:
     pr_statistics: IPrStatistics = {
-        "repository_identifier": repository_identifier,
         "pr_infos": [],
         "src_files_max": 0,
         "src_files_min": 0,
         "lines_max": 0,
         "lines_min": 0,
     }
-    # resources = Collection.resource.find(
-    #     context.create_resource_criteria({"kind": "source"})
-    # )
     resources = Collection.resource.find(
-        {"kind": "source", "repository_identifier": repository_identifier}
+        context.create_resource_criteria({"kind": "source"})
     )
     resource_groups = group_by(resources, "@container")
     pr_title_statistics = {}
@@ -55,6 +52,7 @@ def get_pr_statistics(repository_identifier: str) -> IPrStatistics:
         unique_file_names = list(set([d["name"] for d in resource_group]))
         pr_info: IPrInfo = {
             "pr": pr,
+            "repository": pr["repository_identifier"],
             "number_source_files": len(resource_group),
             "number_unique_files": len(unique_file_names),
             "number_test_files": len(
@@ -83,6 +81,11 @@ def get_pr_statistics(repository_identifier: str) -> IPrStatistics:
     lines_max = lines_average_value + 0.2 * lines_std_deviation
     lines_min = lines_average_value - 0.2 * lines_std_deviation
 
+    pr_statistics["src_files_max"] = src_files_max
+    pr_statistics["src_files_min"] = src_files_min
+    pr_statistics["lines_max"] = lines_max
+    pr_statistics["lines_min"] = lines_min
+
     files_within_bandwidth = sum(
         1
         for num_files in src_files_values
@@ -93,10 +96,5 @@ def get_pr_statistics(repository_identifier: str) -> IPrStatistics:
     # print(
     #     f"Files within bandwidth ({src_files_min} to {src_files_max}): {files_within_bandwidth} out of {total_files}"
     # )
-
-    pr_statistics["src_files_max"] = src_files_max
-    pr_statistics["src_files_min"] = src_files_min
-    pr_statistics["lines_max"] = lines_max
-    pr_statistics["lines_min"] = lines_min
 
     return pr_statistics

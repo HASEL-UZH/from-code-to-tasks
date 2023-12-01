@@ -1,23 +1,18 @@
-from typing import Any, Callable, List, Optional
+from typing import Any, Optional
+
 from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import CountVectorizer
+
 from src.core.logger import log
-from src.strategies.tokenization.nltk_tokenizer import (
-    NltkTokenizer,
-    NltkTokenizerOptimized,
-)
-from src.strategies.tokenization.standard_tokenizer import (
-    StandardTokenizer,
-)
 from src.strategies.defs import (
     ContentStrategies,
     CacheStrategy,
     IEmbeddingConcept,
 )
-from src.strategies.embeddings.defs import IEmbeddingStrategy, IEmbeddingStrategyFactory
+from src.strategies.embeddings.defs import IEmbeddingStrategy
 from src.strategies.tokenization.defs import ITokenizer
-from src.strategies.tokenization.subword_tokenizer import SubwordTokenizerNoNumbers
+from src.strategies.tokenization.tokenizer import SubwordTokenizer, StandardTokenizer
 
 
 class TfEmbeddingStrategy(IEmbeddingStrategy):
@@ -75,16 +70,5 @@ class TfConcept(IEmbeddingConcept):
         self.embedding_strategies = []
         self.content_strategies = ContentStrategies.TfxCore
         self.cache_strategy = CacheStrategy.Memory
-        # self.embedding_strategies.append(
-        #     TfEmbeddingStrategy(StandardTokenizer())
-        # )
-        self.embedding_strategies.append(
-            TfEmbeddingStrategy(SubwordTokenizerNoNumbers())
-        )
-        # self.embedding_strategies.append(TfEmbeddingStrategy(StandardTokenizerNoNumbers()))
-        # self.embedding_strategies.append(TfEmbeddingStrategy(SubwordTokenizer()))
-        # self.embedding_strategies.append(TfEmbeddingStrategy(SubwordTokenizerNoNumbers()))
-        # self.embedding_strategies.append(TfEmbeddingStrategy(NltkTokenizer()))
-        # self.embedding_strategies.append(
-        #     TfEmbeddingStrategy(NltkTokenizerOptimized())
-        # )
+        self.embedding_strategies.append(TfEmbeddingStrategy(StandardTokenizer()))
+        self.embedding_strategies.append(TfEmbeddingStrategy(SubwordTokenizer()))

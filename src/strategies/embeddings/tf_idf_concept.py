@@ -11,11 +11,7 @@ from src.strategies.defs import (
 )
 from src.strategies.embeddings.defs import IEmbeddingStrategy
 from src.strategies.tokenization.defs import ITokenizer
-from src.strategies.tokenization.test_tokenizer import (
-    BasicTestTokenizer,
-    SubwordTestTokenizer,
-    RemovedNumberTestTokenizer,
-)
+from src.strategies.tokenization.tokenizer import SubwordTokenizer, StandardTokenizer
 
 
 class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
@@ -78,20 +74,5 @@ class TfIdfConcept(IEmbeddingConcept):
         self.embedding_strategies = []
         self.content_strategies = ContentStrategies.TfxCore
         self.cache_strategy = CacheStrategy.Memory
-        # self.embedding_strategies.append(
-        #     TfIdfEmbeddingStrategy(StandardTokenizer())
-        # )
-        # self.embedding_strategies.append(
-        #     TfIdfEmbeddingStrategy(SubwordTokenizerNoNumbers())
-        # )
-        # self.embedding_strategies.append(TfIdfEmbeddingStrategy(StandardTokenizerNoNumbers()))
-        # self.embedding_strategies.append(TfIdfEmbeddingStrategy(SubwordTokenizer()))
-        # self.embedding_strategies.append(
-        #     TfIdfEmbeddingStrategy(SubwordTokenizerNoNumbers())
-        # )
-        # self.embedding_strategies.append(TfIdfEmbeddingStrategy(NltkTokenizer()))
-        self.embedding_strategies.append(TfIdfEmbeddingStrategy(BasicTestTokenizer()))
-        self.embedding_strategies.append(TfIdfEmbeddingStrategy(SubwordTestTokenizer()))
-        self.embedding_strategies.append(
-            TfIdfEmbeddingStrategy(RemovedNumberTestTokenizer())
-        )
+        self.embedding_strategies.append(TfIdfEmbeddingStrategy(StandardTokenizer()))
+        self.embedding_strategies.append(TfIdfEmbeddingStrategy(SubwordTokenizer()))

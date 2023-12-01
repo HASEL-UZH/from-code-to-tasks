@@ -24,12 +24,12 @@ class ChangeContentProvider:
         )
         change_resources = db.find_resources(criteria)
         commit_infos: [ICommitInfo] = []
-        # pr_filter = PrFilter(context)
+        pr_filter = PrFilter(context)
         for change_resource in change_resources:
             commit_info = self._get_commit_info(context, change_resource)
             if commit_info is not None:
-                # if pr_filter.accept_commit_info(commit_info["commit_hash"]):
-                commit_infos.append(commit_info)
+                if pr_filter.accept_commit_info(commit_info["commit_hash"]):
+                    commit_infos.append(commit_info)
         return commit_infos
 
     def _get_commit_info(
@@ -71,8 +71,7 @@ class ChangeContentProvider:
 
 class PrFilter:
     def __init__(self, context):
-        # TODO fix repository identifier
-        self._pr_statistics = get_pr_statistics("iluwatar__java-design-patterns")
+        self._pr_statistics = get_pr_statistics(context)
         self._lookup = self.create_lookup_dict(context)
 
     def accept_commit_info(self, commit_id) -> bool:
@@ -83,7 +82,7 @@ class PrFilter:
         # # Remove PRs where majority of files are test files
         if pr_info["number_test_files"] / pr_info["number_source_files"] > 0.5:
             return False
-        # Remove PRs with too many or too little files
+        # Remove PRs with too many or too little files or lines
         # if (
         #     pr_info["number_source_files"] > self._pr_statistics["src_files_max"]
         #     or pr_info["number_source_files"] < self._pr_statistics["src_files_min"]
