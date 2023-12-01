@@ -32,7 +32,7 @@ class TfEmbeddingStrategy(IEmbeddingStrategy):
 
     def get_embedding(self, text) -> Any:
         embedding = self._cache.get(text)
-        if embedding is not None:
+        if embedding is None:
             embedding = self._create_embedding(text)
             self._cache[text] = embedding
         return embedding
@@ -62,7 +62,7 @@ class TfConcept(IEmbeddingConcept):
 
     def __init__(self):
         self.embedding_strategies = []
-        self.content_strategies = ContentStrategies.TfxCore
+        self.content_strategies = ContentStrategies.TfxAll
         self.cache_strategy = CacheStrategy.Memory
         self.embedding_strategies.append(TfEmbeddingStrategy(StandardTokenizer()))
         self.embedding_strategies.append(TfEmbeddingStrategy(SubwordTokenizer()))
