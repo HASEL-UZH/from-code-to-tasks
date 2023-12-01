@@ -42,7 +42,7 @@ class AccuracyCalculator:
         correct_predictions = 0
         sliding_window_items = {d["commit_hash"]: d for d in sliding_window}
         for item_pr in sliding_window:
-            item__pr_commit_hash = item_pr["commit_hash"]
+            item_pr_commit_hash = item_pr["commit_hash"]
             item_pull_request_text = item_pr["pull_request_text"]
             item_pull_request_embedding = embedding_strategy.get_embedding(
                 item_pull_request_text
