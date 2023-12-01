@@ -1,17 +1,14 @@
 from src.calculations.acurracy_calculator import AccuracyCalculator
-from src.core.profiler import Profiler
-from src.core.workspace_context import get_results_file, write_text_file
-from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
-
 from src.calculations.create_results import (
     get_statistics_object,
     save_results_to_csv,
 )
 from src.core.logger import log
+from src.core.profiler import Profiler
+from src.core.workspace_context import get_results_file, write_text_file
 from src.strategies.change_content_provider import ChangeContentProvider
-from src.strategies.defs import CacheStrategy
-from src.strategies.embeddings.tf_concept import TfConcept
 from src.strategies.embeddings.tf_idf_concept import TfIdfConcept
+from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 
 def create_results_task(context: PipelineContext):
@@ -34,19 +31,16 @@ def create_results_task(context: PipelineContext):
                 content_provider = ChangeContentProvider()
                 commit_infos = content_provider.get_content(context, content_strategy)
 
-                # INSERT COMMIT FILTER HERE - or in the ChangeContentProvider
-                # commit_infos = commit_infos[:20]
-
-                corpus_text = []
+                corpus_texts = []
                 for commit_info in commit_infos:
-                    corpus_text.append(commit_info["pull_request_text"])
-                    corpus_text.append(commit_info["change_text"])
+                    corpus_texts.append(commit_info["pull_request_text"])
+                    corpus_texts.append(commit_info["change_text"])
 
-                corpus_tokens = embedding_strategy.init(corpus_text)
-                if corpus_tokens:
+                corpus_feature_names = embedding_strategy.init(corpus_texts).tolist()
+                if corpus_feature_names:
                     corpus_filename = f"corpus_{embedding_concept.name}-{embedding_strategy.name}--{content_strategy['meta']}-{content_strategy['terms']}.text"
                     corpus_filepath = get_results_file(corpus_filename)
-                    write_text_file(corpus_filepath, "\n".join(corpus_tokens))
+                    write_text_file(corpus_filepath, "\n".join(corpus_feature_names))
 
                 for window_size in window_sizes:
                     if window_size > len(commit_infos):

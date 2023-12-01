@@ -73,7 +73,7 @@ class AccuracyCalculator:
             )
             top_k_keys = top_keys[:k]
 
-            match = item__pr_commit_hash in top_k_keys
+            match = item_pr_commit_hash in top_k_keys
             if match:
                 correct_predictions += 1
 

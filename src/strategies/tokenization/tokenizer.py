@@ -47,8 +47,6 @@ class SubwordTokenizer(StandardTokenizer):
         words = [subword for sublist in words for subword in sublist]
         words = [word.split(".") for word in words]
         words = [subword for sublist in words for subword in sublist]
-        words = [
-            subword.lower() for word in words for subword in re.split("[-.]", word)
-        ]
+        words = [subword for word in words for subword in re.split("[-.]", word)]
         words = list(filter(None, words))
         return words
