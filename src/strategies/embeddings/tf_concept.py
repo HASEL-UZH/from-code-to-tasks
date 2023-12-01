@@ -4,7 +4,6 @@ from numpy import dot
 from numpy.linalg import norm
 from sklearn.feature_extraction.text import CountVectorizer
 
-from src.core.logger import log
 from src.strategies.defs import (
     ContentStrategies,
     CacheStrategy,
@@ -22,19 +21,14 @@ class TfEmbeddingStrategy(IEmbeddingStrategy):
         self.name = "tf-embedding--" + tokenizer.name
         self._cache = {}
 
-    def init(self, corpus_text: [str]) -> [str]:
+    def init(self, corpus_texts: [str]) -> [str]:
         self._cache = {}
         self._vectorizer = CountVectorizer()
-
-        content = " ".join(corpus_text)
-        corpus_tokens = self._tokenizer.tokenize(content)
-        log.debug(
-            f"TfEmbeddingStrategy.create_embedding ({self.name}), create corpus: {corpus_tokens[0:10]}"
-        )
-        X = self._vectorizer.fit_transform(corpus_tokens)
-        # shape = X.shape
-        # feature_names = self._vectorizer.get_feature_names_out()
-        return corpus_tokens
+        tokenized_corpus_text = self._tokenizer.tokenize_corpus_texts(corpus_texts)
+        X = self._vectorizer.fit_transform(tokenized_corpus_text)
+        shape = X.shape
+        feature_names = self._vectorizer.get_feature_names_out()
+        return feature_names
 
     def get_embedding(self, text) -> Any:
         embedding = self._cache.get(text)

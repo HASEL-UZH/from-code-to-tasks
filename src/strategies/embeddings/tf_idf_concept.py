@@ -25,20 +25,10 @@ class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
         self._cache = {}
         self._vectorizer = TfidfVectorizer()
         tokenized_corpus_text = self._tokenizer.tokenize_corpus_texts(corpus_texts)
-        # log.debug(
-        #     f"TfIdfEmbeddingStrategy.create_embedding ({self.name}), create corpus: {corpus_tokens[0:10]}"
-        # )
         X = self._vectorizer.fit_transform(tokenized_corpus_text)
         shape = X.shape
         feature_names = self._vectorizer.get_feature_names_out()
         return feature_names
-
-    # def init(self, corpus_texts: [str]) -> [str]:
-    #     self._cache = {}
-    #     self._vectorizer = TfidfVectorizer()
-    #     X = self._vectorizer.fit_transform(corpus_texts)
-    #     feature_names = self._vectorizer.get_feature_names_out()
-    #     return feature_names
 
     def get_embedding(self, text) -> Any:
         embedding = self._cache.get(text)
