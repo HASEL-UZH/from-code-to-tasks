@@ -41,25 +41,38 @@ class AccuracyCalculator:
     ):
         correct_predictions = 0
         sliding_window_items = {d["commit_hash"]: d for d in sliding_window}
-        for item_pr in sliding_window:
-            item_pr_commit_hash = item_pr["commit_hash"]
-            item_pull_request_text = item_pr["pull_request_text"]
-            item_pull_request_embedding = embedding_strategy.get_embedding(
-                item_pull_request_text
-            )
-            item_pr_change_comparison = {}
-            for commit_info in sliding_window:
-                item_text_commit_hash = commit_info["commit_hash"]
-                item_change_text = commit_info["change_text"]
-                item_change_text_embedding = embedding_strategy.get_embedding(
-                    item_change_text
-                )
 
+        item_pr_change_comparison = {}
+
+        for commit_info in sliding_window:
+            item_text_commit_hash = commit_info["commit_hash"]
+            item_change_text = commit_info["change_text"]
+            item_change_text_embedding = embedding_strategy.get_embedding(
+                item_change_text
+            )
+            X_CODE = item_change_text
+            X_CODE_HASH = item_text_commit_hash
+            X_DEBUG_DICT = {}
+            X_DEBUG_DICT[X_CODE_HASH] = []
+
+            for item_pr in sliding_window:
+                item_pr_commit_hash = item_pr["commit_hash"]
+                item_pull_request_text = item_pr["pull_request_text"]
+                item_pull_request_embedding = embedding_strategy.get_embedding(
+                    item_pull_request_text
+                )
                 try:
                     similarity = embedding_strategy.calculate_simularity(
-                        item_pull_request_embedding, item_change_text_embedding
+                        item_change_text_embedding, item_pull_request_embedding
                     )
-                    item_pr_change_comparison[item_text_commit_hash] = similarity
+                    item_pr_change_comparison[item_pr_commit_hash] = similarity
+                    X_DEBUG_DICT[X_CODE_HASH].append(
+                        {
+                            "HASH": item_pr_commit_hash,
+                            "PR_TEXT": item_pull_request_text,
+                            "SIMILARITY": similarity,
+                        }
+                    )
                 except Exception as e:
                     _data = {"k": k}
                     self._context.error(
@@ -73,9 +86,11 @@ class AccuracyCalculator:
             )
             top_k_keys = top_keys[:k]
 
-            match = item_pr_commit_hash in top_k_keys
+            match = item_text_commit_hash in top_k_keys
             if match:
                 correct_predictions += 1
+            else:
+                pass
 
             self._context.log_accuracy(
                 item_pr,
