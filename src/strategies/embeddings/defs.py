@@ -1,4 +1,4 @@
-from typing import Protocol, Any, Callable, List, Optional
+from typing import Protocol, Any, Callable, List
 
 
 class IEmbeddingStrategy(Protocol):
@@ -12,7 +12,7 @@ class IEmbeddingStrategy(Protocol):
     def get_embedding(self, text) -> Any:
         ...
 
-    def calculate_simularity(self, embedding1: Any, embedding2: Any) -> float:
+    def calculate_similarity(self, embedding1: Any, embedding2: Any) -> float:
         ...
 
     def get_tokens(self, text: str) -> [str]:

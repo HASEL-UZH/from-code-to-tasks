@@ -62,7 +62,7 @@ class AccuracyCalculator:
                     item_pull_request_text
                 )
                 try:
-                    similarity = embedding_strategy.calculate_simularity(
+                    similarity = embedding_strategy.calculate_similarity(
                         item_change_text_embedding, item_pull_request_embedding
                     )
                     item_pr_change_comparison[item_pr_commit_hash] = similarity

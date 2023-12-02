@@ -43,7 +43,7 @@ class TfIdfEmbeddingStrategy(IEmbeddingStrategy):
         tf_idf_text_vector = self._vectorizer.transform([token_text]).toarray()[0]
         return tf_idf_text_vector
 
-    def calculate_simularity(self, embedding1: Any, embedding2: Any) -> float:
+    def calculate_similarity(self, embedding1: Any, embedding2: Any) -> float:
         nominator = dot(embedding1, embedding2)
         denominator = norm(embedding1) * norm(embedding2)
         if denominator == 0:
@@ -62,7 +62,7 @@ class TfIdfConcept(IEmbeddingConcept):
 
     def __init__(self):
         self.embedding_strategies = []
-        self.content_strategies = ContentStrategies.TfxCore
+        self.content_strategies = ContentStrategies.TfxAll
         self.cache_strategy = CacheStrategy.Memory
         self.embedding_strategies.append(TfIdfEmbeddingStrategy(StandardTokenizer()))
         self.embedding_strategies.append(TfIdfEmbeddingStrategy(SubwordTokenizer()))

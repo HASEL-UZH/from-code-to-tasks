@@ -43,7 +43,7 @@ class TfEmbeddingStrategy(IEmbeddingStrategy):
         tf_text_vector = self._vectorizer.transform([token_text]).toarray()[0]
         return tf_text_vector
 
-    def calculate_simularity(self, embedding1: Any, embedding2: Any) -> float:
+    def calculate_similarity(self, embedding1: Any, embedding2: Any) -> float:
         nominator = dot(embedding1, embedding2)
         denominator = norm(embedding1) * norm(embedding2)
         if denominator == 0:

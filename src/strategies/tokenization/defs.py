@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Protocol, Optional, List
 
 
 class ITokenizer(Protocol):
@@ -7,5 +7,7 @@ class ITokenizer(Protocol):
     def tokenize(self, text: str) -> [str]:
         ...
 
-    def tokenize_corpus_texts(self, texts: [str]) -> [str]:
+    def tokenize_corpus_texts(
+        self, texts: Optional[List[str]] = None
+    ) -> Optional[List[str]]:
         ...
