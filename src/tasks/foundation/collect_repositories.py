@@ -301,7 +301,7 @@ if __name__ == "__main__":
     # verify_commit_consistencies(
     #     owner="iluwatar", repository_name="java-design-patterns"
     # )
-    insert_issues(owner="iluwatar", repository_name="java-design-patterns")
-    insert_issues(owner="apache", repository_name="commons-lang")
+    # insert_issues(owner="iluwatar", repository_name="java-design-patterns")
+    # insert_issues(owner="apache", repository_name="commons-lang")
     insert_issues(owner="vavr-io", repository_name="vavr")
     print("Done.")
