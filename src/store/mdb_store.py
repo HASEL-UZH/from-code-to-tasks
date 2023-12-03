@@ -3,8 +3,8 @@ import uuid
 from datetime import datetime
 from typing import Union, Iterable
 
-from src.core.profiler import Profiler
 from src.core.logger import log
+from src.core.profiler import Profiler
 from src.core.workspace_context import (
     get_or_create_dir,
     read_text_file,
@@ -13,8 +13,8 @@ from src.core.workspace_context import (
     read_json_file,
     write_text_file,
 )
-from src.store.object_factory import decode_resource_name, ObjectFactory, Classifier
 from src.store.mdb import mdb
+from src.store.object_factory import ObjectFactory, Classifier
 
 IDbCursor = Iterable
 
@@ -33,6 +33,7 @@ class Collection:
     github_issue = mdb.get_collection("github_issue")
     github_query = mdb.get_collection("github_query")
     github_repository = mdb.get_collection("github_repository")
+    pydriller_commit = mdb.get_collection("pydriller_commit")
 
 
 # Base file system structure
