@@ -44,6 +44,26 @@ class ContentStrategies:
         {"meta": "ast-lg", "terms": "meta_ast_text"},
         {"meta": None, "terms": "diff_text"},
     ]
+
+    TfxCombined = [
+        {
+            "$or": [
+                {
+                    "$and": [
+                        {"strategy.meta": "ast-lg"},
+                        {"strategy.terms": "meta_ast_text"},
+                    ]
+                },
+                {
+                    "$and": [
+                        {"strategy.meta": None},
+                        {"strategy.terms": "diff_text"},
+                    ]
+                },
+            ]
+        }
+    ]
+
     CodeBERT = [
         {"meta": "ast-sm", "terms": "meta_ast_code"},
         {"meta": "ast-md", "terms": "meta_ast_code"},

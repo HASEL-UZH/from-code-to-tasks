@@ -6,7 +6,6 @@ from src.core.logger import log
 from src.core.profiler import Profiler
 from src.core.utils import get_date_string
 from src.core.workspace_context import get_file_base_name, is_java_file
-from src.github.defs import RepositoryIdentifier
 from src.github.github_grapghql_api import github_graphql_api
 from src.store.mdb_store import db, Collection
 from src.store.object_factory import ObjectFactory
@@ -32,15 +31,19 @@ def create_commit_data_task(context: PipelineContext):
         git_repository = Repository(
             repo_url, only_modifications_with_file_types=[".java"]
         )
+        commit_pairs = []
         for commit in git_repository.traverse_commits():
             pr_commit = pr_commits.get(commit.hash)
             if pr_commit:
                 profiler.info(f"PR commit found: {commit.hash}")
-                save_commit_data(repository, pr_commit, commit)
+                if True:  # TODO decide if accept commit - PR commit combination
+                    commit_pairs.append({"pr_commit": pr_commit, "commit": commit})
+                #   save_commit_data(repository, pr_commit, commit)
                 match_count += 1
             else:
                 profiler.debug(f"PR commit not found: {commit.hash}")
                 mismatch_count += 1
+        # TODO for all pairs save only 250
         profiler.info(
             f"  match: {match_count}, mismatch: {mismatch_count}, total: {match_count+mismatch_count}, PR count: {len(prs)}, with merge commit: {len(pr_commits)}"
         )
