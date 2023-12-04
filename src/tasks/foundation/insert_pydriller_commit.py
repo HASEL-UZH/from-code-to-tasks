@@ -6,13 +6,8 @@ from src.core.workspace_context import get_file_base_name, is_java_file
 from src.store.mdb_store import Collection
 
 
-def collect_pydriller_commit():
+def insert_pydriller_commit(repositories: [dict]):
     profiler = Profiler("collect_pydriller_commit")
-    repositories = Collection.github_repository.find(
-        {"language": "en", "languages": None}
-    ).sort("stargazerCount", -1)
-    repositories = repositories[:10]
-
     for repository in repositories:
         exists = (
             Collection.pydriller_commit.find_one({"repository_url": repository["url"]})
@@ -29,7 +24,7 @@ def collect_pydriller_commit():
         pydriller_commits = []
         for commit in git_repository.traverse_commits():
             profiler.debug(f"Repository data available - {repo_url}")
-            pydriller_commit = create_pydriller_commit(repository, commit)
+            pydriller_commit = _create_pydriller_commit(repository, commit)
             pydriller_commits.append(pydriller_commit)
         Collection.pydriller_commit.delete_many(
             {"repository_identifier": repository["url"]}
@@ -37,7 +32,7 @@ def collect_pydriller_commit():
         Collection.pydriller_commit.insert_many(pydriller_commits)
 
 
-def create_pydriller_commit(repository, pydriller_commit):
+def _create_pydriller_commit(repository, pydriller_commit):
     commit_date = get_date_string(pydriller_commit.author_date.date())
     seen = set()
     unique_modified_files = [
@@ -71,14 +66,10 @@ def create_pydriller_commit(repository, pydriller_commit):
                 "change_type": modified_file.change_type.name,
                 "old_path": modified_file.old_path,
                 "new_path": modified_file.new_path,
-                "modified_file_before": not not modified_file.source_code_before,
-                "modified_file_after": not not modified_file.source_code,
-                "modified_file_diff": not not modified_file.diff,
+                "modified_file_before": modified_file.source_code_before,
+                "modified_file_after": modified_file.source_code,
+                "modified_file_diff": modified_file.diff,
             }
             commit_info["changes"].append(change)
 
     return commit_info
-
-
-if __name__ == "__main__":
-    collect_pydriller_commit()

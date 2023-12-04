@@ -10,12 +10,12 @@ from src.github.github_grapghql_api import github_graphql_api
 from src.store.mdb import mdb
 from src.store.mdb_store import Collection
 from src.store.object_factory import get_repository_identifier
-from src.tasks.foundation.collect_pr_info import collect_pr_info
 
 api = github_graphql_api
 
 
-def insert_top_repositories():
+# Creates entries in github_repository collection
+def insert_github_repositories():
     profiler = Profiler()
     result = api.find_top_java_repositories(n=100, max_pages=100) or []
     query_result = result.get("query")
@@ -57,17 +57,17 @@ def insert_top_repositories():
         )
 
     else:
-        log.error("insert_top_repositories failed")
-    profiler.info(insert_top_repositories)
+        log.error("insert_github_repositories failed")
+    profiler.info("insert_github_repositories")
 
 
-def update_top_repositories_with_language():
+def _update_top_repositories_with_language():
     profiler = Profiler("update_top_repositories_with_language")
     repositories = list(Collection.github_repository.find())
 
     for d in repositories:
         profiler.debug(d.get("url"))
-        lang_info = get_text_language_info(d.get("description"))
+        lang_info = _get_text_language_info(d.get("description"))
         d["language"] = lang_info.get("language")
         d["languages"] = lang_info.get("languages")
 
@@ -76,7 +76,7 @@ def update_top_repositories_with_language():
     profiler.info("done")
 
 
-def update_top_repositories_with_stats():
+def _update_top_repositories_with_stats():
     profiler = Profiler("update_top_repositories_with_stats")
     repositories = list(Collection.github_repository.find())
 
@@ -102,7 +102,7 @@ def update_top_repositories_with_stats():
     profiler.info("done")
 
 
-def update_top_repositories_with_pr_count():
+def _update_top_repositories_with_pr_count():
     profiler = Profiler("update_top_repositories_with_pr_count")
     repositories = list(Collection.github_repository.find())
     for d in repositories:
@@ -125,7 +125,7 @@ def update_top_repositories_with_pr_count():
 DetectorFactory.seed = 0
 
 
-def get_text_language_info(s):
+def _get_text_language_info(s):
     def get_language(text):
         try:
             return detect(text)
@@ -162,7 +162,7 @@ def get_text_language_info(s):
     return info
 
 
-def generate_top_repositories_stats():
+def _generate_top_repositories_stats():
     profiler = Profiler()
     repositories = list(Collection.github_repository.find())
     rows = []
@@ -183,43 +183,10 @@ def generate_top_repositories_stats():
     filepath_xslx = os.path.join(get_results_dir(), "repository_stats_gen.xlsx")
     write_xlsx_file(filepath_xslx, rows)
 
-    profiler.info(generate_top_repositories_stats)
+    profiler.info("_generate_top_repositories_stats")
 
 
-def insert_pull_requests(owner: str, repository_name: str):
-    result = api.get_pull_requests(owner, repository_name, n=100, max_pages=100)
-    identifier = get_repository_identifier(result["url"])
-    base = {"identifier": identifier}
-
-    entries = []
-    for pr in result.get("data"):
-        entry = {**base, **pr["node"]}
-        commits = entry.get("commits", {}).get("edges", [])
-        commits = [d.get("node", {}).get("commit") for d in commits]
-        entry["commits"] = commits
-        entries.append(entry)
-
-    Collection.github_pr.delete_many({"identifier": identifier})
-    Collection.github_pr.insert_many(entries)
-
-
-def insert_issues(owner: str, repository_name: str):
-    result = api.get_issues(owner, repository_name, n=100, max_pages=100)
-    identifier = get_repository_identifier(result["url"])
-    base = {"identifier": identifier}
-
-    entries = []
-    for issue in result.get("data"):
-        entry = {**base, **issue}
-        entries.append(entry)
-
-    Collection.github_issue.delete_many({"identifier": identifier})
-    if entries:
-        Collection.github_issue.insert_many(entries)
-    log.info(f"Insert issues for {result['url']} ({len(entries)})")
-
-
-def verify_commit_consistencies(owner: str, repository_name: str):
+def _verify_commit_consistencies(owner: str, repository_name: str):
     profiler = Profiler()
     repo_url = f"https://github.com/{owner}/{repository_name}"
     log.info(f"Get commits for repository: {repo_url}")
@@ -292,21 +259,5 @@ def verify_commit_consistencies(owner: str, repository_name: str):
 
 if __name__ == "__main__":
     print(f"Rate limit: {api.get_rate_limit()}")
-
-    # collect_pydriller_commit()
-    collect_pr_info()
-
-    # insert_top_repositories()
-    # update_top_repositories_with_language()
-    # update_top_repositories_with_stats()
-    # update_top_repositories_with_pr_count()
-    # insert_pull_requests(owner="iluwatar", repository_name="java-design-patterns")
-    # insert_pull_requests(owner="apache", repository_name="commons-lang")
-    # insert_pull_requests(owner="vavr-io", repository_name="vavr")
-    # verify_commit_consistencies(
-    #     owner="iluwatar", repository_name="java-design-patterns"
-    # )
-    # insert_issues(owner="iluwatar", repository_name="java-design-patterns")
-    # insert_issues(owner="apache", repository_name="commons-lang")
-    # insert_issues(owner="vavr-io", repository_name="vavr")
+    insert_github_repositories()
     print("Done.")

@@ -1,6 +1,6 @@
 import json
-from typing import TypedDict, Optional, Any, List, Dict
 from datetime import datetime
+from typing import TypedDict, Optional, Any, List, Dict
 
 from src.core.logger import log
 from src.core.utils import hash_string
@@ -25,8 +25,12 @@ class PipelineContext:
         self._repositories = ",".join(self._opts.get("repositories", []))
         self._log_accuracy_flag = self._opts.get("log_accuracy_flag", False)
         self._log_cache = {}
+        self._repository_identifiers = self._opts.get("repositories", [])
 
-    def _create_db_filter_criteria(self, field: str, criteria: Optional[dict] = None):
+    def get_repository_identifiers(self):
+        return self._repository_identifiers
+
+    def create_db_filter_criteria(self, field: str, criteria: Optional[dict] = None):
         if not criteria:
             criteria = {}
 
@@ -42,19 +46,19 @@ class PipelineContext:
         return _criteria
 
     def create_repository_criteria(self, criteria: Optional[dict] = None):
-        criteria = self._create_db_filter_criteria("identifier", criteria)
+        criteria = self.create_db_filter_criteria("identifier", criteria)
         return criteria
 
     def create_commit_criteria(self, criteria: Optional[dict] = None):
-        criteria = self._create_db_filter_criteria("repository_identifier", criteria)
+        criteria = self.create_db_filter_criteria("repository_identifier", criteria)
         return criteria
 
     def create_resource_criteria(self, criteria: Optional[dict] = None):
-        criteria = self._create_db_filter_criteria("repository_identifier", criteria)
+        criteria = self.create_db_filter_criteria("repository_identifier", criteria)
         return criteria
 
     def create_issue_criteria(self, criteria: Optional[dict] = None):
-        criteria = self._create_db_filter_criteria("identifier", criteria)
+        criteria = self.create_db_filter_criteria("identifier", criteria)
         return criteria
 
     def get_opts(self):

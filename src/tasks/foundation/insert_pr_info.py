@@ -1,3 +1,4 @@
+import random
 from typing import TypedDict, Any
 
 from src.core.profiler import Profiler
@@ -8,12 +9,13 @@ from src.store.mdb_store import Collection
 class IPrInfo(TypedDict):
     pr_commit: Any
     py_commit: Any
-    repository: str
+    repository_identifier: str
     number_source_files: int
     number_unique_files: int
     number_test_files: int
     duplicate_title: bool
     number_lines: int
+    stargazer_count: int
 
 
 class IPrStatistics(TypedDict):
@@ -24,12 +26,8 @@ class IPrStatistics(TypedDict):
     lines_min: int
 
 
-def collect_pr_info():
+def insert_pr_info(repositories: [dict]):
     profiler = Profiler("select_commits")
-    repositories = Collection.github_repository.find(
-        {"language": "en", "languages": None, "identifier": "vavr-io__vavr"}
-    ).sort("stargazerCount", -1)
-    repositories = repositories[:10]
     for repository in repositories:
         repository_identifier = repository.get("identifier")
         profiler.info(f"process repository: {repository_identifier}")
@@ -45,14 +43,19 @@ def collect_pr_info():
             )
         )
 
-        pr_infos = create_pr_infos(repository, pr_commits, py_commits)
-        Collection.pr_info.delete_many({"repository": repository_identifier})
+        pr_infos = _create_pr_infos(repository, pr_commits, py_commits)
+        Collection.pr_info.delete_many({"repository_identifier": repository_identifier})
         if pr_infos:
+            random.shuffle(pr_infos)
+            for i in range(0, len(pr_infos)):
+                pr_info = pr_infos[i]
+                pr_info["index"] = i
             Collection.pr_info.insert_many(pr_infos)
+
         profiler.info(f"process repository done: {repository_identifier}")
 
 
-def create_pr_infos(repository: dict, pr_commits: [dict], py_commits: [dict]):
+def _create_pr_infos(repository: dict, pr_commits: [dict], py_commits: [dict]):
     pr_infos = []
     pr_title_statistics = {}
     for pr_commit in pr_commits:
@@ -73,12 +76,13 @@ def create_pr_infos(repository: dict, pr_commits: [dict], py_commits: [dict]):
         pr_info: IPrInfo = {
             "pr_commit": pr_commit,
             "py_commit": py_commit,
-            "repository": repository["identifier"],
+            "repository_identifier": repository["identifier"],
             "number_source_files": None,
             "number_unique_files": None,
             "number_test_files": None,
             "duplicate_title": pr_title_statistics[pr_commit.get("title")] > 1,
             "number_lines": None,
+            "stargazer_count": repository["stargazerCount"],
         }
         pr_infos.append(pr_info)
         if py_commit:
@@ -95,13 +99,13 @@ def create_pr_infos(repository: dict, pr_commits: [dict], py_commits: [dict]):
             )
             pr_info["number_lines"] = added_deleted_lines
 
-        accept_info = get_accept_info(pr_info)
+        accept_info = _get_accept_info(pr_info)
         pr_info.update(accept_info)
 
     return pr_infos
 
 
-def get_accept_info(pr_info):
+def _get_accept_info(pr_info):
     if not pr_info["py_commit"]:
         return {
             "accepted": False,
@@ -114,16 +118,18 @@ def get_accept_info(pr_info):
             "omit_reason": "duplicate title",
         }
     # # Remove PRs where majority of files are test files
-    if pr_info["number_test_files"] / pr_info["number_source_files"] >= 0.5:
+    if pr_info["number_test_files"] / pr_info["number_unique_files"] >= 0.5:
         return {
             "accepted": False,
             "omit_reason": "number test files",
         }
+    if pr_info["number_unique_files"] > 1000:
+        return {
+            "accepted": False,
+            "omit_reason": "number unique files",
+        }
+
     return {
         "accepted": True,
         "omit_reason": None,
     }
-
-
-if __name__ == "__main__":
-    collect_pr_info()

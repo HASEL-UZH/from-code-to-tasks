@@ -1,8 +1,8 @@
-import os
 import csv
 import json
+import os
+
 from openpyxl import Workbook
-from src.core.logger import log
 
 STORE_ROOT = os.path.abspath("./_store")
 RESULTS_DIR = os.path.abspath("./results")
