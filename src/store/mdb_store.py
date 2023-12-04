@@ -34,7 +34,7 @@ class Collection:
     github_query = mdb.get_collection("github_query")
     github_repository = mdb.get_collection("github_repository")
     pydriller_commit = mdb.get_collection("pydriller_commit")
-    flagged_pr = mdb.get_collection("flagged_pr")
+    pr_info = mdb.get_collection("pr_info")
 
 
 # Base file system structure

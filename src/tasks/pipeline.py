@@ -1,28 +1,19 @@
 from src.core.logger import log
 from src.github.defs import RepositoryIdentifier
-from src.github.github_grapghql_api import github_graphql_api
-from src.store.mdb_store import db, Collection
+from src.tasks.foundation.collect_repositories import insert_pull_requests
 from src.tasks.pipeline_context import PipelineContext
-from src.tasks.task_01__create_repository import create_repository_task
-from src.tasks.task_02__create_commit_data import (
-    create_commit_data_task,
-    update_pull_requests_with_issue_information,
-)
-from src.tasks.task_03__create_ast import create_ast_task
-from src.tasks.task_04__create_meta_ast import create_meta_ast_task
-from src.tasks.task_05__create_change_model import change_model_creator_task
-from src.tasks.task_06__create_change_repr import change_term_creator_task
-from src.tasks.task_07__create_results import create_results_task
 
 
 def run_pipeline():
     context = PipelineContext(
         opts={
-            "repositories": [RepositoryIdentifier.iluwatar__java_design_patterns],
-            # "repositories": [RepositoryIdentifier.vavr_io__vavr],
+            # "repositories": [RepositoryIdentifier.iluwatar__java_design_patterns],
+            "repositories": [RepositoryIdentifier.vavr_io__vavr],
             "log_accuracy_flag": False,
         }
     )
+    insert_pull_requests(owner="vavr-io", repository_name="vavr")
+
     log.info(f"Pipeline: {context.get_opts()}")
     # update_pull_requests_with_issue_information(context)
 
@@ -47,7 +38,7 @@ def run_pipeline():
     # change_term_creator_task(context)
 
     # 07
-    create_results_task(context)
+    # create_results_task(context)
     pass
 
 

@@ -10,21 +10,9 @@ class ChangeContentProvider:
     def get_content(
         self, context: PipelineContext, content_strategy: IContentStrategy
     ) -> [ICommitInfo]:
-        file_type = "text"
-        if content_strategy["terms"] == "meta_ast_code":
-            file_type = "java"
-
-        criteria = context.create_resource_criteria(
-            {
-                "strategy.meta": content_strategy["meta"],
-                "kind": "term",
-                "type": file_type,
-                "strategy.terms": content_strategy["terms"],
-            }
-        )
-        change_resources = db.find_resources(criteria)
         commit_infos: [ICommitInfo] = []
         pr_filter = PrFilter(context)
+        change_resources = self._get_change_resources(context, content_strategy)
         for change_resource in change_resources:
             commit_info = self._get_commit_info(context, change_resource)
             if commit_info is not None:
@@ -32,10 +20,42 @@ class ChangeContentProvider:
                     commit_infos.append(commit_info)
         return commit_infos
 
+    def _get_change_resources(
+        self, context: PipelineContext, content_strategy: IContentStrategy
+    ):
+        if content_strategy.get("meta") and content_strategy.get("terms"):
+            # standard strategy
+            file_type = "text"
+            if content_strategy["terms"] == "meta_ast_code":
+                file_type = "java"
+
+            criteria = context.create_resource_criteria(
+                {
+                    "strategy.meta": content_strategy["meta"],
+                    "kind": "term",
+                    "type": file_type,
+                    "strategy.terms": content_strategy["terms"],
+                }
+            )
+            change_resources = db.find_resources(criteria)
+            return change_resources
+        elif content_strategy.get("criteria"):
+            # composite strategy - we expect a complete query
+            criteria = content_strategy.get("criteria")
+            change_resources = db.find_resources(criteria)
+            # FIXME group the resources
+            return change_resources
+        else:
+            raise RuntimeError("Invalid content strategy")
+
+    def _get_resource_content(self, resource: dict or [dict]):
+        # FIXME handle dict[]
+        change_content = db.get_resource_content(resource, volatile=True)
+
     def _get_commit_info(
         self, context: PipelineContext, change_resource
     ) -> ICommitInfo:
-        change_content = db.get_resource_content(change_resource, volatile=True)
+        change_content = self._get_resource_content(change_resource)
         change_text = change_content.strip() if change_content else ""
         commit = db.find_object(change_resource.get("@container"))
         pull_request_title = commit.get("pull_request_title", "")

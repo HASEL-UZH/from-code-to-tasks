@@ -1,4 +1,4 @@
-from typing import TypedDict, Callable, Any, List, Protocol
+from typing import TypedDict, Callable, Any, List, Protocol, Optional
 
 from src.strategies.embeddings.defs import IEmbeddingStrategyFactory
 
@@ -6,6 +6,7 @@ from src.strategies.embeddings.defs import IEmbeddingStrategyFactory
 class IContentStrategy(TypedDict):
     meta: str
     terms: str
+    criteria: Optional[dict]
 
 
 class IEmbeddingConcept(Protocol):
@@ -43,6 +44,36 @@ class ContentStrategies:
     TfxCore = [
         {"meta": "ast-lg", "terms": "meta_ast_text"},
         {"meta": None, "terms": "diff_text"},
+    ]
+
+    TfxMulti = [
+        {
+            "name": "",
+            "criteria": {
+                "$or": [
+                    {
+                        "$and": [
+                            {
+                                "meta": "ast-lg",
+                                "terms": "meta_ast_text",
+                                "kind": "term",
+                                "type": "text",
+                            }
+                        ]
+                    },
+                    {
+                        "$and": [
+                            {
+                                "meta": None,
+                                "terms": "diff_text",
+                                "kind": "term",
+                                "type": "text",
+                            }
+                        ]
+                    },
+                ]
+            },
+        }
     ]
 
     TfxCombined = [
