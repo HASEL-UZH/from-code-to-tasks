@@ -55,12 +55,10 @@ class ChangeContentProvider:
         )
         change_resources = db.find_resources(criteria)
         commit_infos: [ICommitInfo] = []
-        pr_filter = PrFilter(context)
         for change_resource in change_resources:
             commit_info = self._get_commit_info(context, change_resource)
             if commit_info is not None:
-                if pr_filter.accept_commit_info(commit_info["commit_hash"]):
-                    commit_infos.append(commit_info)
+                commit_infos.append(commit_info)
         return commit_infos
 
     def _get_commit_info(
