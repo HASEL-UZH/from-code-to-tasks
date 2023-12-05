@@ -1,4 +1,4 @@
-from typing import TypedDict, Callable, Any, List, Protocol, Optional
+from typing import TypedDict, Callable, Any, List, Protocol, Optional, Union
 
 from src.strategies.embeddings.defs import IEmbeddingStrategyFactory
 
@@ -9,11 +9,14 @@ class IContentStrategy(TypedDict):
     criteria: Optional[dict]
 
 
+TContentStrategy = Union[IContentStrategy, List[IContentStrategy]]
+
+
 class IEmbeddingConcept(Protocol):
     name: str
     embedding_strategies: [IEmbeddingStrategyFactory]
     calculate_similarity: Callable[..., Any]
-    content_strategies: List[IContentStrategy]
+    content_strategies: List[TContentStrategy]
 
 
 class ICommitInfo(TypedDict):
@@ -47,6 +50,15 @@ class ContentStrategies:
     ]
 
     TfxMulti = [
+        {"meta": "ast-lg", "terms": "meta_ast_text"},
+        {"meta": None, "terms": "diff_text"},
+        [
+            {"meta": None, "terms": "diff_text"},
+            {"meta": "ast-lg", "terms": "meta_ast_text"},
+        ],
+    ]
+
+    TfxMulti2 = [
         {
             "name": "",
             "criteria": {
@@ -75,7 +87,6 @@ class ContentStrategies:
             },
         }
     ]
-
     TfxCombined = [
         {
             "$or": [

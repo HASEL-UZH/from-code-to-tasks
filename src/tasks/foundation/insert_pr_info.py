@@ -27,7 +27,7 @@ class IPrStatistics(TypedDict):
 
 
 def insert_pr_info(repositories: [dict]):
-    profiler = Profiler("select_commits")
+    profiler = Profiler("insert_pr_info")
     for repository in repositories:
         repository_identifier = repository.get("identifier")
         profiler.info(f"process repository: {repository_identifier}")

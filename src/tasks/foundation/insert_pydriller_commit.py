@@ -7,10 +7,12 @@ from src.store.mdb_store import Collection
 
 
 def insert_pydriller_commit(repositories: [dict]):
-    profiler = Profiler("collect_pydriller_commit")
+    profiler = Profiler("insert_pydriller_commit")
     for repository in repositories:
         exists = (
-            Collection.pydriller_commit.find_one({"repository_url": repository["url"]})
+            Collection.pydriller_commit.find_one(
+                {"repository_identifier": repository["identifier"]}
+            )
             is not None
         )
         if exists:
@@ -27,7 +29,7 @@ def insert_pydriller_commit(repositories: [dict]):
             pydriller_commit = _create_pydriller_commit(repository, commit)
             pydriller_commits.append(pydriller_commit)
         Collection.pydriller_commit.delete_many(
-            {"repository_identifier": repository["url"]}
+            {"repository_identifier": repository["identifier"]}
         )
         Collection.pydriller_commit.insert_many(pydriller_commits)
 
