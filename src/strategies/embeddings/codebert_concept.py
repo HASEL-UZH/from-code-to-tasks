@@ -55,7 +55,6 @@ class CodeBertConcept(IEmbeddingConcept):
     name = "codebert"
 
     def __init__(self):
-        self.embedding_strategies = []
+        self.embedding_strategies = [CodeBertEmbeddingStrategy()]
         self.content_strategies = ContentStrategies.CodeBERT
         self.cache_strategy = CacheStrategy.Npy
-        self.embedding_strategies.append(CodeBertEmbeddingStrategy)
