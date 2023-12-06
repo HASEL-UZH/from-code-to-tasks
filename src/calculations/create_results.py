@@ -1,9 +1,11 @@
 import csv
 import os
 import statistics
+from datetime import datetime
 
 from src.core.utils import group_by
 from src.core.workspace_context import get_results_dir
+from src.store.mdb_store import Collection
 from src.tasks.pipeline_context import PipelineContext
 
 
@@ -115,7 +117,6 @@ def get_statistics_object(accuracies_over_all_windows):
 def save_results_to_csv(results):
     if not results:
         return
-
     results_dir_path = get_results_dir()
     results_file_path = os.path.join(results_dir_path, "results.csv")
     headers = list(results[0].keys())
@@ -124,3 +125,18 @@ def save_results_to_csv(results):
         writer.writeheader()
         for result in results:
             writer.writerow(result)
+
+
+def save_results_to_db(context, results):
+    repository_identifiers = context.get_repository_identifiers()
+    current_datetime = datetime.now()
+    formatted_date = current_datetime.strftime("%Y-%m-%d")
+    results = [
+        {
+            "date": formatted_date,
+            "repository_identifiers": repository_identifiers[0],
+            **result,
+        }
+        for result in results
+    ]
+    Collection.results.insert_many(results)

@@ -35,6 +35,7 @@ class Collection:
     github_repository = mdb.get_collection("github_repository")
     pydriller_commit = mdb.get_collection("pydriller_commit")
     pr_info = mdb.get_collection("pr_info")
+    results = mdb.get_collection("results")
 
 
 # Base file system structure
