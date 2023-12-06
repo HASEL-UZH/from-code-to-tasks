@@ -36,8 +36,33 @@ class CodeBertSummedEmbeddingStrategy:
         return summed_embeddings
 
     def calculate_similarity(self, embedding1, embedding2):
-        similarity = (F.cosine_similarity(embedding1, embedding2, dim=1)).item()
-        return similarity
+        # Get the sequence lengths of embeddings
+        seq_len1 = embedding1.size(1)
+        seq_len2 = embedding2.size(1)
+
+        # Find the maximum sequence length
+        max_seq_len = max(seq_len1, seq_len2)
+
+        # Pad the embeddings to have the same sequence length
+        pad1 = max_seq_len - seq_len1
+        pad2 = max_seq_len - seq_len2
+
+        embedding1_padded = F.pad(embedding1, (0, 0, 0, pad1))
+        embedding2_padded = F.pad(embedding2, (0, 0, 0, pad2))
+
+        # Reshape padded tensors to [batch_size, sequence_length * embedding_size]
+        embedding1_flat = embedding1_padded.view(embedding1_padded.size(0), -1)
+        embedding2_flat = embedding2_padded.view(embedding2_padded.size(0), -1)
+
+        # Calculate cosine similarity using matrix multiplication
+        cosine_similarities = F.cosine_similarity(
+            embedding1_flat, embedding2_flat, dim=1
+        )
+
+        # Calculate mean similarity
+        mean_similarity = torch.mean(cosine_similarities).item()
+
+        return mean_similarity
 
     def get_tokens(self, text: str) -> [str]:
         return ["no tokens for codebert summed"]
