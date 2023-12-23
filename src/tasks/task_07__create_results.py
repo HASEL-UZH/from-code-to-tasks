@@ -8,6 +8,8 @@ from src.core.logger import log
 from src.core.profiler import Profiler
 from src.core.workspace_context import get_results_file, write_text_file
 from src.strategies.change_content_provider import ChangeContentProvider
+from src.strategies.embeddings.codebert_concept import CodeBertConcept
+from src.strategies.embeddings.codebert_summed_concept import CodeBertSummedConcept
 from src.strategies.embeddings.tf_concept import TfConcept
 from src.strategies.embeddings.tf_idf_concept import TfIdfConcept
 from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
@@ -18,11 +20,14 @@ def create_results_task(context: PipelineContext):
     profiler = Profiler()
 
     embedding_concepts = [
+        TfConcept,
         TfIdfConcept(),
+        CodeBertConcept(),
+        CodeBertSummedConcept(),
     ]
 
-    window_sizes = [10]
-    k_values = [1]
+    window_sizes = [10, 50, 200]
+    k_values = [1, 3, 5]
 
     profiler.info(f"commit foundation created")
 
