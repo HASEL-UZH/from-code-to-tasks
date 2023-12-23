@@ -14,8 +14,8 @@ export interface IContainer extends IObject, IStoreObject {
 }
 
 export interface IRepository extends IContainer {
-    identifier: string;  // "iluwatar__java-design-patterns",
-    repository_url: string; // "https:github.com/iluwatar/java-design-patterns",
+    identifier: string;
+    repository_url: string;
 }
 
 /**

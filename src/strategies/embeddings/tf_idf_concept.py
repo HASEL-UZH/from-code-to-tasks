@@ -62,7 +62,7 @@ class TfIdfConcept(IEmbeddingConcept):
 
     def __init__(self):
         self.embedding_strategies = []
-        self.content_strategies = ContentStrategies.TfxMulti
+        self.content_strategies = ContentStrategies.TfxAll
         self.cache_strategy = CacheStrategy.Memory
         self.embedding_strategies.append(TfIdfEmbeddingStrategy(StandardTokenizer()))
         self.embedding_strategies.append(TfIdfEmbeddingStrategy(SubwordTokenizer()))

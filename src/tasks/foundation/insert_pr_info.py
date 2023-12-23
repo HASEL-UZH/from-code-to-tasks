@@ -1,6 +1,7 @@
 import random
 from typing import TypedDict, Any
 
+from src.core.logger import log
 from src.core.profiler import Profiler
 from src.core.utils import group_by
 from src.store.mdb_store import Collection
@@ -28,8 +29,20 @@ class IPrStatistics(TypedDict):
 
 def insert_pr_info(repositories: [dict]):
     profiler = Profiler("insert_pr_info")
-    for repository in repositories:
+    for i, repository in enumerate(repositories):
         repository_identifier = repository.get("identifier")
+        log.info(
+            f"Insert github pr - {i}/{len(repositories)} current repository: {repository['identifier']}"
+        )
+        exists = (
+            Collection.pr_info.find_one(
+                {"repository_identifier": repository_identifier}
+            )
+            is not None
+        )
+        if exists:
+            profiler.info(f"Repository already exists: {repository['url']}")
+            continue
         profiler.info(f"process repository: {repository_identifier}")
         pr_commits = list(
             Collection.github_pr.find({"identifier": repository_identifier})
@@ -44,7 +57,6 @@ def insert_pr_info(repositories: [dict]):
         )
 
         pr_infos = _create_pr_infos(repository, pr_commits, py_commits)
-        Collection.pr_info.delete_many({"repository_identifier": repository_identifier})
         if pr_infos:
             random.shuffle(pr_infos)
             for i in range(0, len(pr_infos)):
@@ -64,10 +76,6 @@ def _create_pr_infos(repository: dict, pr_commits: [dict], py_commits: [dict]):
         if not pr_entry:
             pr_title_statistics[pr_title] = 0
         pr_title_statistics[pr_title] += 1
-    # _pr_commits = [
-    #     d for d in pr_commits if pr_title_statistics[d.get("title")] == 1
-    # ]
-    # _pr_commit_lookup = {d.get("mergeCommit").get("oid"): d for d in pr_commits}
     py_commit_lookup = {d["commit_hash"]: d for d in py_commits}
     for pr_commit in pr_commits:
         commit_hash = pr_commit.get("mergeCommit").get("oid")
@@ -123,7 +131,7 @@ def _get_accept_info(pr_info):
             "accepted": False,
             "omit_reason": "number test files",
         }
-    if pr_info["number_unique_files"] > 1000:
+    if pr_info["number_unique_files"] > 100:
         return {
             "accepted": False,
             "omit_reason": "number unique files",

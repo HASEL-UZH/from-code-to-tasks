@@ -1,11 +1,24 @@
 from src.core.logger import log
+from src.core.profiler import Profiler
 from src.store.mdb_store import Collection
 from src.store.object_factory import get_repository_identifier
 from src.tasks.task_01__create_repository import api
 
 
 def insert_github_issues(repositories: [dict]):
-    for repository in repositories:
+    profiler = Profiler("insert_github_issues")
+    for i, repository in enumerate(repositories):
+        log.info(
+            f"Insert github pr - {i}/{len(repositories)} current repository: {repository['identifier']}"
+        )
+        exists = (
+            Collection.github_issue.find_one({"identifier": repository["identifier"]})
+            is not None
+        )
+        print(exists)
+        if exists:
+            profiler.info(f"Repository already exists: {repository['url']}")
+            continue
         repository_name = repository["name"]
         repository_owner = repository["owner"]
         _insert_issues(owner=repository_owner, repository_name=repository_name)
@@ -21,7 +34,6 @@ def _insert_issues(owner: str, repository_name: str):
         entry = {**base, **issue}
         entries.append(entry)
 
-    Collection.github_issue.delete_many({"identifier": identifier})
     if entries:
         Collection.github_issue.insert_many(entries)
     log.info(f"Insert issues for {result['url']} ({len(entries)})")

@@ -16,7 +16,7 @@ api = github_graphql_api
 
 # Creates entries in github_repository collection
 def insert_github_repositories():
-    profiler = Profiler()
+    profiler = Profiler("insert_github_repositories")
     result = api.find_top_java_repositories(n=100, max_pages=100) or []
     query_result = result.get("query")
     if True or result["ok"]:
@@ -42,6 +42,9 @@ def insert_github_repositories():
 
         Collection.github_repository.delete_many({})
         Collection.github_repository.insert_many(entries)
+        _update_top_repositories_with_language()
+        _update_top_repositories_with_stats()
+        _update_top_repositories_with_pr_count()
 
         Collection.github_query.insert_one(
             {

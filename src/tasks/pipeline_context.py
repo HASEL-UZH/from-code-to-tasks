@@ -4,10 +4,10 @@ from typing import TypedDict, Optional, Any, List, Dict
 
 from src.core.logger import log
 from src.core.utils import hash_string
-from src.github.defs import RepositoryIdentifier
 from src.store.mdb_store import Collection
 from src.strategies.defs import ICommitInfo, IEmbeddingConcept
 from src.strategies.embeddings.defs import IEmbeddingStrategy
+from src.tasks.foundation.foundation import get_top_repositories
 
 
 class PipelineOptions(TypedDict):
@@ -160,7 +160,7 @@ class PipelineContext:
 
 DEFAULT_PIPELINE_CONTEXT = PipelineContext(
     opts={
-        "repositories": [RepositoryIdentifier.iluwatar__java_design_patterns],
+        "repositories": get_top_repositories(),
         "log_accuracy_flag": False,
     }
 )

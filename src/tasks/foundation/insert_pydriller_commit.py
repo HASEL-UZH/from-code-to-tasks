@@ -1,14 +1,21 @@
 from pydriller import Repository
 
+from src.core.logger import log
 from src.core.profiler import Profiler
 from src.core.utils import get_date_string
-from src.core.workspace_context import get_file_base_name, is_java_file
+from src.core.workspace_context import (
+    get_file_base_name,
+    is_java_file,
+)
 from src.store.mdb_store import Collection
 
 
 def insert_pydriller_commit(repositories: [dict]):
     profiler = Profiler("insert_pydriller_commit")
-    for repository in repositories:
+    for i, repository in enumerate(repositories):
+        log.info(
+            f"Insert github pr - {i}/{len(repositories)} current repository: {repository['identifier']}"
+        )
         exists = (
             Collection.pydriller_commit.find_one(
                 {"repository_identifier": repository["identifier"]}
@@ -16,10 +23,12 @@ def insert_pydriller_commit(repositories: [dict]):
             is not None
         )
         if exists:
-            profiler.info(f"Repository already exists: {repository['url']}")
+            profiler.info(f"Repository already exists: {repository['identifier']}")
             continue
         repo_url = repository["url"]
-        profiler.info(f"Get pydriller commits for repository: {repo_url}")
+        profiler.info(
+            f"Get pydriller commits for repository: {repository['identifier']}"
+        )
         git_repository = Repository(
             repo_url, only_modifications_with_file_types=[".java"]
         )
@@ -28,10 +37,26 @@ def insert_pydriller_commit(repositories: [dict]):
             profiler.debug(f"Repository data available - {repo_url}")
             pydriller_commit = _create_pydriller_commit(repository, commit)
             pydriller_commits.append(pydriller_commit)
-        Collection.pydriller_commit.delete_many(
-            {"repository_identifier": repository["identifier"]}
-        )
-        Collection.pydriller_commit.insert_many(pydriller_commits)
+
+        if pydriller_commits:
+            infos = []
+            infos.append({"repository": repository["identifier"]})
+            for pydriller_commit in pydriller_commits:
+                infos.append(
+                    {
+                        "commit_hash": pydriller_commit["commit_hash"],
+                        "added_lines": pydriller_commit["added_lines"],
+                        "deleted_lines": pydriller_commit["deleted_lines"],
+                        "changes": len(pydriller_commit["changes"]),
+                    }
+                )
+            # write_json_file(
+            #     get_results_file(
+            #         f"pydriller_commit_info_{repository['identifier']}.json"
+            #     ),
+            #     infos,
+            # )
+            Collection.pydriller_commit.insert_many(pydriller_commits)
 
 
 def _create_pydriller_commit(repository, pydriller_commit):

@@ -43,67 +43,11 @@ class ContentStrategies:
         {"meta": "ast-md", "terms": "meta_ast_text"},
         {"meta": "ast-lg", "terms": "meta_ast_text"},
         {"meta": None, "terms": "diff_text"},
-    ]
-    TfxCore = [
-        {"meta": "ast-lg", "terms": "meta_ast_text"},
-        {"meta": None, "terms": "diff_text"},
-    ]
-
-    TfxMulti = [
-        {"meta": "ast-lg", "terms": "meta_ast_text"},
-        {"meta": None, "terms": "diff_text"},
+        # TfxMulti
         [
             {"meta": None, "terms": "diff_text"},
             {"meta": "ast-lg", "terms": "meta_ast_text"},
         ],
-    ]
-
-    TfxMulti2 = [
-        {
-            "name": "",
-            "criteria": {
-                "$or": [
-                    {
-                        "$and": [
-                            {
-                                "meta": "ast-lg",
-                                "terms": "meta_ast_text",
-                                "kind": "term",
-                                "type": "text",
-                            }
-                        ]
-                    },
-                    {
-                        "$and": [
-                            {
-                                "meta": None,
-                                "terms": "diff_text",
-                                "kind": "term",
-                                "type": "text",
-                            }
-                        ]
-                    },
-                ]
-            },
-        }
-    ]
-    TfxCombined = [
-        {
-            "$or": [
-                {
-                    "$and": [
-                        {"strategy.meta": "ast-lg"},
-                        {"strategy.terms": "meta_ast_text"},
-                    ]
-                },
-                {
-                    "$and": [
-                        {"strategy.meta": None},
-                        {"strategy.terms": "diff_text"},
-                    ]
-                },
-            ]
-        }
     ]
 
     CodeBERT = [

@@ -1,9 +1,10 @@
 import json
 import uuid
-from src.github.github_api import GitHubApi, GITHUB_TOKEN, GITHUB_API_GRAPHQL_ENDPOINT
-from src.core.logger import log
 from datetime import datetime
+
+from src.core.logger import log
 from src.core.workspace_context import write_json_file
+from src.github.github_api import GitHubApi, GITHUB_TOKEN, GITHUB_API_GRAPHQL_ENDPOINT
 
 
 # @see https://docs.github.com/en/graphql/guides/forming-calls-with-graphql
@@ -16,7 +17,7 @@ class GitHubGraphQlApi(GitHubApi):
         self,
         token=None,
         headers=None,
-        retry_count=10,
+        retry_count=20,
         retry_ms=100,
     ):
         super().__init__(token, headers)
@@ -76,6 +77,8 @@ class GitHubGraphQlApi(GitHubApi):
             result = self.execute_grapqhql_query(query, variables)
             # data = result.get("data", {}).get("search", {})
             data = result.get("data", {})
+            if not data:
+                pass
             result["data"] = data
             context["page_count"] += 1
             cancel = handler(context, result) == False
@@ -305,6 +308,7 @@ class GitHubGraphQlApi(GitHubApi):
             "repository_count": None,
         }
 
+        # 1
         def next(data):
             _next = None
             page_info = data.get("search", {}).get("pageInfo")
@@ -423,6 +427,7 @@ class GitHubGraphQlApi(GitHubApi):
             "pr_count": None,
         }
 
+        # 2
         def next(data):
             _next = None
             page_info = (
@@ -525,6 +530,7 @@ class GitHubGraphQlApi(GitHubApi):
             "url": None,
         }
 
+        # 3
         def next(data):
             _next = None
             page_info = data.get("repository", {}).get("issues", {}).get("pageInfo")

@@ -2,6 +2,7 @@ from src.calculations.acurracy_calculator import AccuracyCalculator
 from src.calculations.create_results import (
     get_statistics_object,
     save_results_to_csv,
+    save_results_to_db,
 )
 from src.core.logger import log
 from src.core.profiler import Profiler
@@ -16,12 +17,12 @@ def create_results_task(context: PipelineContext):
     print("create_results_task started")
     profiler = Profiler()
 
-    embedding_concepts = [TfIdfConcept()]
-    # embedding_concepts = [TfConcept(), TfIdfConcept()]
-    # embedding_concepts = [CodeBertSummedConcept()]
+    embedding_concepts = [
+        TfIdfConcept(),
+    ]
 
-    window_sizes = [10]  # , 20, 30]
-    k_values = [1]  # ,3,5]
+    window_sizes = [10]
+    k_values = [1]
 
     profiler.info(f"commit foundation created")
 
@@ -32,33 +33,34 @@ def create_results_task(context: PipelineContext):
             for content_strategy in embedding_concept.content_strategies:
                 content_provider = ChangeContentProvider()
                 commit_infos = content_provider.get_content(context, content_strategy)
-
-                if isinstance(embedding_concept, TfConcept) or isinstance(
-                    embedding_concept, TfIdfConcept
-                ):
-                    corpus_texts = []
-                    for commit_info in commit_infos:
+                if not commit_infos:
+                    pass
+                corpus_texts = []
+                for commit_info in commit_infos:
+                    if isinstance(embedding_concept, TfConcept) or isinstance(
+                        embedding_concept, TfIdfConcept
+                    ):
                         corpus_texts.append(commit_info["pull_request_text"])
                         corpus_texts.append(commit_info["change_text"])
+                        corpus_feature_names = embedding_strategy.init(
+                            corpus_texts
+                        ).tolist()
+                        if corpus_feature_names:
+                            corpus_filename = None
+                            if isinstance(content_strategy, list):
+                                # composite strategy
+                                content_strategy_info = [
+                                    f"{d['meta']}-{d['terms']}"
+                                    for d in content_strategy
+                                ]
+                                corpus_filename = f"corpus_{embedding_concept.name}-{embedding_strategy.name}--composite_{'_'.join(content_strategy_info)}.text"
+                            else:
+                                corpus_filename = f"corpus_{embedding_concept.name}-{embedding_strategy.name}--{content_strategy['meta']}-{content_strategy['terms']}.text"
 
-                    corpus_feature_names = embedding_strategy.init(
-                        corpus_texts
-                    ).tolist()
-                    if corpus_feature_names:
-                        corpus_filename = None
-                        if isinstance(content_strategy, list):
-                            # composite strategy
-                            content_strategy_info = [
-                                f"{d['meta']}-{d['terms']}" for d in content_strategy
-                            ]
-                            corpus_filename = f"corpus_{embedding_concept.name}-{embedding_strategy.name}--composite_{'_'.join(content_strategy_info)}.text"
-                        else:
-                            corpus_filename = f"corpus_{embedding_concept.name}-{embedding_strategy.name}--{content_strategy['meta']}-{content_strategy['terms']}.text"
-
-                        corpus_filepath = get_results_file(corpus_filename)
-                        write_text_file(
-                            corpus_filepath, "\n".join(corpus_feature_names)
-                        )
+                            corpus_filepath = get_results_file(corpus_filename)
+                            write_text_file(
+                                corpus_filepath, "\n".join(corpus_feature_names)
+                            )
 
                 for window_size in window_sizes:
                     if window_size > len(commit_infos):
@@ -114,6 +116,7 @@ def create_results_task(context: PipelineContext):
                         profiler.info(f"Done with the following parameters {result}")
 
     save_results_to_csv(results)
+    save_results_to_db(context, results)
     profiler.checkpoint(f"create_results_task done")
 
 
