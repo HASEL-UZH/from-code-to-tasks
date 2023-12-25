@@ -1,0 +1,3564 @@
+{
+    "classifier": "Repository",
+    "fields": [
+        {
+            "name": "allowUpdateBranch",
+            "description": "Whether or not a pull request head branch that is behind its base branch can always be updated even if it is not required to be up to date before merging.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "archivedAt",
+            "description": "Identifies the date and time when the repository was archived.",
+            "type": {
+                "name": "DateTime",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "assignableUsers",
+            "description": "A list of users that can be assigned to issues in this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "UserConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "query",
+                    "description": "Filters users with query on user name and login.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "autoMergeAllowed",
+            "description": "Whether or not Auto-merge can be enabled on pull requests in this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "branchProtectionRules",
+            "description": "A list of branch protection rules for this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "BranchProtectionRuleConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "codeOfConduct",
+            "description": "Returns the code of conduct for this repository",
+            "type": {
+                "name": "CodeOfConduct",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "codeowners",
+            "description": "Information extracted from the repository's `CODEOWNERS` file.",
+            "type": {
+                "name": "RepositoryCodeowners",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "refName",
+                    "description": "The ref name used to return the associated `CODEOWNERS` file.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "collaborators",
+            "description": "A list of collaborators associated with the repository.",
+            "type": {
+                "name": "RepositoryCollaboratorConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "affiliation",
+                    "description": "Collaborators affiliation level with a repository.",
+                    "type": {
+                        "name": "CollaboratorAffiliation",
+                        "kind": "ENUM",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "login",
+                    "description": "The login of one specific collaborator.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "query",
+                    "description": "Filters users with query on user name and login",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "commitComments",
+            "description": "A list of commit comments associated with the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "CommitCommentConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "contactLinks",
+            "description": "Returns a list of contact links associated to the repository",
+            "type": {
+                "name": null,
+                "kind": "LIST",
+                "ofType": {
+                    "name": null,
+                    "kind": "NON_NULL"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "contributingGuidelines",
+            "description": "Returns the contributing guidelines for this repository.",
+            "type": {
+                "name": "ContributingGuidelines",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "createdAt",
+            "description": "Identifies the date and time when the object was created.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DateTime",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "databaseId",
+            "description": "Identifies the primary key from the database.",
+            "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "defaultBranchRef",
+            "description": "The Ref associated with the repository's default branch.",
+            "type": {
+                "name": "Ref",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "deleteBranchOnMerge",
+            "description": "Whether or not branches are automatically deleted when merged in this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "deployKeys",
+            "description": "A list of deploy keys that are on this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DeployKeyConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "deployments",
+            "description": "Deployments associated with the repository",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DeploymentConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "environments",
+                    "description": "Environments to list deployments for",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for deployments returned from the connection.",
+                    "type": {
+                        "name": "DeploymentOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: CREATED_AT, direction: ASC}"
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "description",
+            "description": "The description of the repository.",
+            "type": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "descriptionHTML",
+            "description": "The description of the repository rendered to HTML.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "HTML",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "discussion",
+            "description": "Returns a single discussion from the current repository by number.",
+            "type": {
+                "name": "Discussion",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "number",
+                    "description": "The number for the discussion to be returned.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "discussionCategories",
+            "description": "A list of discussion categories that are available in the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DiscussionCategoryConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "filterByAssignable",
+                    "description": "Filter by categories that are assignable by the viewer.",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": "false"
+                }
+            ]
+        },
+        {
+            "name": "discussionCategory",
+            "description": "A discussion category by slug.",
+            "type": {
+                "name": "DiscussionCategory",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "slug",
+                    "description": "The slug of the discussion category to be returned.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "String",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "discussions",
+            "description": "A list of discussions that have been opened in the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DiscussionConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "categoryId",
+                    "description": "Only include discussions that belong to the category with this ID.",
+                    "type": {
+                        "name": "ID",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": "null"
+                },
+                {
+                    "name": "states",
+                    "description": "A list of states to filter the discussions by.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": "[]"
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for discussions returned from the connection.",
+                    "type": {
+                        "name": "DiscussionOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: UPDATED_AT, direction: DESC}"
+                },
+                {
+                    "name": "answered",
+                    "description": "Only show answered or unanswered discussions",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": "null"
+                }
+            ]
+        },
+        {
+            "name": "diskUsage",
+            "description": "The number of kilobytes this repository occupies on disk.",
+            "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "environment",
+            "description": "Returns a single active environment from the current repository by name.",
+            "type": {
+                "name": "Environment",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "name",
+                    "description": "The name of the environment to be returned.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "String",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "environments",
+            "description": "A list of environments that are in this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "EnvironmentConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for the environments",
+                    "type": {
+                        "name": "Environments",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: NAME, direction: ASC}"
+                }
+            ]
+        },
+        {
+            "name": "forkCount",
+            "description": "Returns how many forks there are of this repository in the whole network.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Int",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "forkingAllowed",
+            "description": "Whether this repository allows forks.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "forks",
+            "description": "A list of direct forked repositories.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "RepositoryConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "privacy",
+                    "description": "If non-null, filters repositories according to privacy",
+                    "type": {
+                        "name": "RepositoryPrivacy",
+                        "kind": "ENUM",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for repositories returned from the connection",
+                    "type": {
+                        "name": "RepositoryOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "affiliations",
+                    "description": "Array of viewer's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the current viewer owns.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": "RepositoryAffiliation",
+                            "kind": "ENUM"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "ownerAffiliations",
+                    "description": "Array of owner's affiliation options for repositories returned from the connection. For example, OWNER will include only repositories that the organization or user being viewed owns.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": "RepositoryAffiliation",
+                            "kind": "ENUM"
+                        }
+                    },
+                    "defaultValue": "[OWNER, COLLABORATOR]"
+                },
+                {
+                    "name": "isLocked",
+                    "description": "If non-null, filters repositories according to whether they have been locked",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "hasIssuesEnabled",
+                    "description": "If non-null, filters repositories according to whether they have issues enabled",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "fundingLinks",
+            "description": "The funding links for this repository",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": null,
+                    "kind": "LIST"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "hasDiscussionsEnabled",
+            "description": "Indicates if the repository has the Discussions feature enabled.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "hasIssuesEnabled",
+            "description": "Indicates if the repository has issues feature enabled.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "hasProjectsEnabled",
+            "description": "Indicates if the repository has the Projects feature enabled.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "hasVulnerabilityAlertsEnabled",
+            "description": "Whether vulnerability alerts are enabled for the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "hasWikiEnabled",
+            "description": "Indicates if the repository has wiki feature enabled.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "homepageUrl",
+            "description": "The repository's URL.",
+            "type": {
+                "name": "URI",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "id",
+            "description": "The Node ID of this object",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ID",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "interactionAbility",
+            "description": "The interaction ability settings for this repository.",
+            "type": {
+                "name": "RepositoryInteractionAbility",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "isArchived",
+            "description": "Indicates if the repository is unmaintained.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isBlankIssuesEnabled",
+            "description": "Returns true if blank issue creation is allowed",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isDisabled",
+            "description": "Returns whether or not this repository disabled.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isEmpty",
+            "description": "Returns whether or not this repository is empty.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isFork",
+            "description": "Identifies if the repository is a fork.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isInOrganization",
+            "description": "Indicates if a repository is either owned by an organization, or is a private fork of an organization repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isLocked",
+            "description": "Indicates if the repository has been locked or not.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isMirror",
+            "description": "Identifies if the repository is a mirror.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isPrivate",
+            "description": "Identifies if the repository is private or internal.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isSecurityPolicyEnabled",
+            "description": "Returns true if this repository has a security policy",
+            "type": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "isTemplate",
+            "description": "Identifies if the repository is a template that can be used to generate new repositories.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isUserConfigurationRepository",
+            "description": "Is this repository a user configuration repository?",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "issue",
+            "description": "Returns a single issue from the current repository by number.",
+            "type": {
+                "name": "Issue",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "number",
+                    "description": "The number for the issue to be returned.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "issueOrPullRequest",
+            "description": "Returns a single issue-like object from the current repository by number.",
+            "type": {
+                "name": "IssueOrPullRequest",
+                "kind": "UNION",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "number",
+                    "description": "The number for the issue to be returned.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "issueTemplates",
+            "description": "Returns a list of issue templates associated to the repository",
+            "type": {
+                "name": null,
+                "kind": "LIST",
+                "ofType": {
+                    "name": null,
+                    "kind": "NON_NULL"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "issues",
+            "description": "A list of issues that have been opened in the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "IssueConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for issues returned from the connection.",
+                    "type": {
+                        "name": "IssueOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "labels",
+                    "description": "A list of label names to filter the pull requests by.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "states",
+                    "description": "A list of states to filter the issues by.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "filterBy",
+                    "description": "Filtering options for issues returned from the connection.",
+                    "type": {
+                        "name": "IssueFilters",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "label",
+            "description": "Returns a single label by name",
+            "type": {
+                "name": "Label",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "name",
+                    "description": "Label name",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "String",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "labels",
+            "description": "A list of labels associated with the repository.",
+            "type": {
+                "name": "LabelConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for labels returned from the connection.",
+                    "type": {
+                        "name": "LabelOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: CREATED_AT, direction: ASC}"
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "query",
+                    "description": "If provided, searches labels by name and description.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "languages",
+            "description": "A list containing a breakdown of the language composition of the repository.",
+            "type": {
+                "name": "LanguageConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Order for connection",
+                    "type": {
+                        "name": "LanguageOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "latestRelease",
+            "description": "Get the latest release for the repository if one exists.",
+            "type": {
+                "name": "Release",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "licenseInfo",
+            "description": "The license associated with the repository",
+            "type": {
+                "name": "License",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "lockReason",
+            "description": "The reason the repository has been locked.",
+            "type": {
+                "name": "RepositoryLockReason",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "mentionableUsers",
+            "description": "A list of Users that can be mentioned in the context of the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "UserConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "query",
+                    "description": "Filters users with query on user name and login",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "mergeCommitAllowed",
+            "description": "Whether or not PRs are merged with a merge commit on this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "mergeCommitMessage",
+            "description": "How the default commit message will be generated when merging a pull request.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "MergeCommitMessage",
+                    "kind": "ENUM"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "mergeCommitTitle",
+            "description": "How the default commit title will be generated when merging a pull request.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "MergeCommitTitle",
+                    "kind": "ENUM"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "mergeQueue",
+            "description": "The merge queue for a specified branch, otherwise the default branch if not provided.",
+            "type": {
+                "name": "MergeQueue",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "branch",
+                    "description": "The name of the branch to get the merge queue for. Case sensitive.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "milestone",
+            "description": "Returns a single milestone from the current repository by number.",
+            "type": {
+                "name": "Milestone",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "number",
+                    "description": "The number for the milestone to be returned.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "milestones",
+            "description": "A list of milestones associated with the repository.",
+            "type": {
+                "name": "MilestoneConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "states",
+                    "description": "Filter by the state of the milestones.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for milestones.",
+                    "type": {
+                        "name": "MilestoneOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "query",
+                    "description": "Filters milestones with a query on the title",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "mirrorUrl",
+            "description": "The repository's original mirror URL.",
+            "type": {
+                "name": "URI",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "name",
+            "description": "The name of the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "nameWithOwner",
+            "description": "The repository's name with owner.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "object",
+            "description": "A Git object in the repository",
+            "type": {
+                "name": "GitObject",
+                "kind": "INTERFACE",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "oid",
+                    "description": "The Git object ID",
+                    "type": {
+                        "name": "GitObjectID",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "expression",
+                    "description": "A Git revision expression suitable for rev-parse",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "openGraphImageUrl",
+            "description": "The image used to represent this repository in Open Graph data.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "owner",
+            "description": "The User owner of the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "RepositoryOwner",
+                    "kind": "INTERFACE"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "packages",
+            "description": "A list of packages under the owner.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "PackageConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "names",
+                    "description": "Find packages by their names.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": "String",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "repositoryId",
+                    "description": "Find packages in a repository by ID.",
+                    "type": {
+                        "name": "ID",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "packageType",
+                    "description": "Filter registry package by type.",
+                    "type": {
+                        "name": "PackageType",
+                        "kind": "ENUM",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering of the returned packages.",
+                    "type": {
+                        "name": "PackageOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: CREATED_AT, direction: DESC}"
+                }
+            ]
+        },
+        {
+            "name": "parent",
+            "description": "The repository parent, if this is a fork.",
+            "type": {
+                "name": "Repository",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "pinnedDiscussions",
+            "description": "A list of discussions that have been pinned in this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "PinnedDiscussionConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "pinnedIssues",
+            "description": "A list of pinned issues for this repository.",
+            "type": {
+                "name": "PinnedIssueConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "primaryLanguage",
+            "description": "The primary language of the repository's code.",
+            "type": {
+                "name": "Language",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "project",
+            "description": "Find project by number.",
+            "type": {
+                "name": "Project",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "number",
+                    "description": "The project number to find.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "projectV2",
+            "description": "Finds and returns the Project according to the provided Project number.",
+            "type": {
+                "name": "ProjectV2",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "number",
+                    "description": "The Project number.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "projects",
+            "description": "A list of projects under the owner.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ProjectConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for projects returned from the connection",
+                    "type": {
+                        "name": "ProjectOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "search",
+                    "description": "Query to search projects by, currently only searching by name.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "states",
+                    "description": "A list of states to filter the projects by.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "projectsResourcePath",
+            "description": "The HTTP path listing the repository's projects",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "projectsUrl",
+            "description": "The HTTP URL listing the repository's projects",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "projectsV2",
+            "description": "List of projects linked to this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ProjectV2Connection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "query",
+                    "description": "A project to search for linked to the repo.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "How to order the returned projects.",
+                    "type": {
+                        "name": "ProjectV2Order",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: NUMBER, direction: DESC}"
+                }
+            ]
+        },
+        {
+            "name": "pullRequest",
+            "description": "Returns a single pull request from the current repository by number.",
+            "type": {
+                "name": "PullRequest",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "number",
+                    "description": "The number for the pull request to be returned.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "pullRequestTemplates",
+            "description": "Returns a list of pull request templates associated to the repository",
+            "type": {
+                "name": null,
+                "kind": "LIST",
+                "ofType": {
+                    "name": null,
+                    "kind": "NON_NULL"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "pullRequests",
+            "description": "A list of pull requests that have been opened in the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "PullRequestConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "states",
+                    "description": "A list of states to filter the pull requests by.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "labels",
+                    "description": "A list of label names to filter the pull requests by.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "headRefName",
+                    "description": "The head ref name to filter the pull requests by.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "baseRefName",
+                    "description": "The base ref name to filter the pull requests by.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for pull requests returned from the connection.",
+                    "type": {
+                        "name": "IssueOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "pushedAt",
+            "description": "Identifies the date and time when the repository was last pushed to.",
+            "type": {
+                "name": "DateTime",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "rebaseMergeAllowed",
+            "description": "Whether or not rebase-merging is enabled on this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "recentProjects",
+            "description": "Recent projects that this user has modified in the context of the owner.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ProjectV2Connection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "ref",
+            "description": "Fetch a given ref from the repository",
+            "type": {
+                "name": "Ref",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "qualifiedName",
+                    "description": "The ref to retrieve. Fully qualified matches are checked in order (`refs/heads/master`) before falling back onto checks for short name matches (`master`).",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "String",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "refs",
+            "description": "Fetch a list of refs from the repository",
+            "type": {
+                "name": "RefConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "query",
+                    "description": "Filters refs with query on name",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "refPrefix",
+                    "description": "A ref name prefix like `refs/heads/`, `refs/tags/`, etc.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "String",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "direction",
+                    "description": "DEPRECATED: use orderBy. The ordering direction.",
+                    "type": {
+                        "name": "OrderDirection",
+                        "kind": "ENUM",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for refs returned from the connection.",
+                    "type": {
+                        "name": "RefOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "release",
+            "description": "Lookup a single release given various criteria.",
+            "type": {
+                "name": "Release",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "tagName",
+                    "description": "The name of the Tag the Release was created from",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "String",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "releases",
+            "description": "List of releases which are dependent on this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ReleaseConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Order for connection",
+                    "type": {
+                        "name": "ReleaseOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "repositoryTopics",
+            "description": "A list of applied repository-topic associations for this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "RepositoryTopicConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "resourcePath",
+            "description": "The HTTP path for this repository",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "ruleset",
+            "description": "Returns a single ruleset from the current repository by ID.",
+            "type": {
+                "name": "RepositoryRuleset",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "includeParents",
+                    "description": "Include rulesets configured at higher levels that apply to this repository",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": "true"
+                },
+                {
+                    "name": "databaseId",
+                    "description": "The ID of the ruleset to be returned.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "rulesets",
+            "description": "A list of rulesets for this repository.",
+            "type": {
+                "name": "RepositoryRulesetConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "includeParents",
+                    "description": "Return rulesets configured at higher levels that apply to this repository",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": "true"
+                }
+            ]
+        },
+        {
+            "name": "securityPolicyUrl",
+            "description": "The security policy URL.",
+            "type": {
+                "name": "URI",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "shortDescriptionHTML",
+            "description": "A description of the repository, rendered to HTML without any links in it.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "HTML",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": [
+                {
+                    "name": "limit",
+                    "description": "How many characters to return.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": "200"
+                }
+            ]
+        },
+        {
+            "name": "squashMergeAllowed",
+            "description": "Whether or not squash-merging is enabled on this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "squashMergeCommitMessage",
+            "description": "How the default commit message will be generated when squash merging a pull request.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "SquashMergeCommitMessage",
+                    "kind": "ENUM"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "squashMergeCommitTitle",
+            "description": "How the default commit title will be generated when squash merging a pull request.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "SquashMergeCommitTitle",
+                    "kind": "ENUM"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "sshUrl",
+            "description": "The SSH URL to clone this repository",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "GitSSHRemote",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "stargazerCount",
+            "description": "Returns a count of how many stargazers there are on this object\n",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Int",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "stargazers",
+            "description": "A list of users who have starred this starrable.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "StargazerConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Order for connection",
+                    "type": {
+                        "name": "StarOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "submodules",
+            "description": "Returns a list of all submodules in this repository parsed from the .gitmodules file as of the default branch's HEAD commit.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "SubmoduleConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "tempCloneToken",
+            "description": "Temporary authentication token for cloning this repository.",
+            "type": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "templateRepository",
+            "description": "The repository from which this repository was generated, if any.",
+            "type": {
+                "name": "Repository",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "updatedAt",
+            "description": "Identifies the date and time when the object was last updated.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DateTime",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "url",
+            "description": "The HTTP URL for this repository",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "usesCustomOpenGraphImage",
+            "description": "Whether this repository has a custom image to use with Open Graph as opposed to being represented by the owner's avatar.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanAdminister",
+            "description": "Indicates whether the viewer has admin permissions on this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanCreateProjects",
+            "description": "Can the current viewer create new projects on this owner.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanSubscribe",
+            "description": "Check if the viewer is able to change their subscription status for the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanUpdateTopics",
+            "description": "Indicates whether the viewer can update the topics of this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerDefaultCommitEmail",
+            "description": "The last commit email for the viewer.",
+            "type": {
+                "name": "String",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "viewerDefaultMergeMethod",
+            "description": "The last used merge method by the viewer or the default for the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "PullRequestMergeMethod",
+                    "kind": "ENUM"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerHasStarred",
+            "description": "Returns a boolean indicating whether the viewing user has starred this starrable.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerPermission",
+            "description": "The users permission level on the repository. Will return null if authenticated as an GitHub App.",
+            "type": {
+                "name": "RepositoryPermission",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "viewerPossibleCommitEmails",
+            "description": "A list of emails this viewer can commit with.",
+            "type": {
+                "name": null,
+                "kind": "LIST",
+                "ofType": {
+                    "name": null,
+                    "kind": "NON_NULL"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerSubscription",
+            "description": "Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.",
+            "type": {
+                "name": "SubscriptionState",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "visibility",
+            "description": "Indicates the repository's visibility level.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "RepositoryVisibility",
+                    "kind": "ENUM"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "vulnerabilityAlert",
+            "description": "Returns a single vulnerability alert from the current repository by number.",
+            "type": {
+                "name": "RepositoryVulnerabilityAlert",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "number",
+                    "description": "The number for the vulnerability alert to be returned.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "vulnerabilityAlerts",
+            "description": "A list of vulnerability alerts that are on this repository.",
+            "type": {
+                "name": "RepositoryVulnerabilityAlertConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "states",
+                    "description": "Filter by the state of the alert",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "dependencyScopes",
+                    "description": "Filter by the scope of the alert's dependency",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "watchers",
+            "description": "A list of users watching the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "UserConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "webCommitSignoffRequired",
+            "description": "Whether contributors are required to sign off on web-based commits in this repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        }
+    ]
+}

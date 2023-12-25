@@ -1,0 +1,1419 @@
+{
+    "classifier": "Issue",
+    "fields": [
+        {
+            "name": "activeLockReason",
+            "description": "Reason that the conversation was locked.",
+            "type": {
+                "name": "LockReason",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "assignees",
+            "description": "A list of Users assigned to this object.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "UserConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "author",
+            "description": "The actor who authored the comment.",
+            "type": {
+                "name": "Actor",
+                "kind": "INTERFACE",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "authorAssociation",
+            "description": "Author's association with the subject of the comment.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "CommentAuthorAssociation",
+                    "kind": "ENUM"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "body",
+            "description": "Identifies the body of the issue.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "bodyHTML",
+            "description": "The body rendered to HTML.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "HTML",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "bodyResourcePath",
+            "description": "The http path for this issue body",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "bodyText",
+            "description": "Identifies the body of the issue rendered to text.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "bodyUrl",
+            "description": "The http URL for this issue body",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "closed",
+            "description": "Indicates if the object is closed (definition of closed may depend on type)",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "closedAt",
+            "description": "Identifies the date and time when the object was closed.",
+            "type": {
+                "name": "DateTime",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "comments",
+            "description": "A list of comments associated with the Issue.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "IssueCommentConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for issue comments returned from the connection.",
+                    "type": {
+                        "name": "IssueCommentOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "createdAt",
+            "description": "Identifies the date and time when the object was created.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DateTime",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "createdViaEmail",
+            "description": "Check if this comment was created via an email reply.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "databaseId",
+            "description": "Identifies the primary key from the database.",
+            "type": {
+                "name": "Int",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "editor",
+            "description": "The actor who edited the comment.",
+            "type": {
+                "name": "Actor",
+                "kind": "INTERFACE",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "fullDatabaseId",
+            "description": "Identifies the primary key from the database as a BigInt.",
+            "type": {
+                "name": "BigInt",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "hovercard",
+            "description": "The hovercard information for this issue",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Hovercard",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "includeNotificationContexts",
+                    "description": "Whether or not to include notification contexts",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": "true"
+                }
+            ]
+        },
+        {
+            "name": "id",
+            "description": "The Node ID of this object",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ID",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "includesCreatedEdit",
+            "description": "Check if this comment was edited and includes an edit with the creation data",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "isPinned",
+            "description": "Indicates whether or not this issue is currently pinned to the repository issues list",
+            "type": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "isReadByViewer",
+            "description": "Is this issue read by the viewer",
+            "type": {
+                "name": "Boolean",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "labels",
+            "description": "A list of labels associated with the object.",
+            "type": {
+                "name": "LabelConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "orderBy",
+                    "description": "Ordering options for labels returned from the connection.",
+                    "type": {
+                        "name": "LabelOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: CREATED_AT, direction: ASC}"
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "lastEditedAt",
+            "description": "The moment the editor made the last edit",
+            "type": {
+                "name": "DateTime",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "linkedBranches",
+            "description": "Branches linked to this issue.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "LinkedBranchConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "locked",
+            "description": "`true` if the object is locked",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "milestone",
+            "description": "Identifies the milestone associated with the issue.",
+            "type": {
+                "name": "Milestone",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "number",
+            "description": "Identifies the issue number.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Int",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "participants",
+            "description": "A list of Users that are participating in the Issue conversation.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "UserConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "projectCards",
+            "description": "List of project cards associated with this issue.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ProjectCardConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "archivedStates",
+                    "description": "A list of archived states to filter the cards by",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": "ProjectCardArchivedState",
+                            "kind": "ENUM"
+                        }
+                    },
+                    "defaultValue": "[ARCHIVED, NOT_ARCHIVED]"
+                }
+            ]
+        },
+        {
+            "name": "projectItems",
+            "description": "List of project items associated with this issue.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ProjectV2ItemConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "includeArchived",
+                    "description": "Include archived items.",
+                    "type": {
+                        "name": "Boolean",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": "true"
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "projectV2",
+            "description": "Find a project by number.",
+            "type": {
+                "name": "ProjectV2",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "number",
+                    "description": "The project number.",
+                    "type": {
+                        "name": null,
+                        "kind": "NON_NULL",
+                        "ofType": {
+                            "name": "Int",
+                            "kind": "SCALAR"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "projectsV2",
+            "description": "A list of projects under the owner.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ProjectV2Connection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "query",
+                    "description": "A project to search for under the the owner.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "How to order the returned projects.",
+                    "type": {
+                        "name": "ProjectV2Order",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": "{field: NUMBER, direction: DESC}"
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "publishedAt",
+            "description": "Identifies when the comment was published at.",
+            "type": {
+                "name": "DateTime",
+                "kind": "SCALAR",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "reactionGroups",
+            "description": "A list of reactions grouped by content left on the subject.",
+            "type": {
+                "name": null,
+                "kind": "LIST",
+                "ofType": {
+                    "name": null,
+                    "kind": "NON_NULL"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "reactions",
+            "description": "A list of Reactions left on the Issue.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "ReactionConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "content",
+                    "description": "Allows filtering Reactions by emoji.",
+                    "type": {
+                        "name": "ReactionContent",
+                        "kind": "ENUM",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "orderBy",
+                    "description": "Allows specifying the order in which reactions are returned.",
+                    "type": {
+                        "name": "ReactionOrder",
+                        "kind": "INPUT_OBJECT",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "repository",
+            "description": "The repository associated with this node.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Repository",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "resourcePath",
+            "description": "The HTTP path for this issue",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "state",
+            "description": "Identifies the state of the issue.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "IssueState",
+                    "kind": "ENUM"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "stateReason",
+            "description": "Identifies the reason for the issue state.",
+            "type": {
+                "name": "IssueStateReason",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "timelineItems",
+            "description": "A list of events, comments, commits, etc. associated with the issue.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "IssueTimelineItemsConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "since",
+                    "description": "Filter timeline items by a `since` timestamp.",
+                    "type": {
+                        "name": "DateTime",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "skip",
+                    "description": "Skips the first _n_ elements in the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "itemTypes",
+                    "description": "Filter timeline items by type.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": null,
+                            "kind": "NON_NULL"
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "title",
+            "description": "Identifies the issue title.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "titleHTML",
+            "description": "Identifies the issue title rendered to HTML.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "String",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "trackedInIssues",
+            "description": "A list of issues that track this issue",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "IssueConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "trackedIssues",
+            "description": "A list of issues tracked inside the current issue",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "IssueConnection",
+                    "kind": "OBJECT"
+                }
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "trackedIssuesCount",
+            "description": "The number of tracked issues for this issue",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Int",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": [
+                {
+                    "name": "states",
+                    "description": "Limit the count to tracked issues with the specified states.",
+                    "type": {
+                        "name": null,
+                        "kind": "LIST",
+                        "ofType": {
+                            "name": "TrackedIssueStates",
+                            "kind": "ENUM"
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "updatedAt",
+            "description": "Identifies the date and time when the object was last updated.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "DateTime",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "url",
+            "description": "The HTTP URL for this issue",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "URI",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "userContentEdits",
+            "description": "A list of edits to this content.",
+            "type": {
+                "name": "UserContentEditConnection",
+                "kind": "OBJECT",
+                "ofType": null
+            },
+            "args": [
+                {
+                    "name": "after",
+                    "description": "Returns the elements in the list that come after the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "before",
+                    "description": "Returns the elements in the list that come before the specified cursor.",
+                    "type": {
+                        "name": "String",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "first",
+                    "description": "Returns the first _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "last",
+                    "description": "Returns the last _n_ elements from the list.",
+                    "type": {
+                        "name": "Int",
+                        "kind": "SCALAR",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ]
+        },
+        {
+            "name": "viewerCanClose",
+            "description": "Indicates if the object can be closed by the viewer.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanDelete",
+            "description": "Check if the current viewer can delete this object.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanReact",
+            "description": "Can user react to this subject",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanReopen",
+            "description": "Indicates if the object can be reopened by the viewer.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanSubscribe",
+            "description": "Check if the viewer is able to change their subscription status for the repository.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCanUpdate",
+            "description": "Check if the current viewer can update this object.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerCannotUpdateReasons",
+            "description": "Reasons why the current viewer can not update this comment.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": null,
+                    "kind": "LIST"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerDidAuthor",
+            "description": "Did the viewer author this comment.",
+            "type": {
+                "name": null,
+                "kind": "NON_NULL",
+                "ofType": {
+                    "name": "Boolean",
+                    "kind": "SCALAR"
+                }
+            },
+            "args": []
+        },
+        {
+            "name": "viewerSubscription",
+            "description": "Identifies if the viewer is watching, not watching, or ignoring the subscribable entity.",
+            "type": {
+                "name": "SubscriptionState",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "viewerThreadSubscriptionFormAction",
+            "description": "Identifies the viewer's thread subscription form action.",
+            "type": {
+                "name": "ThreadSubscriptionFormAction",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        },
+        {
+            "name": "viewerThreadSubscriptionStatus",
+            "description": "Identifies the viewer's thread subscription status.",
+            "type": {
+                "name": "ThreadSubscriptionState",
+                "kind": "ENUM",
+                "ofType": null
+            },
+            "args": []
+        }
+    ]
+}

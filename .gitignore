@@ -1,0 +1,14 @@
+.env
+/venv
+/venv-3.12
+/tmp
+/_tmp
+**/__pycache__/
+/_workspace
+/_store
+/__store*
+/_workspace.zip
+bin/mongodb
+/db
+/_dev
+/results
