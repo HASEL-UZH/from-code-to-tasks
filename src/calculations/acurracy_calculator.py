@@ -1,5 +1,6 @@
 import statistics
 
+from src.core.logger import log
 from src.strategies.defs import ICommitInfo
 from src.strategies.embeddings.defs import IEmbeddingStrategy
 from src.strategies.sliding_window_provider import SlidingWindowProvider
@@ -50,11 +51,6 @@ class AccuracyCalculator:
             item_change_text_embedding = embedding_strategy.get_embedding(
                 item_change_text
             )
-            X_CODE = item_change_text
-            X_CODE_HASH = item_text_commit_hash
-            X_DEBUG_DICT = {}
-            X_DEBUG_DICT[X_CODE_HASH] = []
-
             for item_pr in sliding_window:
                 item_pr_commit_hash = item_pr["commit_hash"]
                 item_pull_request_text = item_pr["pull_request_text"]
@@ -66,13 +62,7 @@ class AccuracyCalculator:
                         item_change_text_embedding, item_pull_request_embedding
                     )
                     item_pr_change_comparison[item_pr_commit_hash] = similarity
-                    X_DEBUG_DICT[X_CODE_HASH].append(
-                        {
-                            "HASH": item_pr_commit_hash,
-                            "PR_TEXT": item_pull_request_text,
-                            "SIMILARITY": similarity,
-                        }
-                    )
+                    log.info("worked")
                 except Exception as e:
                     _data = {"k": k}
                     self._context.error(
