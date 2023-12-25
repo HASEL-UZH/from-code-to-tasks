@@ -1,7 +1,8 @@
 from typing import Any
 
+import numpy as np
 import torch
-import torch.nn.functional as F
+from sklearn.metrics.pairwise import cosine_similarity
 from transformers import AutoModel, AutoTokenizer
 
 from src.strategies.defs import ContentStrategies, CacheStrategy, IEmbeddingConcept
@@ -36,33 +37,40 @@ class CodeBertSummedEmbeddingStrategy:
         return summed_embeddings
 
     def calculate_similarity(self, embedding1, embedding2):
-        # Get the sequence lengths of embeddings
-        seq_len1 = embedding1.size(1)
-        seq_len2 = embedding2.size(1)
+        embedding1_0 = embedding1[0]
+        embedding2_0 = embedding2[0]
 
-        # Find the maximum sequence length
-        max_seq_len = max(seq_len1, seq_len2)
+        if embedding1_0.dim() > 1:
+            embedding1_0 = torch.sum(embedding1_0, dim=1)
 
-        # Pad the embeddings to have the same sequence length
-        pad1 = max_seq_len - seq_len1
-        pad2 = max_seq_len - seq_len2
+        if embedding2_0.dim() > 1:
+            embedding2_0 = torch.sum(embedding2_0, dim=1)
 
-        embedding1_padded = F.pad(embedding1, (0, 0, 0, pad1))
-        embedding2_padded = F.pad(embedding2, (0, 0, 0, pad2))
+        embedding1_0 = embedding1_0.numpy()
+        embedding2_0 = embedding2_0.numpy()
+        size_diff = abs(embedding1_0.size - embedding2_0.size)
 
-        # Reshape padded tensors to [batch_size, sequence_length * embedding_size]
-        embedding1_flat = embedding1_padded.view(embedding1_padded.size(0), -1)
-        embedding2_flat = embedding2_padded.view(embedding2_padded.size(0), -1)
+        if embedding1_0.size > embedding2_0.size:
+            embedding2_0 = np.pad(
+                embedding2_0,
+                (0, size_diff),
+                mode="constant",
+                constant_values=0,
+            )
+        elif embedding2_0.size > embedding1_0.size:
+            embedding1_0 = np.pad(
+                embedding1_0,
+                (0, size_diff),
+                mode="constant",
+                constant_values=0,
+            )
 
-        # Calculate cosine similarity using matrix multiplication
-        cosine_similarities = F.cosine_similarity(
-            embedding1_flat, embedding2_flat, dim=1
-        )
+        similarity = cosine_similarity(
+            embedding1_0.reshape(1, -1),
+            embedding2_0.reshape(1, -1),
+        )[0, 0]
 
-        # Calculate mean similarity
-        mean_similarity = torch.mean(cosine_similarities).item()
-
-        return mean_similarity
+        return similarity
 
     def get_tokens(self, text: str) -> [str]:
         return ["no tokens for codebert summed"]
