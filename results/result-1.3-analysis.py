@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from results.plot_utils import get_formatted_identifier
 from src.core.logger import log
 
 plt.rcParams["font.family"] = "Helvetica"
@@ -42,21 +43,6 @@ def get_data(k, w, term_strategy, meta_strategy):
             ]
         combined_data = combined_data._append(filtered_data, ignore_index=True)
     return combined_data
-
-
-def get_formatted_identifier(identifier):
-    format = {
-        "iluwatar__java-design-patterns": "java-design-patterns",
-        "reactive_x___rx_java": "RxJava",
-        "eugenp__tutorials": "tutorials",
-        "airbnb__lottie-android": "lottie-android",
-        "bumptech__glide": "glide",
-        "apolloconfig__apollo": "apollo",
-        "selenium_hq__selenium": "selenium",
-        "alibaba__nacos": "nacos",
-        "x": "Test",
-    }
-    return format[identifier]
 
 
 def get_formatted_strategy(strategy):

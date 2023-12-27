@@ -2,35 +2,50 @@ from results.grouped_bar_plot_mean import GroupedBarPlotMean
 from results.plot_utils import get_identifiers
 from results.scatter_plot_mean_std import ScatterPlotMeanStd
 
+SRC_TEXT = "Source Code Files - Text Representation"
+SRC_CODE = "Source Code Files - Code Representation"
 
-def scatter_plot_mean_and_std_src_text_k_1_w_10():
-    title = "Source Code Files - Textual Representation"
+
+def scatter_plot_mean_and_std_src_text_k_1_w_10_per_repo():
+    title = SRC_TEXT
     plot_name = "scatter-plot-src-text-mean-std-k-1-w-10.svg"
-    term_strategy = "meta_ast_text"
-    meta_strategy = "ast-lg"
+    filter_criteria = {
+        "term_strategy": "meta_ast_text",
+        "meta_strategy": "ast-lg",
+        "k": 1,
+        "window_size": 10,
+    }
+    group_criteria = {
+        "repository_identifier": get_identifiers(),
+    }
     colors = ["#FF1493", "#9370DB"]
     scatter_plot = ScatterPlotMeanStd(
-        title, plot_name, term_strategy, meta_strategy, colors
+        title, plot_name, filter_criteria, group_criteria, colors=colors
     )
     scatter_plot.plot()
 
 
-def scatter_plot_mean_and_std_src_code_k_1_w_10():
-    title = "Source Code Files - Code Representation"
+def scatter_plot_mean_and_std_src_code_k_1_w_10_per_repo():
+    title = SRC_CODE
     plot_name = "scatter-plot-src-code-mean-std-k-1-w-10.svg"
-    term_strategy = "meta_ast_code"
-    meta_strategy = "ast-lg"
+    filter_criteria = {
+        "term_strategy": "meta_ast_code",
+        "meta_strategy": "ast-lg",
+        "k": 1,
+        "window_size": 10,
+    }
+    group_criteria = {
+        "repository_identifier": get_identifiers(),
+    }
     colors = ["#FF1493", "#9370DB"]
-    scatter_plot_mean_std = ScatterPlotMeanStd(
-        title, plot_name, term_strategy, meta_strategy, colors
+    scatter_plot = ScatterPlotMeanStd(
+        title, plot_name, filter_criteria, group_criteria, colors=colors
     )
-    scatter_plot_mean_std.plot()
+    scatter_plot.plot()
 
 
 def grouped_bar_plot_mean_src_text_by_k_per_repo():
-    title = (
-        "Code Differences - Textual Representation \n Mean Accuracy By K per Repository"
-    )
+    title = "Source Code Files - Textual Representation \n Mean Accuracy By K per Repository"
     plot_name = "grouped-bar-plot-src-text-by-k-per-repo"
     filter_criteria = {
         "term_strategy": "meta_ast_text",
@@ -61,7 +76,7 @@ def grouped_bar_plot_mean_src_text_by_k_per_repo():
 
 
 def grouped_bar_plot_mean_src_text_by_w_per_repo():
-    title = "Code Differences - Textual Representation \n Mean Accuracy By Window Size per Repository"
+    title = "Source Code Files - Textual Representation \n Mean Accuracy By Window Size per Repository"
     plot_name = "grouped-bar-plot-src-text-by-w-per-repo"
     filter_criteria = {
         "term_strategy": "meta_ast_text",
@@ -92,7 +107,7 @@ def grouped_bar_plot_mean_src_text_by_w_per_repo():
 
 
 if __name__ == "__main__":
-    # scatter_plot_mean_and_std_src_text_k_1_w_10()
-    # scatter_plot_mean_and_std_src_code_k_1_w_10()
-    # grouped_bar_plot_mean_src_text_by_w_per_repo()
+    scatter_plot_mean_and_std_src_text_k_1_w_10_per_repo()
+    scatter_plot_mean_and_std_src_code_k_1_w_10_per_repo()
+    grouped_bar_plot_mean_src_text_by_w_per_repo()
     grouped_bar_plot_mean_src_text_by_k_per_repo()
