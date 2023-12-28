@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from results.plot_utils import get_data
+from results.visualizations.plots.plot_utils import get_data, get_formatted_identifier
 from src.core.logger import log
 
 plt.rcParams["font.family"] = "Helvetica"
@@ -19,7 +19,7 @@ class ScatterPlotMeanStd:
 
         plt.figure(figsize=(12, 8))
         plt.scatter(
-            x=data["repository_identifier"],
+            x=data["repository_identifier"].apply(get_formatted_identifier),
             y=data["Mean"],
             color=self.colors[0],
             label="Mean",
@@ -40,7 +40,9 @@ class ScatterPlotMeanStd:
             self.title
             + "\n Mean and Standard Deviation per Repository for K=1 and W=10"
         )
-        plt.legend()
+        plt.legend(
+            loc="lower right",
+        )
         plt.savefig(self.plot_name, format="svg")
         plt.savefig(self.plot_name, format="png")
         plt.show()

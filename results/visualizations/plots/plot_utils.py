@@ -22,12 +22,23 @@ def get_data(filter_criteria, group_criteria, subgroup_criteria=None):
         filtered_data = df[mask]
         combined_data = pd.concat([combined_data, filtered_data], ignore_index=True)
 
+        group_criteria = get_merged_group_criteria(group_criteria, subgroup_criteria)
+
         grouped_data = (
             combined_data.groupby(list(group_criteria.keys()))
             .apply(custom_aggregation)
             .reset_index()
         )
     return grouped_data
+
+
+def get_merged_group_criteria(group_criteria, subgroup_criteria):
+    if subgroup_criteria is not None:
+        merged_group_criteria = group_criteria.copy()
+        merged_group_criteria.update(subgroup_criteria)
+        return merged_group_criteria
+    else:
+        return group_criteria
 
 
 def custom_aggregation(group):
@@ -69,12 +80,23 @@ def get_formatted_label(label):
         "window_size": "Window Size",
         "k": "Top-K",
         "meta_strategy": "Code Element Set",
+        "embeddings_concept": "Vectorization Technique",
+        "W": "Window Size",
+        "V": "Vectorization Technique",
+        "K": "Top-K",
     }
     return format_label[label] if label in format_label else label
 
 
 def get_formatted_item(item):
-    format_item = {"window_size": "W", "k": "K", "meta_strategy": "Set"}
+    format_item = {
+        "window_size": "W",
+        "k": "K",
+        "meta_strategy": "Set",
+        "embeddings_concept": "V",
+        "tf_idf": "TF-IDF",
+        "tf": "TF",
+    }
     return format_item[item] if item in format_item else item
 
 
@@ -83,5 +105,7 @@ def get_formatted_value(value):
         "ast-lg": "Large",
         "ast-md": "Medium",
         "ast-sm": "Small",
+        "tf": "TF",
+        "tf_idf": "TF-IDF",
     }
     return format_value[value] if value in format_value else value

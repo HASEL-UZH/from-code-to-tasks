@@ -1,13 +1,12 @@
 from matplotlib import pyplot as plt
 
-from results.plot_utils import (
+from results.visualizations.plots.plot_utils import (
+    get_formatted_identifier,
+    get_data,
     get_formatted_label,
     get_formatted_item,
-    get_formatted_identifier,
     get_formatted_value,
-    get_data,
 )
-from src.core.logger import log
 
 plt.rcParams["font.family"] = "Helvetica"
 
@@ -21,7 +20,7 @@ class GroupedBarPlotMean:
         group_criteria,
         x_axis_criteria,
         legend_criteria,
-        colors=None,
+        colors,
     ):
         self.title = title
         self.plot_name = plot_name
@@ -36,13 +35,10 @@ class GroupedBarPlotMean:
             self.filter_criteria,
             self.group_criteria,
         )
-
         plt.figure(figsize=(12, 8))
         width = 0.2
         grouped_data = data.groupby(self.x_axis_criteria)
-
         unique_legend_item = set()
-
         tick_positions = []
         tick_labels = []
 
@@ -75,6 +71,7 @@ class GroupedBarPlotMean:
         plt.title(self.title)
         plt.xticks(tick_positions, tick_labels)
         plt.legend(
+            loc="upper center",
             title=get_formatted_label(self.legend_criteria),
             labels=[
                 f"{get_formatted_item(self.legend_criteria)}={get_formatted_value(l_item)}"
@@ -84,27 +81,3 @@ class GroupedBarPlotMean:
         plt.savefig(f"{self.plot_name}.svg", format="svg")
         plt.savefig(f"{self.plot_name}.png", format="png")
         plt.show()
-        self._log_statistics(data)
-
-    def _log_statistics(self, data):
-        for legend_val, group_df in data.groupby(self.legend_criteria):
-            for x_axis_val, x_axis_group in group_df.groupby(self.x_axis_criteria):
-                mean_val = x_axis_group["Mean"].iloc[0]
-                var_val = x_axis_group["Var"].iloc[0]
-                std_val = x_axis_group["Std"].iloc[0]
-                log.info(
-                    f"For {self.x_axis_criteria}={x_axis_val}, {self.legend_criteria}={legend_val}: "
-                    f"Mean: {mean_val:.2f}, Variance: {var_val:.2f}, Std Dev: {std_val:.2f}"
-                )
-
-        for legend_val, group_df in data.groupby(self.legend_criteria):
-            mean_over_all_repos = group_df.groupby("repository_identifier")[
-                "Mean"
-            ].mean()
-            mean_val = mean_over_all_repos.mean()
-            var_val = mean_over_all_repos.var()
-            std_val = mean_over_all_repos.std()
-            log.info(
-                f"For {self.legend_criteria}={legend_val} over all repositories: "
-                f"Mean: {mean_val:.2f}, Variance: {var_val:.2f}, Std Dev: {std_val:.2f}"
-            )

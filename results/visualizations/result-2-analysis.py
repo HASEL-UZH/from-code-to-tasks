@@ -1,5 +1,5 @@
-from results.grouped_bar_plot_mean import GroupedBarPlotMean
-from results.plot_utils import get_identifiers
+from results.visualizations.plots.grouped_bar_plot_mean import GroupedBarPlotMean
+from results.visualizations.plots.plot_utils import get_identifiers
 
 SRC_TEXT = "Source Code Files - Text Representation"
 SRC_CODE = "Source Code Files - Code Representation"
@@ -34,7 +34,7 @@ def grouped_bar_plot_mean_src_text_by_code_el():
         legend_criteria,
         colors,
     )
-    grouped_bar_plot_mean.plot()
+    grouped_bar_plot_mean.plot_group()
 
 
 def grouped_bar_plot_mean_src_code_by_code_el():
@@ -65,7 +65,7 @@ def grouped_bar_plot_mean_src_code_by_code_el():
         legend_criteria,
         colors,
     )
-    grouped_bar_plot_mean.plot()
+    grouped_bar_plot_mean.plot_group()
 
 
 if __name__ == "__main__":

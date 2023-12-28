@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from results.plot_utils import get_formatted_identifier
+from results.visualizations.plots.plot_utils import get_formatted_identifier
 from src.core.logger import log
 
 plt.rcParams["font.family"] = "Helvetica"

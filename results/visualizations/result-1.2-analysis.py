@@ -1,6 +1,6 @@
-from results.grouped_bar_plot_mean import GroupedBarPlotMean
-from results.plot_utils import get_identifiers
-from results.scatter_plot_mean_std import ScatterPlotMeanStd
+from results.visualizations.plots.grouped_bar_plot_mean import GroupedBarPlotMean
+from results.visualizations.plots.plot_utils import get_identifiers
+from results.visualizations.plots.scatter_plot_mean_std import ScatterPlotMeanStd
 
 SRC_TEXT = "Source Code Files - Text Representation"
 SRC_CODE = "Source Code Files - Code Representation"
