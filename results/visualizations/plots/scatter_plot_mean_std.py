@@ -1,7 +1,10 @@
+import os
+
 import matplotlib.pyplot as plt
 
 from results.visualizations.plots.plot_utils import get_data, get_formatted_identifier
 from src.core.logger import log
+from src.core.workspace_context import get_results_dir
 
 plt.rcParams["font.family"] = "Helvetica"
 
@@ -33,19 +36,30 @@ class ScatterPlotMeanStd:
             color=self.colors[1],
             label="Standard Deviation",
         )
-
+        plt.tight_layout()
+        plt.subplots_adjust(left=0.06, bottom=0.09)
         plt.xlabel("Repository")
         plt.ylabel("Mean")
-        plt.title(
+        plt.legend(
+            loc="upper center",
+        )
+        svg_filename = os.path.join(get_results_dir(), f"{self.plot_name}.svg")
+        plt.savefig(svg_filename, format="svg")
+        plt.show()
+
+        self._log_statistics(data)
+
+    def _log_statistics(self, data):
+        log.warn(
             self.title
             + "\n Mean and Standard Deviation per Repository for K=1 and W=10"
         )
-        plt.legend(
-            loc="lower right",
+        overall_mean = data["Mean"].mean()
+        overall_std = data["Mean"].std()
+        overall_var = data["Mean"].var()
+        log.info(
+            f"Overall Mean: {overall_mean:.2f}, Overall Std: {overall_std:.2f}, Overall Var: {overall_var:.2f}"
         )
-        plt.savefig(self.plot_name, format="svg")
-        plt.savefig(self.plot_name, format="png")
-        plt.show()
 
         for repo, mean, std, var in zip(
             data["repository_identifier"],

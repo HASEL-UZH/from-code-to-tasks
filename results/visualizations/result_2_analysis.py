@@ -15,7 +15,7 @@ def grouped_bar_plot_mean_src_text_by_code_el():
         "window_size": 10,
     }
     group_criteria = {
-        "meta_strategy": ["ast_sm", "ast_md", "ast_lg"],
+        "meta_strategy": ["ast-sm", "ast-md", "ast-lg"],
         "repository_identifier": get_identifiers(),
     }
     colors = [
@@ -23,18 +23,14 @@ def grouped_bar_plot_mean_src_text_by_code_el():
         "#33FF57",
         "#5733FF",
     ]
-    x_axis_criteria = "repository_identifier"
-    legend_criteria = "meta_strategy"
     grouped_bar_plot_mean = GroupedBarPlotMean(
         title,
         plot_name,
         filter_criteria,
         group_criteria,
-        x_axis_criteria,
-        legend_criteria,
         colors,
     )
-    grouped_bar_plot_mean.plot_group()
+    grouped_bar_plot_mean.plot()
 
 
 def grouped_bar_plot_mean_src_code_by_code_el():
@@ -46,7 +42,7 @@ def grouped_bar_plot_mean_src_code_by_code_el():
         "window_size": 10,
     }
     group_criteria = {
-        "meta_strategy": ["ast_sm", "ast_md", "ast_lg"],
+        "meta_strategy": ["ast-sm", "ast-md", "ast-lg"],
         "repository_identifier": get_identifiers(),
     }
     colors = [
@@ -54,18 +50,14 @@ def grouped_bar_plot_mean_src_code_by_code_el():
         "#33FF57",
         "#5733FF",
     ]
-    x_axis_criteria = "repository_identifier"
-    legend_criteria = "meta_strategy"
     grouped_bar_plot_mean = GroupedBarPlotMean(
         title,
         plot_name,
         filter_criteria,
         group_criteria,
-        x_axis_criteria,
-        legend_criteria,
         colors,
     )
-    grouped_bar_plot_mean.plot_group()
+    grouped_bar_plot_mean.plot()
 
 
 if __name__ == "__main__":

@@ -1,11 +1,16 @@
+import os
+
+from matplotlib import patches as mpatches
 from matplotlib import pyplot as plt
 
 from results.visualizations.plots.plot_utils import (
     get_data,
     get_formatted_identifier,
     get_formatted_label,
-    get_formatted_item,
+    get_formatted_value,
 )
+from src.core.logger import log
+from src.core.workspace_context import get_results_dir
 
 
 class SubGroupedBarPlotMean:
@@ -15,8 +20,6 @@ class SubGroupedBarPlotMean:
         plot_name,
         filter_criteria,
         group_criteria,
-        x_axis_criteria,
-        legend_criteria,
         colors,
         subgroup_criteria=None,
         group_amount=3,
@@ -28,8 +31,6 @@ class SubGroupedBarPlotMean:
         self.plot_name = plot_name
         self.filter_criteria = filter_criteria
         self.group_criteria = group_criteria
-        self.x_axis_criteria = x_axis_criteria
-        self.legend_criteria = legend_criteria
         self.colors = colors
         self.subgroup_criteria = subgroup_criteria
         self.group_amount = group_amount
@@ -43,10 +44,11 @@ class SubGroupedBarPlotMean:
         )
         plt.figure(figsize=(12, 8))
         width = 0.2
-        grouped_data = data.groupby(self.x_axis_criteria)
+        grouped_data = data.groupby("repository_identifier")
         unique_legend_item = set()
         tick_positions = []
         tick_labels = []
+        color_matching = {}
 
         for k, (repo_identifier, group_df) in enumerate(grouped_data):
             if "meta_ast_strategy" in self.group_criteria:
@@ -85,27 +87,60 @@ class SubGroupedBarPlotMean:
                                 color=color,
                                 label=f"{group_value} {subgroup_value}",
                             )
+                            print(
+                                f"{group_value} {subgroup_value} {mean_value} {group_center} {position + j * subgroup_width}"
+                            )
                             unique_legend_item.add((group_value, subgroup_value))
+                            if (group_value, subgroup_value) not in color_matching:
+                                color_matching[(group_value, subgroup_value)] = color
 
             tick_positions.append(group_center)
             tick_labels.append(f"{get_formatted_identifier(repo_identifier)}")
-
+        plt.tight_layout()
+        plt.subplots_adjust(left=0.06, bottom=0.09)
         plt.xlabel("Repository")
         plt.ylabel("Mean")
-        plt.title(self.title)
         plt.xticks(tick_positions, tick_labels)
         self.group_criteria.update(self.subgroup_criteria)
 
         plt.legend(
             loc="upper center",
             title=f"{get_formatted_label(self.group_name)}, {get_formatted_label(self.subgroup_name)}",
+            handles=[mpatches.Patch(color=color_matching[i]) for i in color_matching],
             labels=sorted(
                 [
-                    f"{self.group_name}={get_formatted_item(l_item[0])} {self.subgroup_name}={get_formatted_item(l_item[1])}"
-                    for l_item in unique_legend_item
+                    f"{self.group_name}={get_formatted_value(i[0])} {self.subgroup_name}={get_formatted_value(i[1])}"
+                    for i in color_matching
                 ]
             ),
         )
-        plt.savefig(f"{self.plot_name}.svg", format="svg")
-        plt.savefig(f"{self.plot_name}.png", format="png")
+        svg_filename = os.path.join(get_results_dir(), f"{self.plot_name}.svg")
+        plt.savefig(svg_filename, format="svg")
         plt.show()
+        self._log_statistics(data)
+
+    def _log_statistics(self, data):
+        log.warn(
+            self.title
+            + "\n Mean and Standard Deviation per Repository for K=1 and W=10"
+        )
+
+        for group_value, group_df in data.groupby(list(self.group_criteria.keys())[0]):
+            for subgroup_value, subgroup_df in group_df.groupby(
+                list(self.subgroup_criteria.keys())[0]
+            ):
+                mean_value = subgroup_df["Mean"].mean()
+                std_value = subgroup_df["Mean"].std()
+                var_value = subgroup_df["Mean"].var()
+
+                log.info(
+                    f"{get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, {get_formatted_label(list(self.subgroup_criteria.keys())[0])}: {subgroup_value}, Mean: {mean_value:.2f}, Std: {std_value:.2f}, Var: {var_value:.2f}"
+                )
+
+                for repo, repo_group in subgroup_df.groupby("repository_identifier"):
+                    mean_value_repo = repo_group["Mean"].mean()
+                    std_value_repo = repo_group["Mean"].std()
+                    var_value_repo = repo_group["Mean"].var()
+            log.info(
+                f"Repository: {get_formatted_identifier(repo)}, {get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, {get_formatted_label(list(self.subgroup_criteria.keys())[0])}: Mean: {mean_value_repo:.2f}, Std: {std_value_repo:.2f}, Var: {var_value_repo:.2f}"
+            )

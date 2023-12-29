@@ -3,16 +3,16 @@ import os
 import numpy as np
 import pandas as pd
 
+from src.core.workspace_context import get_results_dir
+
 
 def get_data(filter_criteria, group_criteria, subgroup_criteria=None):
     combined_data = pd.DataFrame()
-    current_directory = os.getcwd()
-    csv_files = [
-        file for file in os.listdir(current_directory) if file.endswith(".csv")
-    ]
+    folder_path = get_results_dir()
 
+    csv_files = [file for file in os.listdir(folder_path) if file.endswith(".csv")]
     for csv_file in csv_files:
-        file_path = os.path.join(os.getcwd(), csv_file)
+        file_path = os.path.join(folder_path, csv_file)
         df = pd.read_csv(file_path)
 
         mask = np.ones(len(df), dtype=bool)
@@ -23,6 +23,28 @@ def get_data(filter_criteria, group_criteria, subgroup_criteria=None):
         combined_data = pd.concat([combined_data, filtered_data], ignore_index=True)
 
         group_criteria = get_merged_group_criteria(group_criteria, subgroup_criteria)
+
+        combined_data.loc[
+            combined_data["embeddings_strategy"]
+            == "tf-idf-embedding--standard-tokenizer",
+            "embeddings_strategy",
+        ] = "tf-embedding--standard-tokenizer"
+
+        combined_data.loc[
+            combined_data["embeddings_strategy"]
+            == "tf-idf-embedding--subword-tokenizer",
+            "embeddings_strategy",
+        ] = "tf-embedding--subword-tokenizer"
+
+        for group_key, group_values in group_criteria.items():
+            combined_data = combined_data[combined_data[group_key].isin(group_values)]
+
+        if "term_strategy" in group_criteria:
+            term_strategy_values = group_criteria.get("term_strategy", [])
+            if "meta_ast_text" in term_strategy_values:
+                combined_data.loc[
+                    combined_data["term_strategy"] == "meta_ast_text", "meta_strategy"
+                ] = "ast-lg"
 
         grouped_data = (
             combined_data.groupby(list(group_criteria.keys()))
@@ -83,7 +105,10 @@ def get_formatted_label(label):
         "embeddings_concept": "Vectorization Technique",
         "W": "Window Size",
         "V": "Vectorization Technique",
+        "C": "Change Representation",
+        "T": "Tokenization Technique",
         "K": "Top-K",
+        "term_strategy": "Change Representation",
     }
     return format_label[label] if label in format_label else label
 
@@ -96,6 +121,9 @@ def get_formatted_item(item):
         "embeddings_concept": "V",
         "tf_idf": "TF-IDF",
         "tf": "TF",
+        "term_strategy": "C",
+        "tf-embedding--standard-tokenizer": "Standard",
+        "tf-embedding--subword-tokenizer": "Subword",
     }
     return format_item[item] if item in format_item else item
 
@@ -107,5 +135,8 @@ def get_formatted_value(value):
         "ast-sm": "Small",
         "tf": "TF",
         "tf_idf": "TF-IDF",
+        "diff_text": "Diff",
+        "diff_text/meta_ast_text": "Combined",
+        "meta_ast_text": "Source",
     }
     return format_value[value] if value in format_value else value

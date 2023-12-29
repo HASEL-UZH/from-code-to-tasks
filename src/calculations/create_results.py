@@ -114,16 +114,19 @@ def get_statistics_object(accuracies_over_all_windows):
     return statistics_object
 
 
-def save_results_to_csv(results):
+def save_results_to_csv(results, repository_identifier):
     if not results:
         return
     results_dir_path = get_results_dir()
-    results_file_path = os.path.join(results_dir_path, "results.csv")
-    headers = list(results[0].keys())
+    results_file_path = os.path.join(
+        results_dir_path, f"results_{repository_identifier}.csv"
+    )
+    headers = list(results[0].keys()) + ["repository_identifier"]
     with open(results_file_path, "w", newline="") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=headers)
         writer.writeheader()
         for result in results:
+            result["repository_identifier"] = repository_identifier
             writer.writerow(result)
 
 
