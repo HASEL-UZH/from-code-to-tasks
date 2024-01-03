@@ -39,18 +39,29 @@ class SubGroupedBarPlotMean:
         self.subgroup_name = subgroup_name
 
     def plot(self):
+        repository_order = [
+            "iluwatar__java-design-patterns",
+            "reactive_x___rx_java",
+            "apache__dubbo",
+            "eugenp__tutorials",
+            "airbnb__lottie-android",
+            "bumptech__glide",
+            "netty__netty",
+            "apolloconfig__apollo",
+            "selenium_hq__selenium",
+            "alibaba__nacos",
+        ]
         data = get_data(
             self.filter_criteria, self.group_criteria, self.subgroup_criteria
         )
         plt.figure(figsize=(12, 8))
         width = 0.2
-        grouped_data = data.groupby("repository_identifier")
         unique_legend_item = set()
         tick_positions = []
         tick_labels = []
         color_matching = {}
-
-        for k, (repo_identifier, group_df) in enumerate(grouped_data):
+        for k, repo_identifier in enumerate(repository_order):
+            group_df = data[data["repository_identifier"] == repo_identifier]
             if "meta_ast_strategy" in self.group_criteria:
                 custom_order = {"ast-sm": 0, "ast-md": 1, "ast-lg": 2}
                 group_df["sorting_order"] = group_df["meta_ast_strategy"].map(

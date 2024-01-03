@@ -18,31 +18,64 @@ class ScatterPlotMeanStd:
         self.colors = colors
 
     def plot(self):
+        repository_order = [
+            "iluwatar__java-design-patterns",
+            "reactive_x___rx_java",
+            "apache__dubbo",
+            "eugenp__tutorials",
+            "airbnb__lottie-android",
+            "bumptech__glide",
+            "netty__netty",
+            "apolloconfig__apollo",
+            "selenium_hq__selenium",
+            "alibaba__nacos",
+        ]
+
+        plt.figure(figsize=(8, 6))
+        tick_positions = []
+        tick_labels = []
         data = get_data(self.filter_criteria, self.group_criteria)
 
-        plt.figure(figsize=(12, 8))
-        plt.scatter(
-            x=data["repository_identifier"].apply(get_formatted_identifier),
-            y=data["Mean"],
-            color=self.colors[0],
-            label="Mean",
-        )
-        plt.errorbar(
-            data.index,
-            data["Mean"],
-            yerr=data["Std"],
-            fmt="none",
-            capsize=5,
-            color=self.colors[1],
-            label="Standard Deviation",
-        )
+        # Initialize flags for legend labels
+        mean_legend_added = False
+        std_legend_added = False
+
+        for k, repo_identifier in enumerate(repository_order):
+            group_df = data[data["repository_identifier"] == repo_identifier]
+            group_center = k
+
+            plt.scatter(
+                x=group_center,
+                y=group_df["Mean"],
+                color=self.colors[0],
+                label="Mean" if not mean_legend_added else "",
+            )
+
+            plt.errorbar(
+                x=group_center,
+                y=group_df["Mean"],
+                yerr=group_df["Std"],
+                fmt="none",
+                capsize=5,
+                color=self.colors[1],
+                label="Standard Deviation" if not std_legend_added else "",
+            )
+
+            tick_positions.append(group_center)
+            tick_labels.append(f"{get_formatted_identifier(repo_identifier)}")
+
+            # Set the flags to True after the first iteration
+            mean_legend_added = True
+            std_legend_added = True
+
         plt.tight_layout()
-        plt.subplots_adjust(left=0.06, bottom=0.09)
+        plt.subplots_adjust(left=0.09, bottom=0.12)
         plt.xlabel("Repository")
         plt.ylabel("Mean")
-        plt.legend(
-            loc="upper center",
-        )
+        plt.legend(loc="upper center")
+        plt.ylim(0, 1)
+        plt.xticks(tick_positions, tick_labels)
+
         svg_filename = os.path.join(get_results_dir(), f"{self.plot_name}.svg")
         plt.savefig(svg_filename, format="svg")
         plt.show()

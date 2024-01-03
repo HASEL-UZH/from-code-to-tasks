@@ -1,8 +1,10 @@
 from src.core.logger import log
 from src.core.profiler import Profiler
+from src.github.github_grapghql_api import github_graphql_api
 from src.store.mdb_store import Collection
 from src.store.object_factory import get_repository_identifier
-from src.tasks.task_01__create_repository import api
+
+api = github_graphql_api
 
 
 def insert_github_issues(repositories: [dict]):
@@ -21,7 +23,7 @@ def insert_github_issues(repositories: [dict]):
             continue
         repository_name = repository["name"]
         repository_owner = repository["owner"]
-        _insert_issues(owner=repository_owner, repository_name=repository_name)
+        _insert_issues(api, owner=repository_owner, repository_name=repository_name)
 
 
 def _insert_issues(owner: str, repository_name: str):

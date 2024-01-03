@@ -6,7 +6,7 @@ from results.visualizations.plots.plot_utils import (
 
 def grouped_bar_plot_mean_per_change_repr_text_k_1_w_10_per_repo():
     title = "Change Representation Comparision- Textual Representation \n Mean and Standard Deviation per Repository for K=1 and W=10"
-    plot_name = "grouped_bar_plot_mean_per_change_repr__k_1_w_10_per_repo"
+    plot_name = "grouped_bar_plot_mean_per_change_repr_k_1_w_10_per_repo"
     filter_criteria = {
         "k": 1,
         "window_size": 10,
@@ -15,10 +15,11 @@ def grouped_bar_plot_mean_per_change_repr_text_k_1_w_10_per_repo():
         "term_strategy": ["meta_ast_text", "diff_text", "diff_text/meta_ast_text"],
         "repository_identifier": get_identifiers(),
     }
+    # blue, orange and red
     colors = [
-        "#FF5733",
-        "#33FF57",
-        "#5733FF",
+        "#4E79A7",
+        "#F28E2B",
+        "#E15759",
     ]
     grouped_bar_plot_mean = GroupedBarPlotMean(
         title,

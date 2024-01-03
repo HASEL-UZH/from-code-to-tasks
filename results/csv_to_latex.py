@@ -134,9 +134,8 @@ def generate_and_save_latex_tables(folder_path, output_folder):
             "results_iluwatar__java-design-patterns.csv": "Result Runs for java-design-patterns by iluwatar",
             "results_reactive_x___rx_java.csv": "Result Runs for RxJava by ReactiveX",
             "results_selenium_hq__selenium.csv": "Result Runs for selenium by SeleniumHQ",
-            "results_kdn251__interviews.csv": "Result Runs for interviews by kdn251",
-            "results_elastic__elasticsearch.csv": "Result Runs for elasticsearch by elastic",
             "results_apache__dubbo.csv": "Result Runs for dubbo by apache",
+            "results_netty__netty.csv": "Result Runs for netty by netty",
         }
 
         label_dict = {
@@ -148,9 +147,8 @@ def generate_and_save_latex_tables(folder_path, output_folder):
             "results_iluwatar__java-design-patterns.csv": "result-runs-java-design-patterns-iluwatar",
             "results_reactive_x___rx_java.csv": "result-runs-rxjava-reactivex",
             "results_selenium_hq__selenium.csv": "result-runs-selenium-seleniumhq",
-            "results_kdn251__interviews.csv": "result-runs-interviews-kdn251",
-            "results_elastic__elasticsearch.csv": "result-runs-elasticsearch-elastic",
             "results_apache__dubbo.csv": "result-runs-dubbo-apache",
+            "results_netty__netty.csv": "result-runs-netty-netty",
         }
 
         caption = caption_dict[csv_file]

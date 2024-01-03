@@ -18,10 +18,11 @@ def grouped_bar_plot_mean_src_text_by_code_el():
         "meta_strategy": ["ast-sm", "ast-md", "ast-lg"],
         "repository_identifier": get_identifiers(),
     }
+    # blue, orange and red
     colors = [
-        "#FF5733",
-        "#33FF57",
-        "#5733FF",
+        "#4E79A7",
+        "#F28E2B",
+        "#E15759",
     ]
     grouped_bar_plot_mean = GroupedBarPlotMean(
         title,
@@ -45,10 +46,11 @@ def grouped_bar_plot_mean_src_code_by_code_el():
         "meta_strategy": ["ast-sm", "ast-md", "ast-lg"],
         "repository_identifier": get_identifiers(),
     }
+    # blue, orange and red
     colors = [
-        "#FF5733",
-        "#33FF57",
-        "#5733FF",
+        "#4E79A7",
+        "#F28E2B",
+        "#E15759",
     ]
     grouped_bar_plot_mean = GroupedBarPlotMean(
         title,
@@ -62,4 +64,3 @@ def grouped_bar_plot_mean_src_code_by_code_el():
 
 if __name__ == "__main__":
     grouped_bar_plot_mean_src_text_by_code_el()
-    grouped_bar_plot_mean_src_code_by_code_el()

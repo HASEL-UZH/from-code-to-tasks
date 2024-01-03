@@ -16,7 +16,11 @@ def scatter_plot_mean_and_std_diff_text_k_1_w_10_per_repo():
     group_criteria = {
         "repository_identifier": get_identifiers(),
     }
-    colors = ["#FF1493", "#9370DB"]
+    # blue and orange
+    colors = [
+        "#4E79A7",
+        "#F28E2B",
+    ]
     scatter_plot = ScatterPlotMeanStd(
         title, plot_name, filter_criteria, group_criteria, colors=colors
     )
@@ -31,13 +35,14 @@ def grouped_bar_plot_mean_diff_text_by_k_per_repo():
         "window_size": 10,
     }
     group_criteria = {
-        "k": [1, 3, 5],
+        "k": [1, 2, 3],
         "repository_identifier": get_identifiers(),
     }
+    # blue, orange and red
     colors = [
-        "#FF5733",
-        "#33FF57",
-        "#5733FF",
+        "#4E79A7",
+        "#F28E2B",
+        "#E15759",
     ]
     grouped_bar_plot_mean = GroupedBarPlotMean(
         title,
@@ -60,10 +65,11 @@ def grouped_bar_plot_mean_diff_text_by_w_per_repo():
         "window_size": [10, 20, 50],
         "repository_identifier": get_identifiers(),
     }
+    # blue, orange and red
     colors = [
-        "#FF5733",
-        "#33FF57",
-        "#5733FF",
+        "#4E79A7",
+        "#F28E2B",
+        "#E15759",
     ]
     grouped_bar_plot_mean = GroupedBarPlotMean(
         title,

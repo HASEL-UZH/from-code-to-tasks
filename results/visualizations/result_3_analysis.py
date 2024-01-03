@@ -15,7 +15,8 @@ def subgrouped_bar_plot_mean_change_repr_by_v_per_repo():
         "repository_identifier": get_identifiers(),
     }
     subgroup_criteria = {"embeddings_concept": ["tf", "tf_idf"]}
-    colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]
+    # blue, orange, red and green
+    colors = ["#4E79A7", "#F28E2B", "#E15759", "#59A14F"]
     subgrouped_bar_plot_mean = SubGroupedBarPlotMean(
         title,
         plot_name,
@@ -33,7 +34,7 @@ def subgrouped_bar_plot_mean_change_repr_by_v_per_repo():
 
 def fancy_scatter_plot_mean_diff_text_by_v_by_t():
     title = "Mean Accuracy By Window Size per Repository Split by Vectorization"
-    plot_name = "fancy-scatter-plot-diff-text-by-w-per-repo"
+    plot_name = "fancy-scatter-plot-diff-text-by-v-by-t"
     filter_criteria = {"term_strategy": "diff_text", "k": 1, "window_size": 10}
     group_criteria = {
         "embeddings_concept": ["tf", "tf_idf"],
@@ -45,7 +46,8 @@ def fancy_scatter_plot_mean_diff_text_by_v_by_t():
             "tf-embedding--subword-tokenizer",
         ]
     }
-    colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
+    # blue and orange
+    colors = ["#4E79A7", "#F28E2B"]
     fancy_scatter_plot_mean = FancyScatterPlotMean(
         title,
         plot_name,
@@ -63,11 +65,8 @@ def fancy_scatter_plot_mean_diff_text_by_v_by_t():
 
 def fancy_scatter_plot_mean_src_text_by_v_by_t():
     title = "Mean Accuracy By Window Size per Repository Split by Vectorization"
-    plot_name = "fancy-scatter-plot-diff-text-by-w-per-repo"
-    filter_criteria = {
-        "term_strategy": "diff_text",
-        "k": 1,
-    }
+    plot_name = "fancy-scatter-plot-src-text-by-v-by-t"
+    filter_criteria = {"term_strategy": "meta_ast_text", "k": 1, "window_size": 10}
     group_criteria = {
         "embeddings_concept": ["tf", "tf_idf"],
         "repository_identifier": get_identifiers(),
@@ -78,7 +77,8 @@ def fancy_scatter_plot_mean_src_text_by_v_by_t():
             "tf-embedding--subword-tokenizer",
         ]
     }
-    colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b"]
+    # blue and orange
+    colors = ["#4E79A7", "#F28E2B"]
     fancy_scatter_plot_mean = FancyScatterPlotMean(
         title,
         plot_name,
@@ -86,7 +86,7 @@ def fancy_scatter_plot_mean_src_text_by_v_by_t():
         group_criteria,
         colors,
         subgroup_criteria,
-        3,
+        2,
         2,
         "V",
         "T",
