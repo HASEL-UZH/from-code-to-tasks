@@ -72,7 +72,7 @@ def custom_aggregation(group):
 
 def get_formatted_identifier(identifier):
     format = {
-        "iluwatar__java-design-patterns": "java-design-patterns",
+        "iluwatar__java-design-patterns": "java-design-\npatterns",
         "reactive_x___rx_java": "RxJava",
         "eugenp__tutorials": "tutorials",
         "airbnb__lottie-android": "lottie-android",
@@ -80,6 +80,8 @@ def get_formatted_identifier(identifier):
         "apolloconfig__apollo": "apollo",
         "selenium_hq__selenium": "selenium",
         "alibaba__nacos": "nacos",
+        "netty__netty": "netty",
+        "apache__dubbo": "dubbo",
     }
     return format[identifier]
 
@@ -88,9 +90,11 @@ def get_identifiers():
     return [
         "iluwatar__java-design-patterns",
         "reactive_x___rx_java",
+        "apache__dubbo",
         "eugenp__tutorials",
         "airbnb__lottie-android",
         "bumptech__glide",
+        "netty__netty",
         "apolloconfig__apollo",
         "selenium_hq__selenium",
         "alibaba__nacos",
