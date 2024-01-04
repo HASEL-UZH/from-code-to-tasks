@@ -117,6 +117,7 @@ class FancyScatterPlotMean:
         plt.subplots_adjust(left=0.06, bottom=0.09)
         plt.xlabel("Repository")
         plt.ylabel("Mean")
+        plt.ylim(0, 1)
         plt.xticks(tick_positions, tick_labels)
         plt.legend(
             loc="upper center",
