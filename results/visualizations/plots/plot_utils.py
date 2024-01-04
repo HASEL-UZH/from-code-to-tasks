@@ -42,9 +42,13 @@ def get_data(filter_criteria, group_criteria, subgroup_criteria=None):
         if "term_strategy" in group_criteria:
             term_strategy_values = group_criteria.get("term_strategy", [])
             if "meta_ast_text" in term_strategy_values:
-                combined_data.loc[
-                    combined_data["term_strategy"] == "meta_ast_text", "meta_strategy"
-                ] = "ast-lg"
+                combined_data = combined_data[
+                    (combined_data["term_strategy"] != "meta_ast_text")
+                    | (
+                        (combined_data["term_strategy"] == "meta_ast_text")
+                        & (combined_data["meta_strategy"] == "ast-lg")
+                    )
+                ]
 
         grouped_data = (
             combined_data.groupby(list(group_criteria.keys()))

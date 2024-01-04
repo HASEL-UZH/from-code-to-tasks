@@ -91,7 +91,7 @@ class ScatterPlotMeanStd:
         overall_std = data["Mean"].std()
         overall_var = data["Mean"].var()
         log.info(
-            f"Overall Mean: {overall_mean:.2f}, Overall Std: {overall_std:.2f}, Overall Var: {overall_var:.2f}"
+            f"Overall Mean: {overall_mean:.4f}, Overall Std: {overall_std:.2f}, Overall Var: {overall_var:.2f}"
         )
 
         for repo, mean, std, var in zip(
@@ -101,5 +101,5 @@ class ScatterPlotMeanStd:
             data["Var"],
         ):
             log.info(
-                f"Repository: {repo}, Mean: {mean:.2f}, Std: {std:.2f}, Var: {var:.2f}"
+                f"Repository: {repo}, Mean: {mean:.4f}, Std: {std:.2f}, Var: {var:.2f}"
             )

@@ -122,7 +122,7 @@ class GroupedBarPlotMean:
             var_value = group_df["Mean"].var()
 
             log.info(
-                f"{get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, Mean: {mean_value:.2f},Std: {std_value:.2f}, Var: {var_value:.2f}"
+                f"{get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, Mean: {mean_value:.4f},Std: {std_value:.2f}, Var: {var_value:.2f}"
             )
 
         for repo, group, mean, std, var in zip(
@@ -133,5 +133,5 @@ class GroupedBarPlotMean:
             data["Var"],
         ):
             log.info(
-                f"Repository: {get_formatted_identifier(repo)}, {get_formatted_label(list(self.group_criteria.keys())[0])}: {group}, Mean: {mean:.2f}, Std: {std:.2f}, Var: {var:.2f}"
+                f"Repository: {get_formatted_identifier(repo)}, {get_formatted_label(list(self.group_criteria.keys())[0])}: {group}, Mean: {mean:.4f}, Std: {std:.2f}, Var: {var:.2f}"
             )

@@ -98,9 +98,6 @@ class SubGroupedBarPlotMean:
                                 color=color,
                                 label=f"{group_value} {subgroup_value}",
                             )
-                            print(
-                                f"{group_value} {subgroup_value} {mean_value} {group_center} {position + j * subgroup_width}"
-                            )
                             unique_legend_item.add((group_value, subgroup_value))
                             if (group_value, subgroup_value) not in color_matching:
                                 color_matching[(group_value, subgroup_value)] = color
@@ -146,13 +143,13 @@ class SubGroupedBarPlotMean:
                 var_value = subgroup_df["Mean"].var()
 
                 log.info(
-                    f"{get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, {get_formatted_label(list(self.subgroup_criteria.keys())[0])}: {subgroup_value}, Mean: {mean_value:.2f}, Std: {std_value:.2f}, Var: {var_value:.2f}"
+                    f"{get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, {get_formatted_label(list(self.subgroup_criteria.keys())[0])}: {subgroup_value}, Mean: {mean_value:.4f}, Std: {std_value:.2f}, Var: {var_value:.2f}"
                 )
 
-                for repo, repo_group in subgroup_df.groupby("repository_identifier"):
-                    mean_value_repo = repo_group["Mean"].mean()
-                    std_value_repo = repo_group["Mean"].std()
-                    var_value_repo = repo_group["Mean"].var()
-            log.info(
-                f"Repository: {get_formatted_identifier(repo)}, {get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, {get_formatted_label(list(self.subgroup_criteria.keys())[0])}: Mean: {mean_value_repo:.2f}, Std: {std_value_repo:.2f}, Var: {var_value_repo:.2f}"
-            )
+                # for repo, repo_group in subgroup_df.groupby("repository_identifier"):
+                #     mean_value_repo = repo_group["Mean"].mean()
+                #     std_value_repo = repo_group["Mean"].std()
+                #     var_value_repo = repo_group["Mean"].var()
+                #     log.info(
+                #         f"Repository: {get_formatted_identifier(repo)}, {get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, {get_formatted_label(list(self.subgroup_criteria.keys())[0])}: Mean: {mean_value_repo:.4f}, Std: {std_value_repo:.2f}, Var: {var_value_repo:.2f}"
+                #     )
