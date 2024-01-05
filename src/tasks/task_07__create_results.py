@@ -20,13 +20,13 @@ def create_results_task(context: PipelineContext):
     profiler = Profiler()
 
     embedding_concepts = [
-        TfConcept,
+        TfConcept(),
         TfIdfConcept(),
         CodeBertConcept(),
         CodeBertSummedConcept(),
     ]
 
-    window_sizes = [10, 50, 200]
+    window_sizes = [10, 20, 50]
     k_values = [1, 3, 5]
 
     profiler.info(f"commit foundation created")
@@ -120,7 +120,7 @@ def create_results_task(context: PipelineContext):
 
                         profiler.info(f"Done with the following parameters {result}")
 
-    save_results_to_csv(results)
+    save_results_to_csv(results, context.get_repository_identifiers()[0])
     save_results_to_db(context, results)
     profiler.checkpoint(f"create_results_task done")
 

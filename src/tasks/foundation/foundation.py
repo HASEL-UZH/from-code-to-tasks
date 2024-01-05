@@ -1,11 +1,14 @@
 from src.core.utils import group_by
 from src.store.mdb_store import Collection
+from src.tasks.foundation.insert_github_issues import insert_github_issues
+from src.tasks.foundation.insert_github_pr import insert_github_pr
 from src.tasks.foundation.insert_pr_info import insert_pr_info
+from src.tasks.foundation.insert_pydriller_commit import insert_pydriller_commit
 
 PR_COUNT_LIMIT = 100
 
 
-def get_top_repositories(n: int = 10, min_pr_count: int = PR_COUNT_LIMIT) -> [str]:
+def get_top_repositories(n: int = 20, min_pr_count: int = PR_COUNT_LIMIT) -> [str]:
     pr_infos = list(
         Collection.pr_info.find({"accepted": True}).sort({"stargazer_count": -1})
     )
@@ -33,11 +36,20 @@ def collect_top_repositories(n: int = 20):
             }
         ).sort("stargazerCount", -1)
     )
+    selected_identifiers = [
+        "elastic__elasticsearch",
+        "kdn251__interviews",
+        "netty__netty",
+        "apache__dubbo",
+    ]
     repositories = repositories[:n]
+    repositories = [
+        repo for repo in repositories if repo.get("identifier") in selected_identifiers
+    ]
 
-    # insert_github_pr(repositories)
-    # insert_github_issues(repositories)
-    # insert_pydriller_commit(repositories)
+    insert_github_pr(repositories)
+    insert_github_issues(repositories)
+    insert_pydriller_commit(repositories)
     insert_pr_info(repositories)
 
 

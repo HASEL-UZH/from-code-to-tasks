@@ -1,6 +1,5 @@
 import statistics
 
-from src.core.logger import log
 from src.strategies.defs import ICommitInfo
 from src.strategies.embeddings.defs import IEmbeddingStrategy
 from src.strategies.sliding_window_provider import SlidingWindowProvider
@@ -62,7 +61,6 @@ class AccuracyCalculator:
                         item_change_text_embedding, item_pull_request_embedding
                     )
                     item_pr_change_comparison[item_pr_commit_hash] = similarity
-                    log.info("worked")
                 except Exception as e:
                     _data = {"k": k}
                     self._context.error(
