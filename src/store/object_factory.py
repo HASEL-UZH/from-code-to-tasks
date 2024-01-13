@@ -10,7 +10,6 @@ class Classifier:
 
 
 class ObjectFactory:
-    # obj: dict | string (id)
     @staticmethod
     def _get_classifier(obj):
         if not obj:
@@ -22,7 +21,6 @@ class ObjectFactory:
             classifier = obj.get("classifier")
         return classifier
 
-    # obj: dict | string (id)
     @staticmethod
     def is_container(obj):
         return ObjectFactory.is_repository(obj) or ObjectFactory.is_commit(obj)
@@ -109,17 +107,12 @@ class ObjectFactory:
         return _object
 
 
-# --- Utilities
-
-
 def get_object_id(classifier, _id):
     return "::".join([classifier, _id])
 
 
 def get_repository_identifier(repository_url):
-    # Remove the prefix
     id = repository_url.replace("https://github.com/", "")
-    # Replace "/" with "__"
     id = id.replace("/", "__")
     id = camel_to_snake(id)
     return id

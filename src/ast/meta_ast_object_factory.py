@@ -93,10 +93,8 @@ def get_condensed_method_object(method_object, sort=True):
             return False
         if key == "tokenRange" and isinstance(value, dict) and "beginToken" in value:
             return False
-        # ignore empty arrays
         if isinstance(value, list) and not value:
             return False
-        # ignore imports
         if key == "imports" and isinstance(value, list):
             return False
         return True

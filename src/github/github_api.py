@@ -1,15 +1,15 @@
+import os
 import re
 import time
-import requests
 from urllib.parse import urlencode, urlunparse, urlparse, parse_qs
+
+import requests
 from dotenv import load_dotenv
-import os
 
 from src.core.logger import log
 
-load_dotenv()  # This loads the .env file into the environment
+load_dotenv()
 
-# load from .env
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 HEADERS = {"Authorization": f"Bearer {GITHUB_TOKEN}"}
@@ -113,23 +113,18 @@ def get_query_parameter(url, property):
 
 def build_url(url, params=None):
     url_parts = list(urlparse(url))
-    # Build the query string only if params is not None and not empty
     if params:
         query_string = urlencode(params)
-        url_parts[4] = query_string  # Set the query part of the URL
+        url_parts[4] = query_string
 
     _url = urlunparse(url_parts)
     return _url
 
 
-#  RFC 5988, "Web Linking"
 def parse_link_header(linke_header):
-    # Regular expression pattern to match the URL and rel
     pattern = r'<(?P<url>.+?)>; rel="(?P<rel>.+?)"'
     match = re.match(pattern, linke_header)
     if match:
-        # If the pattern matches, return a dictionary with the named groups
         return {"url": match.group("url"), "rel": match.group("rel")}
     else:
-        # If the pattern does not match, return None
         return None

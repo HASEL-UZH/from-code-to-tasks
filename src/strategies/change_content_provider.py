@@ -1,6 +1,5 @@
 import re
 
-from src.analytics.pr_statistics import get_pr_statistics
 from src.core.utils import group_by
 from src.store.mdb_store import db, Collection
 from src.strategies.defs import IContentStrategy, ICommitInfo
@@ -97,75 +96,3 @@ class ChangeContentProvider:
             "resource": change_resource,
         }
         return commit_info if change_text else None
-
-
-class PrFilter:
-    def __init__(self, context):
-        self._pr_statistics = get_pr_statistics(context)
-        self._lookup = self.create_lookup_dict(context)
-
-    def accept_commit_info(self, commit_id) -> bool:
-        pr_info = self._lookup[commit_id]
-        # Remove PRs with duplicate title
-        if pr_info["duplicate_title"]:
-            return False
-        # # Remove PRs where majority of files are test files
-        if pr_info["number_test_files"] / pr_info["number_source_files"] > 0.5:
-            return False
-        # Remove PRs with too many or too little files or lines
-        # if (
-        #     pr_info["number_source_files"] > self._pr_statistics["src_files_max"]
-        #     or pr_info["number_source_files"] < self._pr_statistics["src_files_min"]
-        # ):
-        #     return False
-        # if (
-        #     pr_info["number_lines"] > self._pr_statistics["lines_max"]
-        #     or pr_info["number_lines"] < self._pr_statistics["lines_min"]
-        # ):
-        #     return False
-        return True
-
-    def create_lookup_dict(self, context):
-        lookup_dict = {
-            pr_info["pr"]["commit_hash"]: {
-                k: v for k, v in pr_info.items() if k != "pr"
-            }
-            for pr_info in self._pr_statistics["pr_infos"]
-        }
-        return lookup_dict
-
-
-class PrFilter:
-    def __init__(self, context):
-        self._pr_statistics = get_pr_statistics(context)
-        self._lookup = self.create_lookup_dict(context)
-
-    def accept_commit_info(self, commit_id) -> bool:
-        pr_info = self._lookup[commit_id]
-        # Remove PRs with duplicate title
-        if pr_info["duplicate_title"]:
-            return False
-        # # Remove PRs where majority of files are test files
-        if pr_info["number_test_files"] / pr_info["number_source_files"] > 0.5:
-            return False
-        # Remove PRs with too many or too little files or lines
-        # if (
-        #     pr_info["number_source_files"] > self._pr_statistics["src_files_max"]
-        #     or pr_info["number_source_files"] < self._pr_statistics["src_files_min"]
-        # ):
-        #     return False
-        # if (
-        #     pr_info["number_lines"] > self._pr_statistics["lines_max"]
-        #     or pr_info["number_lines"] < self._pr_statistics["lines_min"]
-        # ):
-        #     return False
-        return True
-
-    def create_lookup_dict(self, context):
-        lookup_dict = {
-            pr_info["pr"]["commit_hash"]: {
-                k: v for k, v in pr_info.items() if k != "pr"
-            }
-            for pr_info in self._pr_statistics["pr_infos"]
-        }
-        return lookup_dict

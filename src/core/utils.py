@@ -40,19 +40,14 @@ def truncate_string(s, max_length=1000):
         return s
 
 
-# Supports bebab-case, camelCase and snake_case
 def split_string(s):
     if s is None:
         return []
-    # First, replace kebab-case and snake_case with spaces to simplify the regex
     s = re.sub("[-_]", " ", s)
-    # Split camelCase (both lowerCamelCase and UpperCamelCase)
     s = re.sub(r"(?<!^)(?=[A-Z])", " ", s)
-    # Now we can split by space and filter out any empty strings
     return [part for part in s.split(" ") if part]
 
 
-# Creates the MD5 hash
 def hash_string(s):
     if s is None:
         s = ""
@@ -68,16 +63,13 @@ def is_date(d):
     return type(d).__name__ == "date"
 
 
-# example accessor(customer, "address", "street")
 def accessor(obj, *keys):
     if not obj:
         return None
     for key in keys:
         try:
-            # Attempt to get the key if the object is not None
             obj = obj.get(key) if obj is not None else None
         except AttributeError:
-            # If obj does not have .get (it's not a dict), return None
             return None
     return obj
 

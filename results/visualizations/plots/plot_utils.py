@@ -50,6 +50,10 @@ def get_data(filter_criteria, group_criteria, subgroup_criteria=None):
                     )
                 ]
 
+        combined_data = combined_data.rename(
+            columns=lambda x: "codebert" if "codebert" in x else x
+        )
+
         grouped_data = (
             combined_data.groupby(list(group_criteria.keys()))
             .apply(custom_aggregation)
@@ -76,10 +80,10 @@ def custom_aggregation(group):
 
 def get_formatted_identifier(identifier):
     format = {
-        "iluwatar__java-design-patterns": "java-design-\npatterns",
+        "iluwatar__java-design-patterns": "java-\ndesign-\npatterns",
         "reactive_x___rx_java": "RxJava",
         "eugenp__tutorials": "tutorials",
-        "airbnb__lottie-android": "lottie-android",
+        "airbnb__lottie-android": "lottie-\nandroid",
         "bumptech__glide": "glide",
         "apolloconfig__apollo": "apollo",
         "selenium_hq__selenium": "selenium",
@@ -109,14 +113,15 @@ def get_formatted_label(label):
     format_label = {
         "window_size": "Window Size",
         "k": "Top-K",
-        "meta_strategy": "Code Element Set",
+        "meta_strategy": "Code Feature Set",
         "embeddings_concept": "Vectorization Technique",
         "W": "Window Size",
         "V": "Vectorization Technique",
-        "C": "Change Representation",
+        "C": "Code Change Information",
         "T": "Tokenization Technique",
         "K": "Top-K",
-        "term_strategy": "Change Representation",
+        "term_strategy": "Code Change Information",
+        "repository_identifier": "CodeBERT Transformation",
     }
     return format_label[label] if label in format_label else label
 
@@ -132,19 +137,26 @@ def get_formatted_item(item):
         "term_strategy": "C",
         "tf-embedding--standard-tokenizer": "Standard",
         "tf-embedding--subword-tokenizer": "Subword",
+        "repository_identifier": "CodeBERT T",
     }
     return format_item[item] if item in format_item else item
 
 
 def get_formatted_value(value):
     format_value = {
-        "ast-lg": "Large",
-        "ast-md": "Medium",
-        "ast-sm": "Small",
+        "ast-lg": "LG",
+        "ast-md": "MD",
+        "ast-sm": "SM",
         "tf": "TF",
         "tf_idf": "TF-IDF",
+        "tf-embedding--standard-tokenizer": "Standard",
+        "tf-embedding--subword-tokenizer": "Subword",
+        "codebert": "CodeBERT",
         "diff_text": "Diff",
         "diff_text/meta_ast_text": "Combined",
-        "meta_ast_text": "Source",
+        "meta_ast_text": "AST",
+        "meta_ast_code": "AST",
+        "codebert-embedding": "Flattening",
+        "codebert-summed-embedding": "Sum Pooling",
     }
     return format_value[value] if value in format_value else value

@@ -13,7 +13,7 @@ from src.core.logger import log
 from src.core.workspace_context import get_results_dir
 
 
-class SubGroupedBarPlotMean:
+class UpdatedSubGroupedBarPlotMean:
     def __init__(
         self,
         title,
@@ -60,6 +60,21 @@ class SubGroupedBarPlotMean:
         tick_positions = []
         tick_labels = []
         color_matching = {}
+
+        combinations = []
+
+        for group_key, group_values in self.group_criteria.items():
+            for i, group_value in enumerate(group_values):
+                for subgroup_key, subgroup_values in self.subgroup_criteria.items():
+                    for j, subgroup_value in enumerate(subgroup_values):
+                        # Check if there is a row with the corresponding values
+                        if any(
+                            (group_value == row[group_key])
+                            and (subgroup_value == row[subgroup_key])
+                            for _, row in data.iterrows()
+                        ):
+                            combinations.append((group_value, subgroup_value))
+
         for k, repo_identifier in enumerate(repository_order):
             group_df = data[data["repository_identifier"] == repo_identifier]
             if "meta_ast_strategy" in self.group_criteria:
@@ -69,7 +84,7 @@ class SubGroupedBarPlotMean:
                 )
                 group_df = group_df.sort_values(by="sorting_order")
                 group_df = group_df.drop("sorting_order", axis=1)
-            group_center = k + (len(group_df) / self.group_amount - 1) / 2
+            group_center = k + (3 - 1) / 2
 
             self.group_criteria = {
                 key: value
@@ -77,24 +92,26 @@ class SubGroupedBarPlotMean:
                 if key != "repository_identifier"
             }
             for group_key, group_values in self.group_criteria.items():
+                x = -1
                 for i, group_value in enumerate(group_values):
                     for subgroup_key, subgroup_values in self.subgroup_criteria.items():
                         for j, subgroup_value in enumerate(subgroup_values):
-                            subgroup_width = width / self.subgroup_amount
+                            if (group_value, subgroup_value) not in combinations:
+                                continue
+                            x += 1
+                            print(f"{x} {(group_value, subgroup_value)}")
                             filtered_data = group_df[
                                 (group_df[group_key] == group_value)
                                 & (group_df[subgroup_key] == subgroup_value)
                             ]
                             mean_value = filtered_data["Mean"].mean()
-                            color = self.colors[len(subgroup_values) * i + j]
-                            position = group_center + width * (
-                                i - (len(group_df) / self.group_amount) / 2
-                            )
+                            color = self.colors[x]
+                            position = group_center + width * (x - 5 - 1) / 2
 
                             plt.bar(
-                                x=position + j * subgroup_width,
+                                x=position,
                                 height=mean_value,
-                                width=subgroup_width,
+                                width=width / 2,
                                 color=color,
                                 label=f"{group_value} {subgroup_value}",
                             )
@@ -102,7 +119,7 @@ class SubGroupedBarPlotMean:
                             if (group_value, subgroup_value) not in color_matching:
                                 color_matching[(group_value, subgroup_value)] = color
 
-            tick_positions.append(group_center - 0.08)
+            tick_positions.append(group_center - 0.6)
             tick_labels.append(f"{get_formatted_identifier(repo_identifier)}")
         plt.tight_layout()
         plt.subplots_adjust(left=0.08, bottom=0.14)
@@ -116,7 +133,7 @@ class SubGroupedBarPlotMean:
             loc="upper left",
             title=f"{get_formatted_label(self.group_name)}, {get_formatted_label(self.subgroup_name)}",
             handles=[mpatches.Patch(color=color_matching[i]) for i in color_matching],
-            labels=sorted(
+            labels=(
                 [
                     f"{self.group_name}={get_formatted_value(i[0])}, {self.subgroup_name}={get_formatted_value(i[1])}"
                     for i in color_matching
@@ -145,11 +162,3 @@ class SubGroupedBarPlotMean:
                 log.info(
                     f"{get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, {get_formatted_label(list(self.subgroup_criteria.keys())[0])}: {subgroup_value}, Mean: {mean_value:.4f}, Std: {std_value:.2f}, Var: {var_value:.2f}"
                 )
-
-                # for repo, repo_group in subgroup_df.groupby("repository_identifier"):
-                #     mean_value_repo = repo_group["Mean"].mean()
-                #     std_value_repo = repo_group["Mean"].std()
-                #     var_value_repo = repo_group["Mean"].var()
-                #     log.info(
-                #         f"Repository: {get_formatted_identifier(repo)}, {get_formatted_label(list(self.group_criteria.keys())[0])}: {group_value}, {get_formatted_label(list(self.subgroup_criteria.keys())[0])}: Mean: {mean_value_repo:.4f}, Std: {std_value_repo:.2f}, Var: {var_value_repo:.2f}"
-                #     )

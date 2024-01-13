@@ -48,7 +48,7 @@ class GroupedBarPlotMean:
             self.filter_criteria,
             self.group_criteria,
         )
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(8, 6))
         width = 0.2
         unique_legend_item = set()
         tick_positions = []
@@ -58,13 +58,6 @@ class GroupedBarPlotMean:
 
         for k, repo_identifier in enumerate(repository_order):
             group_df = data[data["repository_identifier"] == repo_identifier]
-            if "meta_ast_strategy" in self.group_criteria:
-                custom_order = {"ast-sm": 0, "ast-md": 1, "ast-lg": 2}
-                group_df["sorting_order"] = group_df["meta_ast_strategy"].map(
-                    custom_order
-                )
-                group_df = group_df.sort_values(by="sorting_order")
-                group_df = group_df.drop("sorting_order", axis=1)
             group_center = k + (len(group_df) - 1) / 2
 
             self.group_criteria = {
@@ -76,13 +69,13 @@ class GroupedBarPlotMean:
                 for i, group_value in enumerate(group_values):
                     filtered_data = group_df[(group_df[group_key] == group_value)]
                     mean_value = filtered_data["Mean"].mean()
-                    position = group_center + width * (i - (len(group_df) - 1) / 2)
+                    position = group_center + width * (i - (len(group_values) - 1) / 2)
                     plt.bar(
                         x=position,
                         height=mean_value,
                         width=width,
                         color=self.colors[i],
-                        label=f"={group_value}",
+                        label=f"={get_formatted_value(group_value)}",
                     )
                     unique_legend_item.add(group_value)
                     if group_value not in color_matching:
@@ -90,21 +83,24 @@ class GroupedBarPlotMean:
 
             tick_positions.append(group_center)
             tick_labels.append(f"{get_formatted_identifier(repo_identifier)}")
+        legend_handles = [
+            mpatches.Patch(
+                color=color_matching[value],
+                label=f"{get_formatted_item(group_name)}={get_formatted_value(value)}",
+            )
+            for value in color_matching
+        ]
 
         plt.tight_layout()
-        plt.subplots_adjust(left=0.06, bottom=0.09)
+        plt.subplots_adjust(left=0.08, bottom=0.14)
         plt.xlabel("Repository")
-        plt.ylabel("Mean")
+        plt.ylabel("Accuracy")
         plt.ylim(0, 1)
         plt.xticks(tick_positions, tick_labels)
         plt.legend(
             loc="upper center",
             title=get_formatted_label(group_name),
-            handles=[mpatches.Patch(color=color_matching[i]) for i in color_matching],
-            labels=[
-                f"{get_formatted_item(group_name)}={get_formatted_value(i)}"
-                for i in color_matching
-            ],
+            handles=legend_handles,
         )
         svg_filename = os.path.join(get_results_dir(), f"{self.plot_name}.svg")
         plt.savefig(svg_filename, format="svg")

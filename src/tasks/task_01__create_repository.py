@@ -7,7 +7,6 @@ api = github_graphql_api
 
 
 def create_repository_task(context: PipelineContext):
-    # Remove existing repository objects in the database
     db.delete_repositories(context.create_repository_criteria())
     repositories = Collection.github_repository.find(
         context.create_db_filter_criteria("identifier")
@@ -18,5 +17,4 @@ def create_repository_task(context: PipelineContext):
 
 
 if __name__ == "__main__":
-    # print("TASK DISABLED"); exit(0)
     create_repository_task(DEFAULT_PIPELINE_CONTEXT)

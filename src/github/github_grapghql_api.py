@@ -7,11 +7,6 @@ from src.core.workspace_context import write_json_file
 from src.github.github_api import GitHubApi, GITHUB_TOKEN, GITHUB_API_GRAPHQL_ENDPOINT
 
 
-# @see https://docs.github.com/en/graphql/guides/forming-calls-with-graphql
-# @see https://docs.github.com/en/graphql
-# @see https://docs.github.com/en/graphql/overview/explorer
-# @see https://medium.com/swlh/introduction-to-graphql-with-github-api-64ee8bb11630
-# @see https://github.com/altair-graphql/altair
 class GitHubGraphQlApi(GitHubApi):
     def __init__(
         self,
@@ -40,10 +35,8 @@ class GitHubGraphQlApi(GitHubApi):
         )
         data = result.get("data")
         if data and "data" in data:
-            # unpack wrapped data
             result["data"] = data["data"]
         if data and "errors" in data:
-            # unpack wrapped data
             result["errors"] = data["errors"]
             result["ok"] = False
             del result["data"]
@@ -75,7 +68,6 @@ class GitHubGraphQlApi(GitHubApi):
         while True:
             log.debug(f"  page: {context['page_count']}")
             result = self.execute_grapqhql_query(query, variables)
-            # data = result.get("data", {}).get("search", {})
             data = result.get("data", {})
             if not data:
                 pass
@@ -339,7 +331,6 @@ class GitHubGraphQlApi(GitHubApi):
             variables=q0["variables"],
         )
 
-        # We have to divide the query into separate executions because there is a limit of 10 pages, each containing a maximum of 100 entries.
         q1 = get_query("forks:<=1000")
         q2 = get_query("forks:>1000")
         self.execute_grapqhql_iteration_query(
@@ -626,13 +617,3 @@ if __name__ == "__main__":
     write_json_file("./src/github/docs/github-commit-fields.json", commit_fields)
     write_json_file("./src/github/docs/github-object-types.json", object_types)
     write_json_file("./src/github/docs/github-issue-schema.json", issue_schema)
-
-    # top_repositories = (
-    #     api.find_top_java_repositories(n=100, min_stars=2000, max_pages=1) or []
-    # )
-    # write_json_file("./docs/github-api/github-object-types.json", object_types)
-    # write_json_file(
-    #     get_results_file("repositories_stars_1000.json"), top_repositories["data"]
-    # )
-    # print(f"Repository count: {len(top_repositories)}")
-    pass

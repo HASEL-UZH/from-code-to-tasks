@@ -11,7 +11,7 @@ def remove_numbers(text):
 
 def is_number(s):
     try:
-        float(s)  # for float
+        float(s)
     except ValueError:
         return False
     return True

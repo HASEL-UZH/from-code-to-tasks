@@ -4,7 +4,6 @@ from src.core.logger import log
 from src.core.profiler import Profiler
 from src.core.utils import get_date_string
 from src.core.workspace_context import (
-    get_file_base_name,
     is_java_file,
 )
 from src.store.mdb_store import Collection
@@ -50,12 +49,6 @@ def insert_pydriller_commit(repositories: [dict]):
                         "changes": len(pydriller_commit["changes"]),
                     }
                 )
-            # write_json_file(
-            #     get_results_file(
-            #         f"pydriller_commit_info_{repository['identifier']}.json"
-            #     ),
-            #     infos,
-            # )
             Collection.pydriller_commit.insert_many(pydriller_commits)
 
 
@@ -83,10 +76,8 @@ def _create_pydriller_commit(repository, pydriller_commit):
         "changes": [],
     }
 
-    commit_file_count = 0
     for modified_file in unique_modified_files:
         file_name = modified_file.filename
-        base_file_name = get_file_base_name(file_name)
         if is_java_file(file_name):
             change = {
                 "filename": modified_file.filename,

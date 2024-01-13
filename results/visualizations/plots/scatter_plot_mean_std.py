@@ -69,9 +69,9 @@ class ScatterPlotMeanStd:
             std_legend_added = True
 
         plt.tight_layout()
-        plt.subplots_adjust(left=0.09, bottom=0.12)
+        plt.subplots_adjust(left=0.09, bottom=0.14)
         plt.xlabel("Repository")
-        plt.ylabel("Mean")
+        plt.ylabel("Accuracy")
         plt.legend(loc="upper center")
         plt.ylim(0, 1)
         plt.xticks(tick_positions, tick_labels)

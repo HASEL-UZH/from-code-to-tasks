@@ -27,7 +27,7 @@ def create_results_task(context: PipelineContext):
     ]
 
     window_sizes = [10, 20, 50]
-    k_values = [1, 3, 5]
+    k_values = [1, 2, 3]
 
     profiler.info(f"commit foundation created")
 
@@ -38,8 +38,6 @@ def create_results_task(context: PipelineContext):
             for content_strategy in embedding_concept.content_strategies:
                 content_provider = ChangeContentProvider()
                 commit_infos = content_provider.get_content(context, content_strategy)
-                if not commit_infos:
-                    pass
                 corpus_texts = []
                 for commit_info in commit_infos:
                     if isinstance(embedding_concept, TfConcept) or isinstance(
@@ -51,9 +49,7 @@ def create_results_task(context: PipelineContext):
                             corpus_texts
                         ).tolist()
                         if corpus_feature_names:
-                            corpus_filename = None
                             if isinstance(content_strategy, list):
-                                # composite strategy
                                 content_strategy_info = [
                                     f"{d['meta']}-{d['terms']}"
                                     for d in content_strategy

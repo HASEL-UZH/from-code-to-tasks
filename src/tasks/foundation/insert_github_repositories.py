@@ -14,7 +14,6 @@ from src.store.object_factory import get_repository_identifier
 api = github_graphql_api
 
 
-# Creates entries in github_repository collection
 def insert_github_repositories():
     profiler = Profiler("insert_github_repositories")
     result = api.find_top_java_repositories(n=100, max_pages=100) or []

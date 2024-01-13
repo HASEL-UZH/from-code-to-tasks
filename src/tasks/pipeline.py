@@ -1,4 +1,5 @@
 from src.core.logger import log
+from src.store.mdb_store import db
 from src.tasks.foundation.foundation import get_top_repositories
 from src.tasks.pipeline_context import PipelineContext
 from src.tasks.task_01__create_repository import create_repository_task
@@ -19,7 +20,7 @@ def run_pipeline(repository_identifier):
     )
     log.info(f"Pipeline: {context.get_opts()}")
 
-    # db.delete_resources_where(context.create_resource_criteria())
+    db.delete_resources_where(context.create_resource_criteria())
 
     # 01
     create_repository_task(context)

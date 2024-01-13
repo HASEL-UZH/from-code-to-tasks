@@ -63,7 +63,6 @@ def get_pr_statistics(context: PipelineContext) -> IPrStatistics:
         }
         pr_statistics["pr_infos"].append(pr_info)
 
-    # TODO modify bandwidth of accepted src files
     src_files_values = [
         pr_info.get("number_source_files", 0) for pr_info in pr_statistics["pr_infos"]
     ]
@@ -72,7 +71,6 @@ def get_pr_statistics(context: PipelineContext) -> IPrStatistics:
     src_files_max = src_files_average_value + 0.2 * src_files_std_deviation
     src_files_min = src_files_average_value - 0.2 * src_files_std_deviation
 
-    # TODO modify bandwidth of accepted lines
     lines_values = [
         pr_info.get("number_lines", 0) for pr_info in pr_statistics["pr_infos"]
     ]
@@ -85,16 +83,5 @@ def get_pr_statistics(context: PipelineContext) -> IPrStatistics:
     pr_statistics["src_files_min"] = src_files_min
     pr_statistics["lines_max"] = lines_max
     pr_statistics["lines_min"] = lines_min
-
-    files_within_bandwidth = sum(
-        1
-        for num_files in src_files_values
-        if src_files_min <= num_files <= src_files_max
-    )
-
-    total_files = len(src_files_values)
-    # print(
-    #     f"Files within bandwidth ({src_files_min} to {src_files_max}): {files_within_bandwidth} out of {total_files}"
-    # )
 
     return pr_statistics
