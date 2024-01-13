@@ -1,4 +1,5 @@
 import time
+
 from .logger import log
 
 
@@ -66,6 +67,5 @@ class Profiler:
         self.count += 1
         total_time = time.time() - self.start_time
         log.info(f"Profiling stopped. Total time: {total_time:.4f} seconds.")
-        # Reset the timers
         self.start_time = None
         self.last_time = None

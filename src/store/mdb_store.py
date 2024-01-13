@@ -39,44 +39,6 @@ class Collection:
     term_repr_size = mdb.get_collection("term_repr_size")
 
 
-# Base file system structure
-# store (root)
-#   repositories/
-#       {repository_id}
-#           _OBJECT_INF.json
-#           pull_requests
-#               pr_{pr_nr}/
-#                   FileA_before.java
-#                   FileA_after.java
-#                   FileA.diff
-#                   FileA_before_ast.json
-#                   FileA_after_ast.json
-#                   FileA_before_meta_ast.json
-#                   FileA_after_meta_ast.json
-#                   ...
-#                   FileX_before.java
-#                   FileX_after.java
-#                   FileX.diff
-#                   ...
-#
-#
-#  object types:
-#   java (java source file)
-#   text (text file)
-#   ast (json ast)
-#   meta-ast (json meta ast)
-#   diff (git diff file)
-#
-#  version:
-#   "before"
-#   "after"
-#
-#  class types
-#     Repository
-#     PullRequest
-#     Commit
-#     Resource
-#
 class MdbStore:
     def __init__(self, store_dir):
         self.store_dir = store_dir
@@ -84,11 +46,8 @@ class MdbStore:
     def sync(self, force=False):
         log.warning("MdbStore.sync() is a NOP")
 
-    # @deprecated
     def set_dirty(self, dirty, cause=None):
         self.dirty = dirty
-
-    # --- Query
 
     def _get_collection(self, id: str):
         collection = id.split("::")[0]
@@ -141,8 +100,6 @@ class MdbStore:
         collection.delete_one({id: id})
         logging and profiler.debug("db.delete_object")
 
-    # --- IO
-
     def get_resource_location(self, resource: dict, container=None):
         if not ObjectFactory.is_resource(resource):
             return None
@@ -154,7 +111,6 @@ class MdbStore:
                 return location
         raise Exception("Cannot create resource location")
 
-    # repository: IRepository
     def save_repository(self, repository: dict):
         if not ObjectFactory.is_repository(repository):
             raise RuntimeError()
@@ -166,7 +122,6 @@ class MdbStore:
             upsert=True,
         )
 
-    # commit: ICommit
     def save_commit(self, commit: dict):
         if not ObjectFactory.is_commit(commit):
             raise RuntimeError()
@@ -180,7 +135,6 @@ class MdbStore:
             upsert=True,
         )
 
-    # resource: IResource
     def save_resource(self, resource, container):
         if not ObjectFactory.is_resource(resource):
             raise RuntimeError()
@@ -271,7 +225,6 @@ class MdbStore:
             return None
         resource.pop("content", None)
 
-    # absolute path
     def get_repository_dir(self, repo_id=None):
         paths = (
             [StoreFolderName.repositories, repo_id]
@@ -283,7 +236,6 @@ class MdbStore:
         )
         return repository_dir
 
-    # absolute path
     def get_commit_dir(self, repo_id, commit_id):
         repo_dir = self.get_repository_dir(repo_id)
         commit_dir = get_or_create_dir(
@@ -291,7 +243,6 @@ class MdbStore:
         )
         return commit_dir
 
-    # absolute path
     def get_fs_path(self, location):
         full_path = os.path.abspath(os.path.join(self.store_dir, location))
         return full_path
@@ -324,11 +275,9 @@ class MdbStore:
         return file_size_bytes
 
     def generate_tmp_file(self):
-        unique_id = uuid.uuid4()  # Generate a random UUID.
-        current_time = datetime.now().strftime(
-            "%Y-%d-%m-%H-%M-%S"
-        )  # Format the current time.
-        tmp_filename = f"{current_time}-{unique_id}.tmp"  # Create the temp filename.
+        unique_id = uuid.uuid4()
+        current_time = datetime.now().strftime("%Y-%d-%m-%H-%M-%S")
+        tmp_filename = f"{current_time}-{unique_id}.tmp"
         tmp_dir = get_or_create_dir(
             os.path.abspath(os.path.join(self.store_dir, "tmp"))
         )

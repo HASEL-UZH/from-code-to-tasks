@@ -1,12 +1,11 @@
 export interface IObject {
-    id: string; // uuid, technical id
+    id: string;
     classifier: string;
     identifier: string;
 }
 
 export interface IStoreObject {
-    // internal
-    _location?: string; // absolute file location
+    _location?: string;
 }
 
 export interface IContainer extends IObject, IStoreObject {
@@ -35,7 +34,7 @@ export interface IRepository extends IContainer {
  *}
  */
 export interface ICommit extends IContainer {
-    "@repository": string; // repository.id
+    "@repository": string;
     repository_url: string;
     commit_hash: string;
     commit_message: string;
@@ -50,16 +49,16 @@ export interface ICommit extends IContainer {
 }
 
 export interface IResource extends IObject, IStoreObject {
-    "@container": string; // repository.id || commit.id
-    identifier: string // the filename based on the property of this resource
-    name: string; // the base name (excluding extension)
+    "@container": string;
+    identifier: string
+    name: string;
     type: "json" | "diff" | "text"
     kind: "source" | "diff" | "ast" | "meta" | "change";
     version: "before" | "after" | null;
     strategy: {
-        meta?: string; // meta ast processing
-        terms?: string; // how to create the terms based on the meta-ast
-        embedding?: string; // how to create the embeddings
+        meta?: string;
+        terms?: string;
+        embedding?: string;
     }
     content: string | {} | any;
 }

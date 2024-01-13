@@ -1,4 +1,3 @@
-import json
 import os
 
 from src.ast.ast_compare import compare_ast, build_change_tree

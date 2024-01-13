@@ -22,14 +22,11 @@ def generate_change_text_for_file(file_name, compare_tree):
         else:
             return f"In the file {file_name}, the following changes have been made: {generated_text}"
     else:
-        # TODO uncomment to achieve camel case splitting
-        # generated_text = change_text_camel_case_splitter(generated_text).lower()
         if generated_text == "":
             pass
         return generated_text
 
 
-# Only look at class nodes
 def generate_change_text(node, parent, level):
     if is_class(node):
         return generate_file_text(node, parent, level)

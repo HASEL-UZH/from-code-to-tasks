@@ -29,9 +29,6 @@ class ICommitInfo(TypedDict):
     resource: str
 
 
-# Enum
-
-
 class CacheStrategy:
     Memory = "memory"
     Npy = "npy"
@@ -43,7 +40,6 @@ class ContentStrategies:
         {"meta": "ast-md", "terms": "meta_ast_text"},
         {"meta": "ast-lg", "terms": "meta_ast_text"},
         {"meta": None, "terms": "diff_text"},
-        # TfxMulti
         [
             {"meta": None, "terms": "diff_text"},
             {"meta": "ast-lg", "terms": "meta_ast_text"},
