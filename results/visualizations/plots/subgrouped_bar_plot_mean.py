@@ -54,8 +54,8 @@ class SubGroupedBarPlotMean:
         data = get_data(
             self.filter_criteria, self.group_criteria, self.subgroup_criteria
         )
-        plt.figure(figsize=(12, 8))
-        width = 0.2
+        plt.figure(figsize=(8, 6))
+        width = 0.3
         unique_legend_item = set()
         tick_positions = []
         tick_labels = []
@@ -102,23 +102,23 @@ class SubGroupedBarPlotMean:
                             if (group_value, subgroup_value) not in color_matching:
                                 color_matching[(group_value, subgroup_value)] = color
 
-            tick_positions.append(group_center)
+            tick_positions.append(group_center - 0.08)
             tick_labels.append(f"{get_formatted_identifier(repo_identifier)}")
         plt.tight_layout()
-        plt.subplots_adjust(left=0.06, bottom=0.09)
+        plt.subplots_adjust(left=0.08, bottom=0.14)
         plt.xlabel("Repository")
-        plt.ylabel("Mean")
+        plt.ylabel("Accuracy")
         plt.ylim(0, 1)
         plt.xticks(tick_positions, tick_labels)
         self.group_criteria.update(self.subgroup_criteria)
 
         plt.legend(
-            loc="upper center",
+            loc="upper left",
             title=f"{get_formatted_label(self.group_name)}, {get_formatted_label(self.subgroup_name)}",
             handles=[mpatches.Patch(color=color_matching[i]) for i in color_matching],
             labels=sorted(
                 [
-                    f"{self.group_name}={get_formatted_value(i[0])} {self.subgroup_name}={get_formatted_value(i[1])}"
+                    f"{self.group_name}={get_formatted_value(i[0])}, {self.subgroup_name}={get_formatted_value(i[1])}"
                     for i in color_matching
                 ]
             ),

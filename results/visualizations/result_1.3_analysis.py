@@ -10,6 +10,8 @@ def grouped_bar_plot_mean_per_change_repr_text_k_1_w_10_per_repo():
     filter_criteria = {
         "k": 1,
         "window_size": 10,
+        "embeddings_concept": "tf_idf",
+        "embeddings_strategy": "tf-idf-embedding--subword-tokenizer",
     }
     group_criteria = {
         "term_strategy": ["meta_ast_text", "diff_text", "diff_text/meta_ast_text"],
