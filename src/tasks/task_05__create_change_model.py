@@ -1,9 +1,8 @@
 from src.ast.create_ast_change_model import create_ast_change_model
 from src.core.profiler import Profiler
-from src.core.utils import group_by, accessor
-from src.github.defs import RepositoryIdentifier
-from src.store.object_factory import ObjectFactory
+from src.core.utils import group_by
 from src.store.mdb_store import db
+from src.store.object_factory import ObjectFactory
 from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 
@@ -66,12 +65,7 @@ def change_model_creator_task(context: PipelineContext):
             count += 1
             if count % 10 == 0:
                 profiler.debug(f"Change model progress: {count}")
-
-        # }
         profiler.info(f"change_model_creator_task done: {count}")
-
-
-# }
 
 
 if __name__ == "__main__":

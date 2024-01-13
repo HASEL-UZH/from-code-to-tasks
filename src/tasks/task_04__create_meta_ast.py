@@ -1,10 +1,6 @@
-import json
-
 from src.core.profiler import Profiler
-from src.core.logger import log
-from src.github.defs import RepositoryIdentifier
-from src.store.object_factory import ObjectFactory
 from src.store.mdb_store import db
+from src.store.object_factory import ObjectFactory
 from src.strategies.meta.meta_ast_strategy import (
     MetaAstBuilder,
     traverse_json_structure,
@@ -14,7 +10,6 @@ from src.tasks.pipeline_context import PipelineContext, DEFAULT_PIPELINE_CONTEXT
 
 def create_meta_ast_task(context: PipelineContext):
     print("create_meta_ast_task started")
-
     db.delete_resources_where(
         context.create_resource_criteria({"kind": "meta", "type": "json"})
     )
@@ -39,8 +34,6 @@ def create_meta_ast_task(context: PipelineContext):
                 profiler.debug(f"AST resources: {count} of total: {len(ast_resources)}")
 
             ast_input_json = db.get_resource_content(ast_resource)
-
-            # ast_sm - include methods
             ast_builder_sm = MetaAstBuilder(
                 ast_resource["name"],
                 {
@@ -49,7 +42,6 @@ def create_meta_ast_task(context: PipelineContext):
                     "comments": False,
                 },
             )
-            # ast_md - include methods, comments
             ast_builder_md = MetaAstBuilder(
                 ast_resource["name"],
                 {
@@ -57,7 +49,6 @@ def create_meta_ast_task(context: PipelineContext):
                     "identifiers": False,
                 },
             )
-            # ast_lg - include, methods, comments, identifiers, imports
             ast_builder_lg = MetaAstBuilder(ast_resource["name"])
 
             traverse_json_structure(ast_input_json, ast_builder_sm)

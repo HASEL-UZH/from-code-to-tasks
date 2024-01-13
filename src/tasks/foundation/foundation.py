@@ -21,9 +21,6 @@ def get_top_repositories(n: int = 20, min_pr_count: int = PR_COUNT_LIMIT) -> [st
 
 
 def collect_top_repositories(n: int = 20):
-    # Insert into github repository
-    # insert_github_repositories()
-
     repositories = list(
         Collection.github_repository.find(
             {
@@ -36,15 +33,9 @@ def collect_top_repositories(n: int = 20):
             }
         ).sort("stargazerCount", -1)
     )
-    selected_identifiers = [
-        "elastic__elasticsearch",
-        "kdn251__interviews",
-        "netty__netty",
-        "apache__dubbo",
-    ]
     repositories = repositories[:n]
     repositories = [
-        repo for repo in repositories if repo.get("identifier") in selected_identifiers
+        repo for repo in repositories if repo.get("identifier") in repositories
     ]
 
     insert_github_pr(repositories)

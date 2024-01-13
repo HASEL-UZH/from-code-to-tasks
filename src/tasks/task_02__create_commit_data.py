@@ -34,15 +34,6 @@ def create_commit_data_task(context: PipelineContext):
 
 def save_commit_data(repository, pr_commit, py_commit):
     commit_date = get_date_string(py_commit["commit_date"])
-    seen = set()
-    # code for accept first
-    unique_modified_files = [
-        d
-        for d in (py_commit["changes"] or [])
-        if d["filename"] not in seen and not seen.add(d["filename"])
-    ]
-    # code for accept last
-    # unique_modified_files = {d.filename: d for d in (pydriller_commit.modified_files or [])}.values()
     pr_commit["merge_commit_hash"] = pr_commit.get("mergeCommit", {}).get("oid")
     commit_info = {
         "repository_url": repository["repository_url"],
@@ -124,5 +115,4 @@ def save_commit_data(repository, pr_commit, py_commit):
 
 
 if __name__ == "__main__":
-    # print("TASK DISABLED"); exit(0)
     create_commit_data_task(DEFAULT_PIPELINE_CONTEXT)
