@@ -36,6 +36,7 @@ class Collection:
     pydriller_commit = mdb.get_collection("pydriller_commit")
     pr_info = mdb.get_collection("pr_info")
     results = mdb.get_collection("results")
+    term_repr_size = mdb.get_collection("term_repr_size")
 
 
 # Base file system structure
@@ -312,6 +313,15 @@ class MdbStore:
 
         file_path = self.get_fs_path(location)
         return file_path
+
+    def get_resource_size(self, resource):
+        resource_path = self.get_resource_path(resource)
+        path = os.path.join(self.store_dir, resource_path)
+        file_size_bytes = os.path.getsize(path)
+        file_size_kb = file_size_bytes / 1024.0
+        file_size_mb = file_size_bytes / (1024.0**2)
+        print(f"{file_size_bytes} Bytes, {file_size_kb} kB, {file_size_mb} mB")
+        return file_size_bytes
 
     def generate_tmp_file(self):
         unique_id = uuid.uuid4()  # Generate a random UUID.
